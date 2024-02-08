@@ -1,0 +1,20 @@
+[package]
+name = "qcd-sme"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+num = "0.4"
+
+[build-dependencies]
+cbindgen = "0.26"
+regex = "1.10"
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"
