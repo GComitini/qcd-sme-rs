@@ -4,6 +4,10 @@ use num::complex::ComplexFloat;
 pub type R = f64;
 /// A complex number.
 pub type C = num::Complex<R>;
+/// An integer type for the number of colors.
+///
+/// Used by [set_number_of_colors](crate::set_number_of_colors).
+pub type NCTYPE = u32;
 
 /// A number.
 pub trait Num:
