@@ -1,4 +1,4 @@
-use crate::{types::NCTYPE, C};
+use crate::{types::NCTYPE, C, R};
 
 /// The imaginary unit.
 pub const I: C = C { re: 0., im: 1. };
@@ -24,4 +24,27 @@ pub extern "C" fn set_number_of_colors(n: NCTYPE) {
 #[inline(always)]
 pub(crate) fn nc() -> NCTYPE {
     unsafe { NC }
+}
+
+/// The default quark mass.
+static mut M_QUARK: R = 0.3;
+
+/// Get the default quark mass.
+#[no_mangle]
+pub extern "C" fn get_default_quark_mass() -> R {
+    m_quark()
+}
+
+/// Set the number of colors.
+#[no_mangle]
+pub extern "C" fn set_default_quark_mass(m: R) {
+    unsafe {
+        M_QUARK = m;
+    }
+}
+
+// This is just an alias to avoid typing "unsafe { M_QUARK }" every time.
+#[inline(always)]
+pub(crate) fn m_quark() -> R {
+    unsafe { M_QUARK }
 }
