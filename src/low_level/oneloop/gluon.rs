@@ -12,8 +12,8 @@ mod native {
     use crate::Num;
 
     #[allow(clippy::too_many_arguments)]
-    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T) -> T {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2)
+    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T) -> T {
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
     }
 
     pub fn f<T: Num>(s: T) -> T {
@@ -47,8 +47,15 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_sep(
+        s2: R,
+        s: R,
+        sinv: R,
+        sinv2: R,
+        s_pl_1_2: R,
+        ln_s: R,
+    ) -> R {
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
     }
 
     #[no_mangle]
@@ -63,8 +70,9 @@ pub(crate) mod ffi {
         sinv: C,
         sinv2: C,
         s_pl_1_2: C,
+        ln_s: C,
     ) -> C {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2)
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
     }
 
     #[no_mangle]
@@ -151,8 +159,7 @@ pub(crate) mod inlines {
 
     #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T) -> T {
-        let ln_s = s.ln();
+    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T) -> T {
         (l_a(s2, s, sinv, ln_s)
             + l_b(sinv, sinv2, s_pl_1_2)
             + l_c(s2, ln_s)
@@ -170,7 +177,8 @@ pub(crate) mod inlines {
         let sinv2 = sinv * sinv;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
-        f_sep(s2, s, sinv, sinv2, s_pl_1_2)
+        let ln_s = s.ln();
+        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
     }
 
     #[inline(always)]
