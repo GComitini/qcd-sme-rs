@@ -47,17 +47,17 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
+    pub extern "C" fn oneloop__gluon__f_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
         inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f(s: R) -> R {
+    pub extern "C" fn oneloop__gluon__f(s: R) -> R {
         inlines::f(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_sep__complex(
+    pub extern "C" fn oneloop__gluon__f_sep__complex(
         s2: C,
         s: C,
         sinv: C,
@@ -68,22 +68,22 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f__complex(s: C) -> C {
+    pub extern "C" fn oneloop__gluon__f__complex(s: C) -> C {
         inlines::f(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_xi_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
+    pub extern "C" fn oneloop__gluon__f_xi_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
         inlines::f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_xi(s: R) -> R {
+    pub extern "C" fn oneloop__gluon__f_xi(s: R) -> R {
         inlines::f_xi(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_xi_sep__complex(
+    pub extern "C" fn oneloop__gluon__f_xi_sep__complex(
         s2: C,
         s: C,
         sinv: C,
@@ -94,17 +94,17 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_xi__complex(s: C) -> C {
+    pub extern "C" fn oneloop__gluon__f_xi__complex(s: C) -> C {
         inlines::f_xi(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_q(s: R) -> R {
+    pub extern "C" fn oneloop__gluon__f_q(s: R) -> R {
         inlines::f_q(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn one_loop__gluon__f_q__complex(s: C) -> C {
+    pub extern "C" fn oneloop__gluon__f_q__complex(s: C) -> C {
         inlines::f_q(s)
     }
 }
@@ -207,7 +207,7 @@ pub(crate) mod inlines {
 
 #[cfg(test)]
 mod tests {
-    use crate::low_level::one_loop::gluon;
+    use crate::low_level::oneloop::gluon;
     use crate::{Num, C, I, R};
 
     const TOLERANCE: R = 1e-12;
@@ -237,7 +237,7 @@ mod tests {
     #[test]
     fn test_f() {
         use gluon::f;
-        use gluon::ffi::{one_loop__gluon__f, one_loop__gluon__f__complex};
+        use gluon::ffi::{oneloop__gluon__f, oneloop__gluon__f__complex};
 
         const REAL_RESULTS: [R; 4] = [
             2.12858737422535,
@@ -261,7 +261,7 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(one_loop__gluon__f(s), REAL_RESULTS[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f(s), REAL_RESULTS[i]));
 
         COMPLEX_TEST_VAL
             .iter()
@@ -271,13 +271,13 @@ mod tests {
         COMPLEX_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(one_loop__gluon__f__complex(s), complex_results[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f__complex(s), complex_results[i]));
     }
 
     #[test]
     fn test_f_xi() {
         use gluon::f_xi;
-        use gluon::ffi::{one_loop__gluon__f_xi, one_loop__gluon__f_xi__complex};
+        use gluon::ffi::{oneloop__gluon__f_xi, oneloop__gluon__f_xi__complex};
 
         const REAL_RESULTS: [R; 4] = [
             0.08333333333333334,
@@ -301,22 +301,23 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(one_loop__gluon__f_xi(s), REAL_RESULTS[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_xi(s), REAL_RESULTS[i]));
 
         COMPLEX_TEST_VAL
             .iter()
             .enumerate()
             .for_each(|(i, &s)| assert_equal(f_xi(s), complex_results[i]));
 
-        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(one_loop__gluon__f_xi__complex(s), complex_results[i])
-        });
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_xi__complex(s), complex_results[i]));
     }
 
     #[test]
     fn test_f_q() {
         use gluon::f_q;
-        use gluon::ffi::{one_loop__gluon__f_q, one_loop__gluon__f_q__complex};
+        use gluon::ffi::{oneloop__gluon__f_q, oneloop__gluon__f_q__complex};
 
         const REAL_RESULTS: [R; 4] = [
             -0.11357849147764694,
@@ -340,7 +341,7 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(one_loop__gluon__f_q(s), REAL_RESULTS[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q(s), REAL_RESULTS[i]));
 
         COMPLEX_TEST_VAL
             .iter()
@@ -350,6 +351,6 @@ mod tests {
         COMPLEX_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(one_loop__gluon__f_q__complex(s), complex_results[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q__complex(s), complex_results[i]));
     }
 }

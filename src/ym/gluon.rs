@@ -223,7 +223,7 @@ pub(crate) mod ffi {
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
-    use crate::low_level::one_loop::gluon::inlines::*;
+    use crate::low_level::oneloop::gluon::inlines::*;
     use crate::{Num, R};
 
     #[allow(clippy::too_many_arguments)]

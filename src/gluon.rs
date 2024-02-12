@@ -251,7 +251,7 @@ pub(crate) mod ffi {
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
     use crate::consts::{m_quark, nf_div_nc};
-    use crate::low_level::one_loop::gluon::inlines::*;
+    use crate::low_level::oneloop::gluon::inlines::*;
     use crate::{Num, R};
 
     #[allow(clippy::too_many_arguments)]
