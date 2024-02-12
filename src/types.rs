@@ -8,6 +8,10 @@ pub type C = num::Complex<R>;
 ///
 /// Used by [set_number_of_colors](crate::consts::set_number_of_colors).
 pub type NCTYPE = u32;
+/// An integer type for the number of fermions.
+///
+/// Used by [set_number_of_fermions](crate::consts::set_number_of_fermions).
+pub type NFTYPE = u32;
 
 /// A number.
 pub trait Num:

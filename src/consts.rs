@@ -1,4 +1,7 @@
-use crate::{types::NCTYPE, C, R};
+use crate::{
+    types::{NCTYPE, NFTYPE},
+    C, R,
+};
 
 /// The imaginary unit.
 pub const I: C = C { re: 0., im: 1. };
@@ -24,6 +27,29 @@ pub extern "C" fn set_number_of_colors(n: NCTYPE) {
 #[inline(always)]
 pub(crate) fn nc() -> NCTYPE {
     unsafe { NC }
+}
+
+/// The number of fermions.
+static mut NF: NCTYPE = 1;
+
+/// Get the number of fermions.
+#[no_mangle]
+pub extern "C" fn get_number_of_fermions() -> NFTYPE {
+    nf()
+}
+
+/// Set the number of fermions.
+#[no_mangle]
+pub extern "C" fn set_number_of_fermions(n: NFTYPE) {
+    unsafe {
+        NF = n;
+    }
+}
+
+// This is just an alias to avoid typing "unsafe { NF }" every time.
+#[inline(always)]
+pub(crate) fn nf() -> NCTYPE {
+    unsafe { NF }
 }
 
 /// The default quark mass.
