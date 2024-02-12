@@ -27,8 +27,10 @@ pub trait Num:
 {
     fn abs(&self) -> R;
     fn exp(&self) -> Self;
+    fn im(&self) -> R;
     fn inv(&self) -> Self;
     fn ln(&self) -> Self;
+    fn re(&self) -> R;
     fn sqrt(&self) -> Self;
 }
 
@@ -44,6 +46,11 @@ impl Num for R {
     }
 
     #[inline(always)]
+    fn im(&self) -> R {
+        0.
+    }
+
+    #[inline(always)]
     fn inv(&self) -> Self {
         1. / self
     }
@@ -51,6 +58,11 @@ impl Num for R {
     #[inline(always)]
     fn ln(&self) -> Self {
         (*self as R).ln()
+    }
+
+    #[inline(always)]
+    fn re(&self) -> R {
+        *self
     }
 
     #[inline(always)]
@@ -71,6 +83,11 @@ impl Num for C {
     }
 
     #[inline(always)]
+    fn im(&self) -> R {
+        self.im
+    }
+
+    #[inline(always)]
     fn inv(&self) -> Self {
         1. / self
     }
@@ -78,6 +95,11 @@ impl Num for C {
     #[inline(always)]
     fn ln(&self) -> Self {
         (*self as C).ln()
+    }
+
+    #[inline(always)]
+    fn re(&self) -> R {
+        self.re
     }
 
     #[inline(always)]

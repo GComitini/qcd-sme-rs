@@ -18,11 +18,25 @@ mod native {
         inlines::fermi_distribution(en, beta, mu)
     }
 
+    pub fn fermi_distribution_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
+    where
+        T1: std::ops::Sub<T2, Output = T1>,
+    {
+        inlines::fermi_distribution_zero_temp(en, mu)
+    }
+
     pub fn fermi_distribution_double<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
     {
         inlines::fermi_distribution_double(en, beta, mu)
+    }
+
+    pub fn fermi_distribution_double_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
+    where
+        T1: std::ops::Sub<T2, Output = T1>,
+    {
+        inlines::fermi_distribution_double_zero_temp(en, mu)
     }
 
     pub fn fermi_distribution_zero_chempot<T: Num>(en: T, beta: R) -> T {
@@ -60,8 +74,18 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
+    pub extern "C" fn fermi_distribution_zero_temp(en: R, mu: R) -> R {
+        inlines::fermi_distribution_zero_temp(en, mu)
+    }
+
+    #[no_mangle]
     pub extern "C" fn fermi_distribution_double(en: R, beta: R, mu: R) -> R {
         inlines::fermi_distribution_double(en, beta, mu)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn fermi_distribution_double_zero_temp(en: R, mu: R) -> R {
+        inlines::fermi_distribution_double_zero_temp(en, mu)
     }
 
     #[no_mangle]
@@ -100,12 +124,32 @@ pub mod inlines {
     }
 
     #[inline(always)]
+    pub fn fermi_distribution_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
+    where
+        T1: std::ops::Sub<T2, Output = T1>,
+    {
+        if en.re() > mu.re() {
+            T1::zero()
+        } else {
+            T1::one()
+        }
+    }
+
+    #[inline(always)]
     pub fn fermi_distribution_double<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
     {
         (statistic_distribution_exponential(en, beta, mu) + 1.).inv()
             + (statistic_distribution_exponential(en, beta, -mu) + 1.).inv()
+    }
+
+    #[inline(always)]
+    pub fn fermi_distribution_double_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
+    where
+        T1: std::ops::Sub<T2, Output = T1>,
+    {
+        fermi_distribution_zero_temp(en, mu) + fermi_distribution_zero_temp(en, -mu)
     }
 
     #[inline(always)]
