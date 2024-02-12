@@ -12,8 +12,16 @@ mod native {
     use crate::Num;
 
     #[allow(clippy::too_many_arguments)]
-    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T) -> T {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
+    pub fn f_sep<T: Num>(
+        s2: T,
+        s: T,
+        sinv: T,
+        sinv2: T,
+        s_pl_1_2: T,
+        ln_s: T,
+        ln_s_pl_1_2: T,
+    ) -> T {
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
     }
 
     pub fn f<T: Num>(s: T) -> T {
@@ -54,8 +62,9 @@ pub(crate) mod ffi {
         sinv2: R,
         s_pl_1_2: R,
         ln_s: R,
+        ln_s_pl_1_2: R,
     ) -> R {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -71,8 +80,9 @@ pub(crate) mod ffi {
         sinv2: C,
         s_pl_1_2: C,
         ln_s: C,
+        ln_s_pl_1_2: C,
     ) -> C {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
+        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -132,9 +142,9 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn l_b<T: Num>(sinv: T, sinv2: T, s_pl_1_2: T) -> T {
+    pub fn l_b<T: Num>(sinv: T, sinv2: T, s_pl_1_2: T, ln_s_pl_1_2: T) -> T {
         let sinv3 = sinv * sinv2;
-        s_pl_1_2 * (-sinv * 20. + 3. + sinv2 * 11. - sinv3 * 2.) * s_pl_1_2.ln()
+        s_pl_1_2 * (-sinv * 20. + 3. + sinv2 * 11. - sinv3 * 2.) * ln_s_pl_1_2
     }
 
     #[inline(always)]
@@ -159,9 +169,17 @@ pub(crate) mod inlines {
 
     #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn f_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T) -> T {
+    pub fn f_sep<T: Num>(
+        s2: T,
+        s: T,
+        sinv: T,
+        sinv2: T,
+        s_pl_1_2: T,
+        ln_s: T,
+        ln_s_pl_1_2: T,
+    ) -> T {
         (l_a(s2, s, sinv, ln_s)
-            + l_b(sinv, sinv2, s_pl_1_2)
+            + l_b(sinv, sinv2, s_pl_1_2, ln_s_pl_1_2)
             + l_c(s2, ln_s)
             + r_a(s, sinv)
             + r_b(sinv, sinv2, s_pl_1_2)
@@ -178,7 +196,8 @@ pub(crate) mod inlines {
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
-        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s)
+        let ln_s_pl_1_2 = s_pl_1_2.ln();
+        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
     }
 
     #[inline(always)]

@@ -19,9 +19,10 @@ mod native {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
     ) -> T {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     pub fn dressing_inv_landau<T: Num>(s: T, f0: R) -> T {
@@ -36,10 +37,11 @@ mod native {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
         xi: R,
     ) -> T {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     pub fn dressing_inv<T: Num>(s: T, f0: R, xi: R) -> T {
@@ -54,9 +56,10 @@ mod native {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
     ) -> T {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     pub fn dressing_landau<T: Num>(s: T, f0: R) -> T {
@@ -71,10 +74,11 @@ mod native {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
         xi: R,
     ) -> T {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     pub fn dressing<T: Num>(s: T, f0: R, xi: R) -> T {
@@ -103,9 +107,10 @@ pub(crate) mod ffi {
         sinv2: R,
         s_pl_1_2: R,
         ln_s: R,
+        ln_s_pl_1_2: R,
         f0: R,
     ) -> R {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     #[no_mangle]
@@ -121,9 +126,10 @@ pub(crate) mod ffi {
         sinv2: C,
         s_pl_1_2: C,
         ln_s: C,
+        ln_s_pl_1_2: C,
         f0: R,
     ) -> C {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     #[no_mangle]
@@ -139,10 +145,11 @@ pub(crate) mod ffi {
         sinv2: R,
         s_pl_1_2: R,
         ln_s: R,
+        ln_s_pl_1_2: R,
         f0: R,
         xi: R,
     ) -> R {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     #[no_mangle]
@@ -158,10 +165,11 @@ pub(crate) mod ffi {
         sinv2: C,
         s_pl_1_2: C,
         ln_s: C,
+        ln_s_pl_1_2: C,
         f0: R,
         xi: R,
     ) -> C {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     #[no_mangle]
@@ -177,9 +185,10 @@ pub(crate) mod ffi {
         sinv2: R,
         s_pl_1_2: R,
         ln_s: R,
+        ln_s_pl_1_2: R,
         f0: R,
     ) -> R {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     #[no_mangle]
@@ -195,9 +204,10 @@ pub(crate) mod ffi {
         sinv2: C,
         s_pl_1_2: C,
         ln_s: C,
+        ln_s_pl_1_2: C,
         f0: R,
     ) -> C {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     #[no_mangle]
@@ -213,10 +223,11 @@ pub(crate) mod ffi {
         sinv2: R,
         s_pl_1_2: R,
         ln_s: R,
+        ln_s_pl_1_2: R,
         f0: R,
         xi: R,
     ) -> R {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     #[no_mangle]
@@ -232,10 +243,11 @@ pub(crate) mod ffi {
         sinv2: C,
         s_pl_1_2: C,
         ln_s: C,
+        ln_s_pl_1_2: C,
         f0: R,
         xi: R,
     ) -> C {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     #[no_mangle]
@@ -262,9 +274,10 @@ pub(crate) mod inlines {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
     ) -> T {
-        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s) + f0
+        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2) + f0
     }
 
     #[inline(always)]
@@ -275,7 +288,8 @@ pub(crate) mod inlines {
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        let ln_s_pl_1_2 = s_pl_1_2.ln();
+        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -287,10 +301,11 @@ pub(crate) mod inlines {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
         xi: R,
     ) -> T {
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0)
+        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0)
             + f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2) * xi
     }
 
@@ -302,7 +317,8 @@ pub(crate) mod inlines {
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
-        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi)
+        let ln_s_pl_1_2 = s_pl_1_2.ln();
+        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -314,9 +330,10 @@ pub(crate) mod inlines {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
     ) -> T {
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0).inv()
+        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0).inv()
     }
 
     #[inline(always)]
@@ -333,10 +350,11 @@ pub(crate) mod inlines {
         sinv2: T,
         s_pl_1_2: T,
         ln_s: T,
+        ln_s_pl_1_2: T,
         f0: R,
         xi: R,
     ) -> T {
-        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, f0, xi).inv()
+        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, f0, xi).inv()
     }
 
     #[inline(always)]
