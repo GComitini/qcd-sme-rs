@@ -6,7 +6,8 @@ use crate::{
 /// The imaginary unit.
 pub const I: C = C { re: 0., im: 1. };
 
-/// The number of colors.
+// The number of colors.
+// If you change this line you MUST also change the value of NF_DIV_NC.
 static mut NC: NCTYPE = 3;
 
 /// Get the number of colors.
@@ -20,6 +21,7 @@ pub extern "C" fn get_number_of_colors() -> NCTYPE {
 pub extern "C" fn set_number_of_colors(n: NCTYPE) {
     unsafe {
         NC = n;
+        NF_DIV_NC = (NF as R) / (NC as R);
     }
 }
 
@@ -29,7 +31,8 @@ pub(crate) fn nc() -> NCTYPE {
     unsafe { NC }
 }
 
-/// The number of fermions.
+// The number of fermions.
+// If you change this line you MUST also change the value of NF_DIV_NC.
 static mut NF: NCTYPE = 1;
 
 /// Get the number of fermions.
@@ -43,6 +46,7 @@ pub extern "C" fn get_number_of_fermions() -> NFTYPE {
 pub extern "C" fn set_number_of_fermions(n: NFTYPE) {
     unsafe {
         NF = n;
+        NF_DIV_NC = (NF as R) / (NC as R);
     }
 }
 
@@ -52,8 +56,17 @@ pub(crate) fn nf() -> NCTYPE {
     unsafe { NF }
 }
 
+/// The number of fermions divided by the number of colors.
+static mut NF_DIV_NC: R = 1. / 3.;
+
+// This is just an alias to avoid typing "unsafe { NF_DIV_NC }" every time.
+#[inline(always)]
+pub(crate) fn nf_div_nc() -> R {
+    unsafe { NF_DIV_NC }
+}
+
 /// The default quark mass.
-static mut M_QUARK: R = 0.3;
+static mut M_QUARK: R = 0.5;
 
 /// Get the default quark mass.
 #[no_mangle]
