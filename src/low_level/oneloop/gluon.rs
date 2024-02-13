@@ -11,16 +11,16 @@ mod native {
     use super::inlines;
     use crate::Num;
 
-    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
-        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
+    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
+        inlines::f_sep(s, ln_s, ln_s_pl_1)
     }
 
     pub fn f<T: Num>(s: T) -> T {
         inlines::f(s)
     }
 
-    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
-        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
+    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
     pub fn f_xi<T: Num>(s: T) -> T {
@@ -46,8 +46,8 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_sep(s: R, ln_s: R, ln_s_pl_1_2: R) -> R {
-        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_sep(s: R, ln_s: R, ln_s_pl_1: R) -> R {
+        inlines::f_sep(s, ln_s, ln_s_pl_1)
     }
 
     #[no_mangle]
@@ -56,8 +56,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_sep__complex(s: C, ln_s: C, ln_s_pl_1_2: C) -> C {
-        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_sep__complex(s: C, ln_s: C, ln_s_pl_1: C) -> C {
+        inlines::f_sep(s, ln_s, ln_s_pl_1)
     }
 
     #[no_mangle]
@@ -66,8 +66,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_xi_sep(s: R, ln_s: R, ln_s_pl_1_2: R) -> R {
-        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_xi_sep(s: R, ln_s: R, ln_s_pl_1: R) -> R {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
     #[no_mangle]
@@ -76,8 +76,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_xi_sep__complex(s: C, ln_s: C, ln_s_pl_1_2: C) -> C {
-        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_xi_sep__complex(s: C, ln_s: C, ln_s_pl_1: C) -> C {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
     #[no_mangle]
@@ -113,13 +113,13 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn l_b<T: Num>(s: T, ln_s_pl_1_2: T) -> T {
+    pub fn l_b<T: Num>(s: T, ln_s_pl_1: T) -> T {
         let sinv = s.inv();
         let sinv2 = sinv * sinv;
         let sinv3 = sinv * sinv2;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
-        s_pl_1_2 * (-sinv * 20. + 3. + sinv2 * 11. - sinv3 * 2.) * ln_s_pl_1_2
+        s_pl_1_2 * (-sinv * 20. + 3. + sinv2 * 11. - sinv3 * 2.) * 2. * ln_s_pl_1
     }
 
     #[inline(always)]
@@ -152,28 +152,27 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
         let sinv = s.inv();
-        (l_a(s, ln_s) + l_b(s, ln_s_pl_1_2) + l_c(s, ln_s) + r_a(s) + r_b(s) + r_c(s)) / 72.
+        (l_a(s, ln_s) + l_b(s, ln_s_pl_1) + l_c(s, ln_s) + r_a(s) + r_b(s) + r_c(s)) / 72.
             + sinv * 5. / 8.
     }
 
     #[inline(always)]
     pub fn f<T: Num>(s: T) -> T {
         let s_pl_1 = s + 1.;
-        let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
-        let ln_s_pl_1_2 = s_pl_1_2.ln();
-        f_sep(s, ln_s, ln_s_pl_1_2)
+        let ln_s_pl_1 = s_pl_1.ln();
+        f_sep(s, ln_s, ln_s_pl_1)
     }
 
     #[inline(always)]
-    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
         let s2 = s * s;
         let sinv = s.inv();
         let sinv2 = sinv * sinv;
         sinv / 4.
-            - (s * 2. * ln_s - (sinv2 - sinv) * (sinv - s2) * ln_s_pl_1_2 + 3. - sinv * 3.
+            - (s * 2. * ln_s - (sinv2 - sinv) * (sinv - s2) * 2. * ln_s_pl_1 + 3. - sinv * 3.
                 + sinv2 * 2.)
                 / 12.
     }
@@ -182,9 +181,8 @@ pub(crate) mod inlines {
     pub fn f_xi<T: Num>(s: T) -> T {
         let ln_s = s.ln();
         let s_pl_1 = s + 1.;
-        let s_pl_1_2 = s_pl_1 * s_pl_1;
-        let ln_s_pl_1_2 = s_pl_1_2.ln();
-        f_xi_sep(s, ln_s, ln_s_pl_1_2)
+        let ln_s_pl_1 = s_pl_1.ln();
+        f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
     // Defined so that f_q(0)=0.

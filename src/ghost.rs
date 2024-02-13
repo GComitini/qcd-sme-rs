@@ -22,8 +22,8 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_inv_landau_sep(s: R, ln_s: R, ln_s_pl_1_2: R, g0: R) -> R {
-        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, g0)
+    pub extern "C" fn ghost__dressing_inv_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -35,10 +35,10 @@ pub(crate) mod ffi {
     pub extern "C" fn ghost__dressing_inv_landau_sep__complex(
         s: C,
         ln_s: C,
-        ln_s_pl_1_2: C,
+        ln_s_pl_1: C,
         g0: R,
     ) -> C {
-        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, g0)
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -47,8 +47,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_inv_sep(s: R, ln_s: R, ln_s_pl_1_2: R, g0: R, xi: R) -> R {
-        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1_2, g0, xi)
+    pub extern "C" fn ghost__dressing_inv_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -60,11 +60,11 @@ pub(crate) mod ffi {
     pub extern "C" fn ghost__dressing_inv_sep__complex(
         s: C,
         ln_s: C,
-        ln_s_pl_1_2: C,
+        ln_s_pl_1: C,
         g0: R,
         xi: R,
     ) -> C {
-        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1_2, g0, xi)
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -73,8 +73,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_landau_sep(s: R, ln_s: R, ln_s_pl_1_2: R, g0: R) -> R {
-        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1_2, g0)
+    pub extern "C" fn ghost__dressing_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
+        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -83,13 +83,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_landau_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1_2: C,
-        g0: R,
-    ) -> C {
-        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1_2, g0)
+    pub extern "C" fn ghost__dressing_landau_sep__complex(s: C, ln_s: C, ln_s_pl_1: C, g0: R) -> C {
+        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -98,8 +93,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_sep(s: R, ln_s: R, ln_s_pl_1_2: R, g0: R, xi: R) -> R {
-        inlines::dressing_sep(s, ln_s, ln_s_pl_1_2, g0, xi)
+    pub extern "C" fn ghost__dressing_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
+        inlines::dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -108,14 +103,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ghost__dressing_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1_2: C,
-        g0: R,
-        xi: R,
-    ) -> C {
-        inlines::dressing_sep(s, ln_s, ln_s_pl_1_2, g0, xi)
+    pub extern "C" fn ghost__dressing_sep__complex(s: C, ln_s: C, ln_s_pl_1: C, g0: R, xi: R) -> C {
+        inlines::dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
