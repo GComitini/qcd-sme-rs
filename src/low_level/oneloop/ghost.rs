@@ -11,8 +11,8 @@ mod native {
     use super::inlines;
     use crate::Num;
 
-    pub fn g_sep<T: Num>(s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T, ln_s_pl_1_2: T) -> T {
-        inlines::g_sep(s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub fn g_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        inlines::g_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     pub fn g<T: Num>(s: T) -> T {
@@ -42,15 +42,8 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn oneloop__ghost__g_sep(
-        s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
-        ln_s: R,
-        ln_s_pl_1_2: R,
-    ) -> R {
-        inlines::g_sep(s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__ghost__g_sep(s: R, ln_s: R, ln_s_pl_1_2: R) -> R {
+        inlines::g_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -59,15 +52,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__ghost__g_sep__complex(
-        s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
-        ln_s: C,
-        ln_s_pl_1_2: C,
-    ) -> C {
-        inlines::g_sep(s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__ghost__g_sep__complex(s: C, ln_s: C, ln_s_pl_1_2: C) -> C {
+        inlines::g_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -105,29 +91,31 @@ pub(crate) mod inlines {
     use crate::Num;
 
     #[inline(always)]
-    pub fn l_g<T: Num>(s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T, ln_s_pl_1_2: T) -> T {
-        s_pl_1_2 * (sinv * 2. - sinv2) / 2. * ln_s_pl_1_2 - s * 2. * ln_s
-    }
-
-    #[inline(always)]
-    pub fn r_g<T: Num>(sinv: T) -> T {
-        sinv + 2.
-    }
-
-    #[inline(always)]
-    pub fn g_sep<T: Num>(s: T, sinv: T, sinv2: T, s_pl_1_2: T, ln_s: T, ln_s_pl_1_2: T) -> T {
-        (l_g(s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2) + r_g(sinv)) / 12.
-    }
-
-    #[inline(always)]
-    pub fn g<T: Num>(s: T) -> T {
+    pub fn l_g<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
         let sinv = s.inv();
         let sinv2 = sinv * sinv;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
+        s_pl_1_2 * (sinv * 2. - sinv2) / 2. * ln_s_pl_1_2 - s * 2. * ln_s
+    }
+
+    #[inline(always)]
+    pub fn r_g<T: Num>(s: T) -> T {
+        s.inv() + 2.
+    }
+
+    #[inline(always)]
+    pub fn g_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        (l_g(s, ln_s, ln_s_pl_1_2) + r_g(s)) / 12.
+    }
+
+    #[inline(always)]
+    pub fn g<T: Num>(s: T) -> T {
+        let s_pl_1 = s + 1.;
+        let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
         let ln_s_pl_1_2 = s_pl_1_2.ln();
-        g_sep(s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+        g_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[inline(always)]

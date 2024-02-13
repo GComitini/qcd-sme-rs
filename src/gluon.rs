@@ -11,78 +11,32 @@ mod native {
     use super::inlines;
     use crate::{Num, R};
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn dressing_inv_landau_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-    ) -> T {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R) -> T {
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     pub fn dressing_inv_landau<T: Num>(s: T, f0: R) -> T {
         inlines::dressing_inv_landau(s, f0)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn dressing_inv_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-        xi: R,
-    ) -> T {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R, xi: R) -> T {
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     pub fn dressing_inv<T: Num>(s: T, f0: R, xi: R) -> T {
         inlines::dressing_inv(s, f0, xi)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn dressing_landau_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-    ) -> T {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+    pub fn dressing_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R) -> T {
+        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     pub fn dressing_landau<T: Num>(s: T, f0: R) -> T {
         inlines::dressing_landau(s, f0)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn dressing_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-        xi: R,
-    ) -> T {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+    pub fn dressing_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R, xi: R) -> T {
+        inlines::dressing_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     pub fn dressing<T: Num>(s: T, f0: R, xi: R) -> T {
@@ -105,17 +59,13 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_inv_landau_sep(
-        s2: R,
         s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
         ln_s_pl_1_2: R,
         ln_s: R,
         s_q: R,
         f0: R,
     ) -> R {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     #[no_mangle]
@@ -125,17 +75,13 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_inv_landau_sep__complex(
-        s2: C,
         s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
         ln_s: C,
         ln_s_pl_1_2: C,
         s_q: C,
         f0: R,
     ) -> C {
-        inlines::dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     #[no_mangle]
@@ -145,18 +91,14 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_inv_sep(
-        s2: R,
         s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
         ln_s: R,
         ln_s_pl_1_2: R,
         s_q: R,
         f0: R,
         xi: R,
     ) -> R {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     #[no_mangle]
@@ -166,18 +108,14 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_inv_sep__complex(
-        s2: C,
         s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
         ln_s: C,
         ln_s_pl_1_2: C,
         s_q: C,
         f0: R,
         xi: R,
     ) -> C {
-        inlines::dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     #[no_mangle]
@@ -187,17 +125,13 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_landau_sep(
-        s2: R,
         s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
         ln_s: R,
         ln_s_pl_1_2: R,
         s_q: R,
         f0: R,
     ) -> R {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     #[no_mangle]
@@ -207,17 +141,13 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_landau_sep__complex(
-        s2: C,
         s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
         ln_s: C,
         ln_s_pl_1_2: C,
         s_q: C,
         f0: R,
     ) -> C {
-        inlines::dressing_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
     #[no_mangle]
@@ -227,18 +157,14 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_sep(
-        s2: R,
         s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
         ln_s: R,
         ln_s_pl_1_2: R,
         s_q: R,
         f0: R,
         xi: R,
     ) -> R {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+        inlines::dressing_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     #[no_mangle]
@@ -248,18 +174,14 @@ pub(crate) mod ffi {
 
     #[no_mangle]
     pub extern "C" fn gluon__dressing_sep__complex(
-        s2: C,
         s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
         ln_s: C,
         ln_s_pl_1_2: C,
         s_q: C,
         f0: R,
         xi: R,
     ) -> C {
-        inlines::dressing_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+        inlines::dressing_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
     #[no_mangle]
@@ -278,27 +200,13 @@ pub(crate) mod inlines {
     use crate::low_level::oneloop::gluon::inlines::*;
     use crate::{Num, R};
 
-    #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn dressing_inv_landau_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-    ) -> T {
-        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2) + f_q(s_q) * nf_div_nc() + f0
+    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R) -> T {
+        f_sep(s, ln_s, ln_s_pl_1_2) + f_q(s_q) * nf_div_nc() + f0
     }
 
     #[inline(always)]
     pub fn dressing_inv_landau<T: Num>(s: T, f0: R) -> T {
-        let s2 = s * s;
-        let sinv = s.inv();
-        let sinv2 = sinv * sinv;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
@@ -306,32 +214,16 @@ pub(crate) mod inlines {
         let x = m_quark();
         let x2 = x * x;
         let s_q = s / x2;
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
+        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0)
     }
 
-    #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn dressing_inv_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-        xi: R,
-    ) -> T {
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0)
-            + f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2) * xi
+    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R, xi: R) -> T {
+        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0) + f_xi_sep(s, ln_s, ln_s_pl_1_2) * xi
     }
 
     #[inline(always)]
     pub fn dressing_inv<T: Num>(s: T, f0: R, xi: R) -> T {
-        let s2 = s * s;
-        let sinv = s.inv();
-        let sinv2 = sinv * sinv;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
@@ -339,23 +231,12 @@ pub(crate) mod inlines {
         let x = m_quark();
         let x2 = x * x;
         let s_q = s / x2;
-        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi)
+        dressing_inv_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi)
     }
 
-    #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn dressing_landau_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-    ) -> T {
-        dressing_inv_landau_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0).inv()
+    pub fn dressing_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R) -> T {
+        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1_2, s_q, f0).inv()
     }
 
     #[inline(always)]
@@ -363,21 +244,9 @@ pub(crate) mod inlines {
         dressing_inv_landau(s, f0).inv()
     }
 
-    #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn dressing_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-        s_q: T,
-        f0: R,
-        xi: R,
-    ) -> T {
-        dressing_inv_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2, s_q, f0, xi).inv()
+    pub fn dressing_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T, s_q: T, f0: R, xi: R) -> T {
+        dressing_inv_sep(s, ln_s, ln_s_pl_1_2, s_q, f0, xi).inv()
     }
 
     #[inline(always)]

@@ -11,25 +11,16 @@ mod native {
     use super::inlines;
     use crate::Num;
 
-    #[allow(clippy::too_many_arguments)]
-    pub fn f_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-    ) -> T {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     pub fn f<T: Num>(s: T) -> T {
         inlines::f(s)
     }
 
-    pub fn f_xi_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T) -> T {
-        inlines::f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2)
+    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     pub fn f_xi<T: Num>(s: T) -> T {
@@ -55,16 +46,8 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_sep(
-        s2: R,
-        s: R,
-        sinv: R,
-        sinv2: R,
-        s_pl_1_2: R,
-        ln_s: R,
-        ln_s_pl_1_2: R,
-    ) -> R {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_sep(s: R, ln_s: R, ln_s_pl_1_2: R) -> R {
+        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -73,16 +56,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_sep__complex(
-        s2: C,
-        s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
-        ln_s: C,
-        ln_s_pl_1_2: C,
-    ) -> C {
-        inlines::f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_sep__complex(s: C, ln_s: C, ln_s_pl_1_2: C) -> C {
+        inlines::f_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -91,8 +66,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_xi_sep(s2: R, s: R, sinv: R, sinv2: R, s_pl_1_2: R) -> R {
-        inlines::f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_xi_sep(s: R, ln_s: R, ln_s_pl_1_2: R) -> R {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -101,14 +76,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_xi_sep__complex(
-        s2: C,
-        s: C,
-        sinv: C,
-        sinv2: C,
-        s_pl_1_2: C,
-    ) -> C {
-        inlines::f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2)
+    pub extern "C" fn oneloop__gluon__f_xi_sep__complex(s: C, ln_s: C, ln_s_pl_1_2: C) -> C {
+        inlines::f_xi_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[no_mangle]
@@ -136,91 +105,91 @@ pub(crate) mod inlines {
     use crate::Num;
 
     #[inline(always)]
-    pub fn l_a<T: Num>(s2: T, s: T, sinv: T, ln_s: T) -> T {
+    pub fn l_a<T: Num>(s: T, ln_s: T) -> T {
+        let s2 = s * s;
+        let sinv = s.inv();
         let a = (sinv * 4. + 1.).sqrt();
         (s2 * 3. - s * 34. - 28. - sinv * 24.) * a * (((a - 1.) / 2.).ln() * 2. + ln_s)
     }
 
     #[inline(always)]
-    pub fn l_b<T: Num>(sinv: T, sinv2: T, s_pl_1_2: T, ln_s_pl_1_2: T) -> T {
+    pub fn l_b<T: Num>(s: T, ln_s_pl_1_2: T) -> T {
+        let sinv = s.inv();
+        let sinv2 = sinv * sinv;
         let sinv3 = sinv * sinv2;
+        let s_pl_1 = s + 1.;
+        let s_pl_1_2 = s_pl_1 * s_pl_1;
         s_pl_1_2 * (-sinv * 20. + 3. + sinv2 * 11. - sinv3 * 2.) * ln_s_pl_1_2
     }
 
     #[inline(always)]
-    pub fn l_c<T: Num>(s2: T, ln_s: T) -> T {
+    pub fn l_c<T: Num>(s: T, ln_s: T) -> T {
+        let s2 = s * s;
         (-s2 * 3. + 2.) * ln_s
     }
 
     #[inline(always)]
-    pub fn r_a<T: Num>(s: T, sinv: T) -> T {
+    pub fn r_a<T: Num>(s: T) -> T {
+        let sinv = s.inv();
         -(s + 4.) * (s - 20. + sinv * 12.)
     }
 
     #[inline(always)]
-    pub fn r_b<T: Num>(sinv: T, sinv2: T, s_pl_1_2: T) -> T {
+    pub fn r_b<T: Num>(s: T) -> T {
+        let sinv = s.inv();
+        let sinv2 = sinv * sinv;
+        let s_pl_1 = s + 1.;
+        let s_pl_1_2 = s_pl_1 * s_pl_1;
         s_pl_1_2 * 2. * (-sinv * 10. + 1. + sinv2)
     }
 
     #[inline(always)]
-    pub fn r_c<T: Num>(s2: T, sinv2: T) -> T {
+    pub fn r_c<T: Num>(s: T) -> T {
+        let s2 = s * s;
+        let sinv = s.inv();
+        let sinv2 = sinv * sinv;
         sinv2 * 2. + 2. - s2
     }
 
-    #[allow(clippy::too_many_arguments)]
     #[inline(always)]
-    pub fn f_sep<T: Num>(
-        s2: T,
-        s: T,
-        sinv: T,
-        sinv2: T,
-        s_pl_1_2: T,
-        ln_s: T,
-        ln_s_pl_1_2: T,
-    ) -> T {
-        (l_a(s2, s, sinv, ln_s)
-            + l_b(sinv, sinv2, s_pl_1_2, ln_s_pl_1_2)
-            + l_c(s2, ln_s)
-            + r_a(s, sinv)
-            + r_b(sinv, sinv2, s_pl_1_2)
-            + r_c(s2, sinv2))
-            / 72.
+    pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        let sinv = s.inv();
+        (l_a(s, ln_s) + l_b(s, ln_s_pl_1_2) + l_c(s, ln_s) + r_a(s) + r_b(s) + r_c(s)) / 72.
             + sinv * 5. / 8.
     }
 
     #[inline(always)]
     pub fn f<T: Num>(s: T) -> T {
-        let s2 = s * s;
-        let sinv = s.inv();
-        let sinv2 = sinv * sinv;
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
         let ln_s = s.ln();
         let ln_s_pl_1_2 = s_pl_1_2.ln();
-        f_sep(s2, s, sinv, sinv2, s_pl_1_2, ln_s, ln_s_pl_1_2)
+        f_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     #[inline(always)]
-    pub fn f_xi_sep<T: Num>(s2: T, s: T, sinv: T, sinv2: T, s_pl_1_2: T) -> T {
+    pub fn f_xi_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1_2: T) -> T {
+        let s2 = s * s;
+        let sinv = s.inv();
+        let sinv2 = sinv * sinv;
         sinv / 4.
-            - (s * 2. * s.ln() - (sinv2 - sinv) * (sinv - s2) * s_pl_1_2.ln() + 3. - sinv * 3.
+            - (s * 2. * ln_s - (sinv2 - sinv) * (sinv - s2) * ln_s_pl_1_2 + 3. - sinv * 3.
                 + sinv2 * 2.)
                 / 12.
     }
 
     #[inline(always)]
     pub fn f_xi<T: Num>(s: T) -> T {
-        let s2 = s * s;
-        let sinv = s.inv();
-        let sinv2 = sinv * sinv;
+        let ln_s = s.ln();
         let s_pl_1 = s + 1.;
         let s_pl_1_2 = s_pl_1 * s_pl_1;
-        f_xi_sep(s2, s, sinv, sinv2, s_pl_1_2)
+        let ln_s_pl_1_2 = s_pl_1_2.ln();
+        f_xi_sep(s, ln_s, ln_s_pl_1_2)
     }
 
     // Defined so that f_q(0)=0.
     //
-    // Don't define a "sep" variant as s is p^2/M_QUARK^2 and its powers
+    // Don't define a "sep" variant as s is p^2/M_QUARK^2 and its logarithms
     // are unlikely to appear in other expressions.
     #[inline(always)]
     pub fn f_q<T: Num>(s: T) -> T {
