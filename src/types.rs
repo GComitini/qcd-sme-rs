@@ -1,4 +1,6 @@
 use num::complex::ComplexFloat;
+use std::fmt;
+use std::ops;
 
 /// A real number.
 pub type R = f64;
@@ -17,13 +19,15 @@ pub type NFTYPE = u32;
 pub trait Num:
     Copy
     + num::Num
-    + std::fmt::Debug
-    + std::fmt::Display
-    + std::ops::Add<R, Output = Self>
-    + std::ops::Mul<R, Output = Self>
-    + std::ops::Div<R, Output = Self>
-    + std::ops::Sub<R, Output = Self>
-    + std::ops::Neg<Output = Self>
+    + fmt::Debug
+    + fmt::Display
+    + ops::Add<R, Output = Self>
+    + ops::Mul<R, Output = Self>
+    + ops::Div<R, Output = Self>
+    + ops::Sub<R, Output = Self>
+    + ops::Neg<Output = Self>
+    + ops::Add<C, Output = C>
+    + ops::Mul<C, Output = C>
 {
     fn abs(&self) -> R;
     fn exp(&self) -> Self;
