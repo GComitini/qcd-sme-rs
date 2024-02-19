@@ -28,6 +28,7 @@ pub trait Num:
     + ops::Neg<Output = Self>
     + ops::Add<C, Output = C>
     + ops::Mul<C, Output = C>
+    + From<R>
 {
     fn abs(&self) -> R;
     fn exp(&self) -> Self;
