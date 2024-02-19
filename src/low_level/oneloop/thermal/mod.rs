@@ -14,10 +14,6 @@ mod native {
     use super::inlines;
     use crate::{Num, C, R};
 
-    pub fn r_0<T1: Num, T2: Num, T3: Copy + Into<C>>(om: T1, p: R, en: T2, delta: T3) -> C {
-        inlines::r_0(om, p, en, delta)
-    }
-
     pub fn tlog<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, p: R, en: T2, delta: T3) -> C {
         inlines::tlog(q, om, p, en, delta)
     }
