@@ -249,7 +249,8 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn tlog_zero_mass<T: Num>(q: R, om: T, p: R) -> C {
-        ((r_0_same_mass(om, p, q) + q * 2. * p) / (r_0_same_mass(om, p, q) - q * 2. * p)).ln()
+        let r_0 = r_0_same_mass(om, p, q);
+        ((r_0 + q * 2. * p) / (r_0 - q * 2. * p)).ln()
     }
 
     #[inline(always)]
