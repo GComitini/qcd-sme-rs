@@ -239,10 +239,17 @@ mod tests {
     ];
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        assert!(
-            (lhs - rhs).abs() < TOLERANCE,
-            "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
-        );
+        if rhs != T::zero() {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
+            );
+        } else {
+            assert!(
+                (lhs - rhs).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        }
     }
 
     #[test]

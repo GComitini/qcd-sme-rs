@@ -428,20 +428,20 @@ mod tests {
     use crate::low_level::oneloop::thermal;
     use crate::{Num, C, I, R};
 
-    const TOLERANCE: R = 1e-12;
+    const TOLERANCE: R = 1e-11;
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        assert!(
-            (lhs - rhs).abs() < TOLERANCE,
-            "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
-        );
-    }
-
-    fn assert_equal_tol<T: Num>(lhs: T, rhs: T, tol: R) {
-        assert!(
-            (lhs - rhs).abs() < tol,
-            "|lhs-rhs| = |({lhs}) - ({rhs})| >= {tol:e}"
-        );
+        if rhs != T::zero() {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
+            );
+        } else {
+            assert!(
+                (lhs - rhs).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        }
     }
 
     #[test]
@@ -560,13 +560,13 @@ mod tests {
         args.iter()
             .enumerate()
             .for_each(|(i, (q, om, p, en, delta))| {
-                assert_equal_tol(tlog_l(*q, *om, *p, *en, *delta), res[i], 1e-12)
+                assert_equal(tlog_l(*q, *om, *p, *en, *delta), res[i])
             });
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, om, p, en, delta))| {
-                assert_equal_tol(oneloop__tlog_l(*q, *om, *p, *en, *delta), res[i], 1e-6)
+                assert_equal(oneloop__tlog_l(*q, *om, *p, *en, *delta), res[i])
             });
     }
 
@@ -591,11 +591,11 @@ mod tests {
         ];
 
         args.iter().enumerate().for_each(|(i, (q, om, p, en))| {
-            assert_equal_tol(tlog_l_same_mass(*q, *om, *p, *en), res[i], 1e-6)
+            assert_equal(tlog_l_same_mass(*q, *om, *p, *en), res[i])
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, p, en))| {
-            assert_equal_tol(oneloop__tlog_l_same_mass(*q, *om, *p, *en), res[i], 1e-6)
+            assert_equal(oneloop__tlog_l_same_mass(*q, *om, *p, *en), res[i])
         });
     }
 
@@ -617,12 +617,12 @@ mod tests {
             0.29041395973279666 + 0.4080161453514444 * I,
         ];
 
-        args.iter().enumerate().for_each(|(i, (q, om, p))| {
-            assert_equal_tol(tlog_l_zero_mass(*q, *om, *p), res[i], 1e-6)
-        });
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p))| assert_equal(tlog_l_zero_mass(*q, *om, *p), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, om, p))| {
-            assert_equal_tol(oneloop__tlog_l_zero_mass(*q, *om, *p), res[i], 1e-6)
+            assert_equal(oneloop__tlog_l_zero_mass(*q, *om, *p), res[i])
         });
     }
 
