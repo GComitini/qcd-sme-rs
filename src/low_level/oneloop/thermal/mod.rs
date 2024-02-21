@@ -239,18 +239,23 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn tlog<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, p: R, en: T2, delta: T3) -> C {
-        ((r_0(om, p, en, delta) + q * 2. * p) / (r_0(om, p, en, delta) - q * 2. * p)).ln()
+        let r_0 = r_0(om, p, en, delta);
+        let q2p = q * 2. * p;
+        ((r_0 + q2p) / (r_0 - q2p)).ln()
     }
 
     #[inline(always)]
     pub fn tlog_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, en: T2) -> C {
-        ((r_0_same_mass(om, p, en) + q * 2. * p) / (r_0_same_mass(om, p, en) - q * 2. * p)).ln()
+        let r_0 = r_0_same_mass(om, p, en);
+        let q2p = q * 2. * p;
+        ((r_0 + q2p) / (r_0 - q2p)).ln()
     }
 
     #[inline(always)]
     pub fn tlog_zero_mass<T: Num>(q: R, om: T, p: R) -> C {
         let r_0 = r_0_same_mass(om, p, q);
-        ((r_0 + q * 2. * p) / (r_0 - q * 2. * p)).ln()
+        let q2p = q * 2. * p;
+        ((r_0 + q2p) / (r_0 - q2p)).ln()
     }
 
     #[inline(always)]
