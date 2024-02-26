@@ -840,9 +840,9 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m1: T2, beta: R) -> C {
+    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
         let q2p = q * p * 2.;
-        let en = energy(q, m1);
+        let en = energy(q, m);
         let r0 = r_0_same_mass(om, p, en);
         let rpinv = (r0 + q2p).inv();
         let rminv = (r0 - q2p).inv();
