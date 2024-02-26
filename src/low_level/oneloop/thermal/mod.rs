@@ -197,6 +197,33 @@ mod native {
     pub fn d_i_0_0_i<T: Num>(q: R, om: T, p: R, beta: R) -> C {
         inlines::d_i_0_0_i(q, om, p, beta)
     }
+
+    pub fn d_i_m_m_t_i<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: R,
+        m1: T2,
+        m2: T3,
+        beta: R,
+    ) -> C {
+        inlines::d_i_m_m_t_i(q, om, p, m1, m2, beta)
+    }
+
+    pub fn d_i_m_m_t_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+        inlines::d_i_m_m_t_i_same_mass(q, om, p, m, beta)
+    }
+
+    pub fn d_i_m_t_0_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+        inlines::d_i_m_0_t_i(q, om, p, m, beta)
+    }
+
+    pub fn d_i_m_0_t_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+        inlines::d_i_m_0_t_i(q, om, p, m, beta)
+    }
+
+    pub fn d_i_0_0_t_i<T: Num>(q: R, om: T, p: R, beta: R) -> C {
+        inlines::d_i_0_0_t_i(q, om, p, beta)
+    }
 }
 
 // For use in other languages, e.g. C/C++/Python
@@ -425,6 +452,26 @@ pub(crate) mod ffi {
     #[no_mangle]
     pub extern "C" fn oneloop__d_i_0_0_i(q: R, om: R, p: R, beta: R) -> C {
         inlines::d_i_0_0_i(q, om, p, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__d_i_m_m_t_i(q: R, om: R, p: R, m1: R, m2: R, beta: R) -> C {
+        inlines::d_i_m_m_t_i(q, om, p, m1, m2, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__d_i_m_m_t_i_same_mass(q: R, om: R, p: R, m: R, beta: R) -> C {
+        inlines::d_i_m_m_t_i_same_mass(q, om, p, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__d_i_m_0_t_i(q: R, om: R, p: R, m: R, beta: R) -> C {
+        inlines::d_i_m_0_t_i(q, om, p, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__d_i_0_0_t_i(q: R, om: R, p: R, beta: R) -> C {
+        inlines::d_i_0_0_t_i(q, om, p, beta)
     }
 }
 
@@ -889,6 +936,76 @@ pub(crate) mod inlines {
         let rminv_opp = (r0_opp - q2p).inv();
         -bose_distribution_zero_chempot(q, beta) / q * (rpinv + rminv + rpinv_opp + rminv_opp)
             / (8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_t_i<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: R,
+        m1: T2,
+        m2: T3,
+        beta: R,
+    ) -> C {
+        let p2 = p * p;
+        let delta = m2 * m2 - Into::<C>::into(m1 * m1);
+        let en1 = energy(q, m1);
+        let b1 = bose_distribution_zero_chempot(en1, beta);
+        let tlog1p = tlog(q, om, p, en1, delta);
+        let tlog1m = tlog(q, -om, p, en1, delta);
+        let r01p = r_0(om, p, en1, delta);
+        let r01m = r_0(-om, p, en1, delta);
+        let en2 = energy(q, m2);
+        let b2 = bose_distribution_zero_chempot(en2, beta);
+        let tlog2p = tlog(q, om, p, en2, -delta);
+        let tlog2m = tlog(q, -om, p, en2, -delta);
+        let r02p = r_0(om, p, en2, -delta);
+        let r02m = r_0(-om, p, en2, -delta);
+        let t1 = -b1 / en1 * (tlog1p + tlog1m) / 4.;
+        let t2 = (b2 / en2 - Into::<C>::into(b1 / en1)) * q / p;
+        let t3 = (b1 / en1 * (r01p * tlog1p + r01m * tlog1m)
+            - b2 / en2 * (r02p * tlog2p + r02m * tlog2m))
+            / (p2 * 8.);
+        (t1 + t2 + t3) * q / (p * 8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_t_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+        let en = energy(q, m);
+        let b = bose_distribution_zero_chempot(en, beta);
+        let tlogp = tlog_same_mass(q, om, p, en);
+        let tlogm = tlog_same_mass(q, -om, p, en);
+        -(en * p * 32. * PI2).inv() * b * (tlogp + tlogm) * q
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_0_t_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+        let p2 = p * p;
+        let delta = -m * m;
+        let en1 = energy(q, m);
+        let b1 = bose_distribution_zero_chempot(en1, beta);
+        let tlog1p = tlog(q, om, p, en1, delta);
+        let tlog1m = tlog(q, -om, p, en1, delta);
+        let r01p = r_0(om, p, en1, delta);
+        let r01m = r_0(-om, p, en1, delta);
+        let b2 = bose_distribution_zero_chempot(q, beta);
+        let tlog2p = tlog(q, om, p, q, -delta);
+        let tlog2m = tlog(q, -om, p, q, -delta);
+        let r02p = r_0(om, p, q, -delta);
+        let r02m = r_0(-om, p, q, -delta);
+        let t1 = -b1 / en1 * (tlog1p + tlog1m) / 4.;
+        let t2 = (b2 / q - Into::<C>::into(b1 / en1)) * q / p;
+        let t3 = (b1 / en1 * (r01p * tlog1p + r01m * tlog1m)
+            - b2 / q * (r02p * tlog2p + r02m * tlog2m))
+            / (p2 * 8.);
+        (t1 + t2 + t3) * q / (p * 8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_0_0_t_i<T: Num>(q: R, om: T, p: R, beta: R) -> C {
+        -bose_distribution_zero_chempot(q, beta)
+            * (tlog_same_mass(q, om, p, q) + tlog_same_mass(q, -om, p, q))
+            / (p * 32. * PI2)
     }
 }
 
@@ -2861,6 +2978,276 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
             assert_equal(oneloop__d_i_0_0_i(*q, *om, *p, *beta), res[i])
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i() {
+        use thermal::{d_i_m_m_t_i, ffi::oneloop__d_i_m_m_t_i};
+
+        let args: [(R, R, R, R, R, R); 7] = [
+            (0.62, 0.21, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 2.22, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 2.22, 0.19),
+        ];
+
+        let res: [C; 7] = [
+            -3.0453698720331727e-05 + 0. * I,
+            -1.259718018389033e-05 + 0. * I,
+            -9.325325168374524e-06 + 0. * I,
+            -1.1473523427992827e-05 + 0. * I,
+            -7.79739481623871e-08 + 0. * I,
+            -1.2851615018482306e-10 + 0. * I,
+            6.569439555819919e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m1, m2, beta))| {
+                assert_equal(d_i_m_m_t_i(*q, *om, *p, *m1, *m2, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m1, m2, beta))| {
+                assert_equal(oneloop__d_i_m_m_t_i(*q, *om, *p, *m1, *m2, *beta), res[i])
+            })
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_d_i_m_m_t_i_symm() {
+        use thermal::{d_i_m_m_t_i, ffi::oneloop__d_i_m_m_t_i};
+
+        let args: [(R, R, R, R, R, R); 7] = [
+            (0.62, 0.21, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.8, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 2.22, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 2.22, 0.19),
+        ];
+
+        let res: [C; 7] = [
+            -3.0453698720331727e-05 + 0. * I,
+            -1.259718018389033e-05 + 0. * I,
+            -9.325325168374524e-06 + 0. * I,
+            -1.1473523427992827e-05 + 0. * I,
+            -7.79739481623871e-08 + 0. * I,
+            -1.2851615018482306e-10 + 0. * I,
+            6.569439555819919e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m1, m2, beta))| {
+                assert_equal(d_i_m_m_t_i(*q, *om, *p, *m2, *m1, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m1, m2, beta))| {
+                assert_equal(oneloop__d_i_m_m_t_i(*q, *om, *p, *m2, *m1, *beta), res[i])
+            })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i_m_0() {
+        use thermal::{d_i_m_m_t_i, ffi::oneloop__d_i_m_m_t_i};
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            -5.207781161469446e-05 + 0. * I,
+            -2.4004003441611033e-05 + 0. * I,
+            -1.773716674228576e-05 + 0. * I,
+            -3.594307598059408e-05 + 0. * I,
+            -1.3631787142386054e-06 + 0. * I,
+            1.1960160876470227e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(d_i_m_m_t_i(*q, *om, *p, *m, 0., *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(oneloop__d_i_m_m_t_i(*q, *om, *p, *m, 0., *beta), res[i])
+            })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i_0_0() {
+        use thermal::{d_i_m_m_t_i, ffi::oneloop__d_i_m_m_t_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 2.16, 3.2),
+            (0.35, 0.21, 2.16, 3.2),
+            (0.35, 0.75, 2.16, 3.2),
+            (0.35, 0.75, 1.15, 3.2),
+            (0.35, 0.75, 1.15, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.0006000508734472277 + 0. * I,
+            -0.0009439542164749866 + 0. * I,
+            -0.0008356326787121956 + 0. * I,
+            -0.0022006788439086302 + 0. * I,
+            -0.06608518397116815 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(d_i_m_m_t_i(*q, *om, *p, 0., 0., *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(oneloop__d_i_m_m_t_i(*q, *om, *p, 0., 0., *beta), res[i])
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i_same_mass() {
+        use thermal::{d_i_m_m_t_i_same_mass, ffi::oneloop__d_i_m_m_t_i_same_mass};
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            -2.2741592068497444e-05 + 0. * I,
+            -1.0044902787991927e-05 + 0. * I,
+            -7.952918702884596e-06 + 0. * I,
+            -1.1957406470761567e-05 + 0. * I,
+            -2.417011222474329e-10 + 0. * I,
+            -4.0776133478083794e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(d_i_m_m_t_i_same_mass(*q, *om, *p, *m, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(
+                    oneloop__d_i_m_m_t_i_same_mass(*q, *om, *p, *m, *beta),
+                    res[i],
+                )
+            })
+    }
+
+    #[test]
+    fn test_d_i_m_0_t_i() {
+        use thermal::{d_i_m_0_t_i, ffi::oneloop__d_i_m_0_t_i};
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            -5.207781161469446e-05 + 0. * I,
+            -2.4004003441611033e-05 + 0. * I,
+            -1.773716674228576e-05 + 0. * I,
+            -3.594307598059408e-05 + 0. * I,
+            -1.3631787142386054e-06 + 0. * I,
+            1.1960160876470227e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(d_i_m_0_t_i(*q, *om, *p, *m, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(oneloop__d_i_m_0_t_i(*q, *om, *p, *m, *beta), res[i])
+            })
+    }
+
+    #[test]
+    fn test_d_i_m_0_t_i_0_0() {
+        use thermal::{d_i_m_0_t_i, ffi::oneloop__d_i_m_0_t_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 2.16, 3.2),
+            (0.35, 0.21, 2.16, 3.2),
+            (0.35, 0.75, 2.16, 3.2),
+            (0.35, 0.75, 1.15, 3.2),
+            (0.35, 0.75, 1.15, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.0006000508734472277 + 0. * I,
+            -0.0009439542164749866 + 0. * I,
+            -0.0008356326787121956 + 0. * I,
+            -0.0022006788439086302 + 0. * I,
+            -0.06608518397116815 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(d_i_m_0_t_i(*q, *om, *p, 0., *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(oneloop__d_i_m_0_t_i(*q, *om, *p, 0., *beta), res[i])
+        })
+    }
+
+    #[test]
+    fn test_d_i_0_0_t_i() {
+        use thermal::{d_i_0_0_t_i, ffi::oneloop__d_i_0_0_t_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 2.16, 3.2),
+            (0.35, 0.21, 2.16, 3.2),
+            (0.35, 0.75, 2.16, 3.2),
+            (0.35, 0.75, 1.15, 3.2),
+            (0.35, 0.75, 1.15, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.0006000508734472277 + 0. * I,
+            -0.0009439542164749866 + 0. * I,
+            -0.0008356326787121956 + 0. * I,
+            -0.0022006788439086302 + 0. * I,
+            -0.06608518397116815 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(d_i_0_0_t_i(*q, *om, *p, *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, p, beta))| {
+            assert_equal(oneloop__d_i_0_0_t_i(*q, *om, *p, *beta), res[i])
         })
     }
 }
