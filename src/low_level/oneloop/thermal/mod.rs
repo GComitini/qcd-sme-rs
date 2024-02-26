@@ -896,8 +896,9 @@ pub(crate) mod inlines {
         let r0_opp = r_0_same_mass(-om, p, en);
         let rpinv_opp = (r0_opp + q2p).inv();
         let rminv_opp = (r0_opp - q2p).inv();
-        -bose_distribution_zero_chempot(en, beta) / en * (rpinv + rminv + rpinv_opp + rminv_opp)
-            / (8. * PI2)
+        -bose_distribution_zero_chempot(en, beta)
+            * (en * 8. * PI2).inv()
+            * (rpinv + rminv + rpinv_opp + rminv_opp)
     }
 
     #[inline(always)]
@@ -934,8 +935,8 @@ pub(crate) mod inlines {
         let r0_opp = r_0_same_mass(-om, p, q);
         let rpinv_opp = (r0_opp + q2p).inv();
         let rminv_opp = (r0_opp - q2p).inv();
-        -bose_distribution_zero_chempot(q, beta) / q * (rpinv + rminv + rpinv_opp + rminv_opp)
-            / (8. * PI2)
+        -bose_distribution_zero_chempot(q, beta) * (rpinv + rminv + rpinv_opp + rminv_opp)
+            / (q * 8. * PI2)
     }
 
     #[inline(always)]
