@@ -1,6 +1,8 @@
 pub mod ghost;
 pub mod gluon;
 
+pub mod zero_matsubara;
+
 pub use native::*;
 
 // For use in Rust
