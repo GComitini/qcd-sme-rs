@@ -74,6 +74,38 @@ mod native {
     pub fn d_i_0_0_i<T: Num>(q: R, om: T, beta: R) -> C {
         inlines::d_i_0_0_i(q, om, beta)
     }
+
+    pub fn d_i_m_m_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
+        inlines::d_i_m_m_l_i(q, om, m1, m2, beta)
+    }
+
+    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        inlines::d_i_m_m_l_i_same_mass(q, om, m, beta)
+    }
+
+    pub fn d_i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        inlines::d_i_m_0_l_i(q, om, m, beta)
+    }
+
+    pub fn d_i_0_0_l_i<T: Num>(q: R, om: T, beta: R) -> C {
+        inlines::d_i_0_0_l_i(q, om, beta)
+    }
+
+    pub fn d_i_m_m_t_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
+        inlines::d_i_m_m_t_i(q, om, m1, m2, beta)
+    }
+
+    pub fn d_i_m_m_t_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        inlines::d_i_m_m_t_i_same_mass(q, om, m, beta)
+    }
+
+    pub fn d_i_m_0_t_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        inlines::d_i_m_0_t_i(q, om, m, beta)
+    }
+
+    pub fn d_i_0_0_t_i<T: Num>(q: R, om: T, beta: R) -> C {
+        inlines::d_i_0_0_t_i(q, om, beta)
+    }
 }
 
 // For use in other languages, e.g. C/C++/Python
@@ -167,6 +199,56 @@ pub(crate) mod ffi {
     #[no_mangle]
     pub extern "C" fn oneloop__zero_momentum__d_i_0_0_i(q: R, om: R, beta: R) -> C {
         inlines::d_i_0_0_i(q, om, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_m_l_i(q: R, om: R, m1: R, m2: R, beta: R) -> C {
+        inlines::d_i_m_m_l_i(q, om, m1, m2, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_m_l_i_same_mass(
+        q: R,
+        om: R,
+        m: R,
+        beta: R,
+    ) -> C {
+        inlines::d_i_m_m_l_i_same_mass(q, om, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_0_l_i(q: R, om: R, m: R, beta: R) -> C {
+        inlines::d_i_m_0_l_i(q, om, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_0_0_l_i(q: R, om: R, beta: R) -> C {
+        inlines::d_i_0_0_l_i(q, om, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_m_t_i(q: R, om: R, m1: R, m2: R, beta: R) -> C {
+        inlines::d_i_m_m_t_i(q, om, m1, m2, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_m_t_i_same_mass(
+        q: R,
+        om: R,
+        m: R,
+        beta: R,
+    ) -> C {
+        inlines::d_i_m_m_t_i_same_mass(q, om, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_m_0_t_i(q: R, om: R, m: R, beta: R) -> C {
+        inlines::d_i_m_0_t_i(q, om, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__zero_momentum__d_i_0_0_t_i(q: R, om: R, beta: R) -> C {
+        inlines::d_i_0_0_t_i(q, om, beta)
     }
 }
 
@@ -401,6 +483,80 @@ pub(crate) mod inlines {
         let r0_opp_inv = r_0_same_mass(-om, q).inv();
         let b1 = bose_distribution_zero_chempot(q, beta);
         -b1 * (r0_inv + r0_opp_inv) / (q * 8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
+        let q2 = q * q;
+        let delta = m2 * m2 - Into::<C>::into(m1 * m1);
+        let en1 = energy(q, m1);
+        let en2 = energy(q, m2);
+        let r01_inv = r_0(om, en1, delta).inv();
+        let r01_opp_inv = r_0(-om, en1, delta).inv();
+        let r02_inv = r_0(om, en2, -delta).inv();
+        let r02_opp_inv = r_0(-om, en2, -delta).inv();
+        let b1 = bose_distribution_zero_chempot(en1, beta);
+        let b2 = bose_distribution_zero_chempot(en2, beta);
+        let t10 = b1 / en1 * (r01_inv + r01_opp_inv);
+        let t1 = b1 / en1 * (r01_inv * r01_inv + r01_opp_inv * r01_opp_inv);
+        let t2 = b2 / en2 * (r02_inv * r02_inv + r02_opp_inv * r02_opp_inv);
+        (-t10 + (t1 - t2) * q2 * 2. / 3.) * q2 / (8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        let q2 = q * q;
+        let en = energy(q, m);
+        let r0_inv = r_0_same_mass(om, en).inv();
+        let r0_opp_inv = r_0_same_mass(-om, en).inv();
+        -bose_distribution_zero_chempot(en, beta)
+            * (en * 8. * PI2).inv()
+            * (r0_inv + r0_opp_inv)
+            * q2
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        let q2 = q * q;
+        let delta = -m * m;
+        let en = energy(q, m);
+        let r01_inv = r_0(om, en, delta).inv();
+        let r01_opp_inv = r_0(-om, en, delta).inv();
+        let r02_inv = r_0(om, q, -delta).inv();
+        let r02_opp_inv = r_0(-om, q, -delta).inv();
+        let b1 = bose_distribution_zero_chempot(en, beta);
+        let b2 = bose_distribution_zero_chempot(q, beta);
+        let t10 = b1 / en * (r01_inv + r01_opp_inv);
+        let t1 = b1 * q / en * (r01_inv * r01_inv + r01_opp_inv * r01_opp_inv);
+        let t2 = b2 * (r02_inv * r02_inv + r02_opp_inv * r02_opp_inv);
+        (-t10 + (t1 - t2) * q * 2. / 3.) * q2 / (8. * PI2)
+    }
+
+    #[inline(always)]
+    pub fn d_i_0_0_l_i<T: Num>(q: R, om: T, beta: R) -> C {
+        let r0_inv = r_0_same_mass(om, q).inv();
+        let r0_opp_inv = r_0_same_mass(-om, q).inv();
+        -bose_distribution_zero_chempot(q, beta) * (8. * PI2).inv() * (r0_inv + r0_opp_inv) * q
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_t_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
+        d_i_m_m_l_i(q, om, m1, m2, beta)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_m_t_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        d_i_m_m_l_i_same_mass(q, om, m, beta)
+    }
+
+    #[inline(always)]
+    pub fn d_i_m_0_t_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
+        d_i_m_0_l_i(q, om, m, beta)
+    }
+
+    #[inline(always)]
+    pub fn d_i_0_0_t_i<T: Num>(q: R, om: T, beta: R) -> C {
+        d_i_0_0_l_i(q, om, beta)
     }
 }
 
@@ -1278,7 +1434,7 @@ mod tests {
     }
 
     #[test]
-    fn test_d_i_m_m_d_i_m_0() {
+    fn test_d_i_m_m_i_m_0() {
         use zero_momentum::{d_i_m_m_i, ffi::oneloop__zero_momentum__d_i_m_m_i};
 
         let args: [(R, R, R, R); 5] = [
@@ -1310,7 +1466,7 @@ mod tests {
     }
 
     #[test]
-    fn test_d_i_m_m_d_i_0_0() {
+    fn test_d_i_m_m_i_0_0() {
         use zero_momentum::{d_i_m_m_i, ffi::oneloop__zero_momentum__d_i_m_m_i};
 
         let args: [(R, R, R); 4] = [
@@ -1406,7 +1562,7 @@ mod tests {
     }
 
     #[test]
-    fn test_d_i_m_0_d_i_0_0() {
+    fn test_d_i_m_0_i_0_0() {
         use zero_momentum::{d_i_m_0_i, ffi::oneloop__zero_momentum__d_i_m_0_i};
 
         let args: [(R, R, R); 4] = [
@@ -1459,6 +1615,421 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, om, beta))| {
             assert_equal(oneloop__zero_momentum__d_i_0_0_i(*q, *om, *beta), res[i])
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_l_i() {
+        use zero_momentum::{d_i_m_m_l_i, ffi::oneloop__zero_momentum__d_i_m_m_l_i};
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 1.2, 0.8, 3.2),
+            (0.35, 0.21, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 3.76, 0.8, 3.2),
+            (0.35, 0.75, 3.76, 2.22, 3.2),
+            (0.35, 0.75, 3.76, 2.22, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            2.2749626510847174e-05 + 0. * I,
+            2.766115906785751e-05 + 0. * I,
+            1.8453696456422319e-06 + 0. * I,
+            -9.287293377729397e-08 + 0. * I,
+            -2.488106457198816e-10 + 0. * I,
+            6.205134590847087e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, m1, m2, beta))| {
+                assert_equal(d_i_m_m_l_i(*q, *om, *m1, *m2, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, m1, m2, beta))| {
+                assert_equal(
+                    oneloop__zero_momentum__d_i_m_m_l_i(*q, *om, *m1, *m2, *beta),
+                    res[i],
+                )
+            })
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_d_i_m_m_l_i_symm() {
+        use zero_momentum::{d_i_m_m_l_i, ffi::oneloop__zero_momentum__d_i_m_m_l_i};
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 1.2, 0.8, 3.2),
+            (0.35, 0.21, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 1.2, 0.8, 3.2),
+            (0.35, 0.75, 3.76, 0.8, 3.2),
+            (0.35, 0.75, 3.76, 2.22, 3.2),
+            (0.35, 0.75, 3.76, 2.22, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            2.2749626510847174e-05 + 0. * I,
+            2.766115906785751e-05 + 0. * I,
+            1.8453696456422319e-06 + 0. * I,
+            -9.287293377729397e-08 + 0. * I,
+            -2.488106457198816e-10 + 0. * I,
+            6.205134590847087e-05 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, m1, m2, beta))| {
+                assert_equal(d_i_m_m_l_i(*q, *om, *m2, *m1, *beta), res[i])
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, m1, m2, beta))| {
+                assert_equal(
+                    oneloop__zero_momentum__d_i_m_m_l_i(*q, *om, *m2, *m1, *beta),
+                    res[i],
+                )
+            })
+    }
+
+    #[test]
+    fn test_d_i_m_m_l_i_m_0() {
+        use zero_momentum::{d_i_m_m_l_i, ffi::oneloop__zero_momentum__d_i_m_m_l_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.00019831294139692566 + 0. * I,
+            -0.0001242415111677944 + 0. * I,
+            -6.237632304143158e-05 + 0. * I,
+            -1.6161553920999904e-06 + 0. * I,
+            7.997970344844774e-07 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(d_i_m_m_l_i(*q, *om, *m, 0., *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_m_l_i(*q, *om, *m, 0., *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_l_i_0_0() {
+        use zero_momentum::{d_i_m_m_l_i, ffi::oneloop__zero_momentum__d_i_m_m_l_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(d_i_m_m_l_i(*q, *om, 0., 0., *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_m_l_i(*q, *om, 0., 0., *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_l_i_same_mass() {
+        use zero_momentum::{
+            d_i_m_m_l_i_same_mass, ffi::oneloop__zero_momentum__d_i_m_m_l_i_same_mass,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -1.3205010754405883e-05 + 0. * I,
+            -7.358391664357257e-06 + 0. * I,
+            -6.7984518127898696e-06 + 0. * I,
+            -8.058459716169227e-11 + 0. * I,
+            -1.3595006343325636e-05 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(d_i_m_m_l_i_same_mass(*q, *om, *m, *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_m_l_i_same_mass(*q, *om, *m, *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_0_l_i() {
+        use zero_momentum::{d_i_m_0_l_i, ffi::oneloop__zero_momentum__d_i_m_0_l_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.00019831294139692566 + 0. * I,
+            -0.0001242415111677944 + 0. * I,
+            -6.237632304143158e-05 + 0. * I,
+            -1.6161553920999904e-06 + 0. * I,
+            7.997970344844774e-07 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(d_i_m_0_l_i(*q, *om, *m, *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_0_l_i(*q, *om, *m, *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_0_l_i_0_0() {
+        use zero_momentum::{d_i_m_0_l_i, ffi::oneloop__zero_momentum__d_i_m_0_l_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, beta))| assert_equal(d_i_m_0_l_i(*q, *om, 0., *beta), res[i]));
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_0_l_i(*q, *om, 0., *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_0_0_l_i() {
+        use zero_momentum::{d_i_0_0_l_i, ffi::oneloop__zero_momentum__d_i_0_0_l_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, beta))| assert_equal(d_i_0_0_l_i(*q, *om, *beta), res[i]));
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(oneloop__zero_momentum__d_i_0_0_l_i(*q, *om, *beta), res[i])
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i_0_0() {
+        use zero_momentum::{d_i_m_m_t_i, ffi::oneloop__zero_momentum__d_i_m_m_t_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(d_i_m_m_t_i(*q, *om, 0., 0., *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_m_t_i(*q, *om, 0., 0., *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_m_t_i_same_mass() {
+        use zero_momentum::{
+            d_i_m_m_t_i_same_mass, ffi::oneloop__zero_momentum__d_i_m_m_t_i_same_mass,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -1.3205010754405883e-05 + 0. * I,
+            -7.358391664357257e-06 + 0. * I,
+            -6.7984518127898696e-06 + 0. * I,
+            -8.058459716169227e-11 + 0. * I,
+            -1.3595006343325636e-05 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(d_i_m_m_t_i_same_mass(*q, *om, *m, *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_m_t_i_same_mass(*q, *om, *m, *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_0_t_i() {
+        use zero_momentum::{d_i_m_0_t_i, ffi::oneloop__zero_momentum__d_i_m_0_t_i};
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.00019831294139692566 + 0. * I,
+            -0.0001242415111677944 + 0. * I,
+            -6.237632304143158e-05 + 0. * I,
+            -1.6161553920999904e-06 + 0. * I,
+            7.997970344844774e-07 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(d_i_m_0_t_i(*q, *om, *m, *beta), res[i])
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_0_t_i(*q, *om, *m, *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_m_0_t_i_0_0() {
+        use zero_momentum::{d_i_m_0_t_i, ffi::oneloop__zero_momentum__d_i_m_0_t_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, beta))| assert_equal(d_i_m_0_t_i(*q, *om, 0., *beta), res[i]));
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__d_i_m_0_t_i(*q, *om, 0., *beta),
+                res[i],
+            )
+        })
+    }
+
+    #[test]
+    fn test_d_i_0_0_t_i() {
+        use zero_momentum::{d_i_0_0_t_i, ffi::oneloop__zero_momentum__d_i_0_0_t_i};
+
+        let args: [(R, R, R); 4] = [
+            (0.62, 0.21, 3.2),
+            (0.35, 0.21, 3.2),
+            (0.35, 0.75, 3.2),
+            (0.35, 0.75, 0.19),
+        ];
+
+        let res: [C; 4] = [
+            -0.001583133642111522 + 0. * I,
+            -0.008038894655762144 + 0. * I,
+            -0.004079404879470366 + 0. * I,
+            -0.1225023009145051 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, beta))| assert_equal(d_i_0_0_t_i(*q, *om, *beta), res[i]));
+
+        args.iter().enumerate().for_each(|(i, (q, om, beta))| {
+            assert_equal(oneloop__zero_momentum__d_i_0_0_t_i(*q, *om, *beta), res[i])
         })
     }
 }
