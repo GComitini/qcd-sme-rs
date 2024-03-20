@@ -69,7 +69,7 @@ mod native {
         inlines::j_m_i(q, m, beta)
     }
 
-    pub fn j_0_i<T: Num>(q: R, beta: R) -> T {
+    pub fn j_0_i(q: R, beta: R) -> R {
         inlines::j_0_i(q, beta)
     }
 
@@ -77,7 +77,7 @@ mod native {
         inlines::j_m_l_i(q, m, beta)
     }
 
-    pub fn j_0_l_i<T: Num>(q: R, beta: R) -> T {
+    pub fn j_0_l_i(q: R, beta: R) -> R {
         inlines::j_0_l_i(q, beta)
     }
 
@@ -85,7 +85,7 @@ mod native {
         inlines::j_m_t_i(q, m, beta)
     }
 
-    pub fn j_0_t_i<T: Num>(q: R, beta: R) -> T {
+    pub fn j_0_t_i(q: R, beta: R) -> R {
         inlines::j_0_t_i(q, beta)
     }
 
@@ -141,7 +141,7 @@ mod native {
         inlines::d_j_m_i(q, m, beta)
     }
 
-    pub fn d_j_0_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d_j_0_i(q: R, beta: R) -> R {
         inlines::d_j_0_i(q, beta)
     }
 
@@ -149,7 +149,7 @@ mod native {
         inlines::d2_j_m_i(q, m, beta)
     }
 
-    pub fn d2_j_0_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d2_j_0_i(q: R, beta: R) -> R {
         inlines::d2_j_0_i(q, beta)
     }
 
@@ -157,7 +157,7 @@ mod native {
         inlines::d_j_m_l_i(q, m, beta)
     }
 
-    pub fn d_j_0_l_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d_j_0_l_i(q: R, beta: R) -> R {
         inlines::d_j_0_l_i(q, beta)
     }
 
@@ -165,7 +165,7 @@ mod native {
         inlines::d2_j_m_l_i(q, m, beta)
     }
 
-    pub fn d2_j_0_l_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d2_j_0_l_i(q: R, beta: R) -> R {
         inlines::d2_j_0_l_i(q, beta)
     }
 
@@ -173,7 +173,7 @@ mod native {
         inlines::d_j_m_t_i(q, m, beta)
     }
 
-    pub fn d_j_0_t_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d_j_0_t_i(q: R, beta: R) -> R {
         inlines::d_j_0_t_i(q, beta)
     }
 
@@ -181,7 +181,7 @@ mod native {
         inlines::d2_j_m_t_i(q, m, beta)
     }
 
-    pub fn d2_j_0_t_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d2_j_0_t_i(q: R, beta: R) -> R {
         inlines::d2_j_0_t_i(q, beta)
     }
 
@@ -631,8 +631,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn j_0_i<T: Num>(q: R, beta: R) -> T {
-        Into::<T>::into(bose_distribution_zero_chempot(q, beta) * q / (2. * PI2))
+    pub fn j_0_i(q: R, beta: R) -> R {
+        bose_distribution_zero_chempot(q, beta) * q / (2. * PI2)
     }
 
     #[inline(always)]
@@ -643,10 +643,10 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn j_0_l_i<T: Num>(q: R, beta: R) -> T {
+    pub fn j_0_l_i(q: R, beta: R) -> R {
         let q2 = q * q;
         let q3 = q2 * q;
-        Into::<T>::into(-bose_distribution_zero_chempot(q, beta) * q3 / (2. * PI2))
+        -bose_distribution_zero_chempot(q, beta) * q3 / (2. * PI2)
     }
 
     #[inline(always)]
@@ -658,10 +658,10 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn j_0_t_i<T: Num>(q: R, beta: R) -> T {
+    pub fn j_0_t_i(q: R, beta: R) -> R {
         let q2 = q * q;
         let q3 = q2 * q;
-        Into::<T>::into(bose_distribution_zero_chempot(q, beta) * q3 / (6. * PI2))
+        bose_distribution_zero_chempot(q, beta) * q3 / (6. * PI2)
     }
 
     #[inline(always)]
@@ -837,8 +837,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_j_0_i<T: Num>(q: R, beta: R) -> T {
-        Into::<T>::into(-bose_distribution_zero_chempot(q, beta) / (q * 4. * PI2))
+    pub fn d_j_0_i(q: R, beta: R) -> R {
+        -bose_distribution_zero_chempot(q, beta) / (q * 4. * PI2)
     }
 
     #[inline(always)]
@@ -852,12 +852,12 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d2_j_0_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d2_j_0_i(q: R, beta: R) -> R {
         let q3 = q * q * q;
         let bq = q * beta;
         let bp = bose_distribution_zero_chempot(q, beta);
         let bm = bose_distribution_zero_chempot(-q, beta);
-        Into::<T>::into(bp / (q3 * 8. * PI2) * (-bq * bm + 1.))
+        bp / (q3 * 8. * PI2) * (-bq * bm + 1.)
     }
 
     #[inline(always)]
@@ -867,8 +867,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_j_0_l_i<T: Num>(q: R, beta: R) -> T {
-        Into::<T>::into(q * bose_distribution_zero_chempot(q, beta) / (4. * PI2))
+    pub fn d_j_0_l_i(q: R, beta: R) -> R {
+        q * bose_distribution_zero_chempot(q, beta) / (4. * PI2)
     }
 
     #[inline(always)]
@@ -880,10 +880,10 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d2_j_0_l_i<T: Num>(q: R, beta: R) -> T {
+    pub fn d2_j_0_l_i(q: R, beta: R) -> R {
         let bp = bose_distribution_zero_chempot(q, beta);
         let bm = bose_distribution_zero_chempot(-q, beta);
-        Into::<T>::into(bp / (8. * PI2) * (bm * beta + 1. / q))
+        bp / (8. * PI2) * (bm * beta + 1. / q)
     }
 
     #[inline(always)]
@@ -894,8 +894,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_j_0_t_i<T: Num>(q: R, beta: R) -> T {
-        Into::<T>::into(-bose_distribution_zero_chempot(q, beta) * q / (4. * PI2))
+    pub fn d_j_0_t_i(q: R, beta: R) -> R {
+        -bose_distribution_zero_chempot(q, beta) * q / (4. * PI2)
     }
 
     #[inline(always)]
@@ -905,8 +905,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d2_j_0_t_i<T: Num>(q: R, beta: R) -> T {
-        Into::<T>::into(bose_distribution_zero_chempot(q, beta) / (q * 8. * PI2))
+    pub fn d2_j_0_t_i(q: R, beta: R) -> R {
+        bose_distribution_zero_chempot(q, beta) / (q * 8. * PI2)
     }
 
     #[inline(always)]
