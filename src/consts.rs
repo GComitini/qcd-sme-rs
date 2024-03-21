@@ -87,3 +87,56 @@ pub extern "C" fn set_default_quark_mass(m: R) {
 pub(crate) fn m_quark() -> R {
     unsafe { M_QUARK }
 }
+
+/// The default tolerance for numerical integrals.
+static mut TOL_INTEGRAL: R = 1E-12;
+
+/// Get the default tolerance for numerical integrals.
+#[no_mangle]
+pub extern "C" fn get_default_tol_integral() -> R {
+    tol_integral()
+}
+
+/// Set the default tolerance for numerical integrals.
+#[no_mangle]
+pub extern "C" fn set_default_tol_integral(tol: R) {
+    unsafe {
+        TOL_INTEGRAL = tol;
+    }
+}
+
+// This is just an alias to avoid typing "unsafe { TOL_INTEGRAL }" every time.
+#[inline(always)]
+pub(crate) fn tol_integral() -> R {
+    unsafe { TOL_INTEGRAL }
+}
+
+/// The default max iterations for numerical integrals.
+static mut MAX_ITER_INTEGRAL: u32 = 20;
+
+/// Get the default max iterations for numerical integrals.
+#[no_mangle]
+pub extern "C" fn get_default_max_iter_integral() -> u32 {
+    max_iter_integral()
+}
+
+/// Set the default max iterations for numerical integrals.
+#[no_mangle]
+pub extern "C" fn set_default_max_iter_integral(iter: u32) {
+    unsafe {
+        MAX_ITER_INTEGRAL = iter;
+    }
+}
+
+// This is just an alias to avoid typing "unsafe { MAX_ITER_INTEGRAL }" every time.
+#[inline(always)]
+pub(crate) fn max_iter_integral() -> u32 {
+    unsafe { MAX_ITER_INTEGRAL }
+}
+
+/// Get the default integration method
+#[no_mangle]
+// Add 'extern "C"' after redefining Integral
+pub fn get_default_integration_method() -> crate::Integral {
+    crate::Integral::G7K15(tol_integral(), max_iter_integral())
+}

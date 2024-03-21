@@ -8,4 +8,4 @@ pub mod types;
 pub mod ym;
 
 pub use consts::I;
-pub use types::{Num, C, R};
+pub use types::{Integral, Num, C, R};

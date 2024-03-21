@@ -2,14 +2,20 @@ use num::complex::ComplexFloat;
 use std::fmt;
 use std::ops;
 
+/// An integration method.
+pub use peroxide::numerical::integral::Integral;
+
 /// A real number.
 pub type R = f64;
+
 /// A complex number.
 pub type C = num::Complex<R>;
+
 /// An integer type for the number of colors.
 ///
 /// Used by [set_number_of_colors](crate::consts::set_number_of_colors).
 pub type NCTYPE = u32;
+
 /// An integer type for the number of fermions.
 ///
 /// Used by [set_number_of_fermions](crate::consts::set_number_of_fermions).

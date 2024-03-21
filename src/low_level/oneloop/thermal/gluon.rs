@@ -1,3 +1,46 @@
+pub use native::*;
+
+// For use in Rust
+//
+// - Collect into a module to improve code organization, but immediately re-export.
+//
+// - Each function simply calls its inline analogue with the sole objective of not
+//   inlining code when not necessary. The inline functions are still available to
+//   the crate for more specialized use.
+mod native {
+    use super::inlines;
+    use crate::R;
+    use peroxide::numerical::integral::Integral;
+
+    pub fn thermal_polarization_l_landau_w_method(
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+        integral: Integral,
+    ) -> R {
+        inlines::thermal_polarization_l_landau_w_method(om, p, m, beta, integral)
+    }
+
+    pub fn thermal_polarization_l_landau(om: R, p: R, m: R, beta: R) -> R {
+        inlines::thermal_polarization_l_landau(om, p, m, beta)
+    }
+
+    pub fn thermal_polarization_t_landau_w_method(
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+        integral: Integral,
+    ) -> R {
+        inlines::thermal_polarization_t_landau_w_method(om, p, m, beta, integral)
+    }
+
+    pub fn thermal_polarization_t_landau(om: R, p: R, m: R, beta: R) -> R {
+        inlines::thermal_polarization_t_landau(om, p, m, beta)
+    }
+}
+
 // For use in other languages, e.g. C/C++/Python
 //
 // - Re-export at crate::ffi, since symbols need to be unmangled anyway and the
@@ -15,9 +58,10 @@ pub(crate) mod ffi {}
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
-    // See if it's better not to inline these
+    use crate::consts::get_default_integration_method;
     use crate::low_level::oneloop::thermal::*;
     use crate::{Num, C, R};
+    use peroxide::numerical::integral::{integrate, Integral};
 
     #[inline(always)]
     pub fn thermal_polarization_l_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
@@ -84,5 +128,45 @@ pub(crate) mod inlines {
         let t15 = -d_j_m_t_i(q, m, beta) + d2_j_m_t_i(q, m, beta) * m2 / 2.;
 
         t12 + (t7 + (t6 + t1)) + t2 + t3 + t4 + t5 + t8 + t9 + t10 + t11 + t14 + t15 + t13
+    }
+
+    #[inline(always)]
+    pub fn thermal_polarization_l_landau_w_method(
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+        integral: Integral,
+    ) -> R {
+        integrate(
+            |t| thermal_polarization_l_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
+            (0., 1.),
+            integral,
+        )
+    }
+
+    #[inline(always)]
+    pub fn thermal_polarization_l_landau(om: R, p: R, m: R, beta: R) -> R {
+        thermal_polarization_l_landau_w_method(om, p, m, beta, get_default_integration_method())
+    }
+
+    #[inline(always)]
+    pub fn thermal_polarization_t_landau_w_method(
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+        integral: Integral,
+    ) -> R {
+        integrate(
+            |t| thermal_polarization_t_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
+            (0., 1.),
+            integral,
+        )
+    }
+
+    #[inline(always)]
+    pub fn thermal_polarization_t_landau(om: R, p: R, m: R, beta: R) -> R {
+        thermal_polarization_t_landau_w_method(om, p, m, beta, get_default_integration_method())
     }
 }
