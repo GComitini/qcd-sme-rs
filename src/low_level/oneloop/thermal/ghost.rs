@@ -9,8 +9,12 @@ pub use native::*;
 //   the crate for more specialized use.
 mod native {
     use super::inlines;
-    use crate::R;
+    use crate::{Num, C, R};
     use peroxide::numerical::integral::Integral;
+
+    pub fn thermal_self_energy_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+        inlines::thermal_self_energy_landau_i(q, om, p, m, beta)
+    }
 
     pub fn thermal_self_energy_landau_w_method(
         om: R,
@@ -90,19 +94,30 @@ pub mod zero_matsubara {
 
     mod native {
         use super::inlines;
+        use crate::Integral;
         use crate::{C, R};
 
         pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
             inlines::thermal_self_energy_landau_i(q, p, m, beta)
+        }
+
+        pub fn thermal_self_energy_landau_w_method(p: R, m: R, beta: R, integral: Integral) -> R {
+            inlines::thermal_self_energy_landau_w_method(p, m, beta, integral)
+        }
+
+        pub fn thermal_self_energy_landau(p: R, m: R, beta: R) -> R {
+            inlines::thermal_self_energy_landau(p, m, beta)
         }
     }
 
     mod ffi {}
 
     mod inlines {
+        use crate::consts::get_default_integration_method;
         use crate::low_level::oneloop::thermal::zero_matsubara::*;
         use crate::low_level::oneloop::thermal::{d_j_m_i, j_0_i, j_m_i};
         use crate::{C, R};
+        use peroxide::numerical::integral::{integrate, Integral};
 
         #[inline(always)]
         pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
@@ -118,6 +133,20 @@ pub mod zero_matsubara {
 
             t5 + (t3 + t1) + t2 + t4
         }
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau_w_method(p: R, m: R, beta: R, integral: Integral) -> R {
+            integrate(
+                |t| thermal_self_energy_landau_i((1. - t) / t, p, m, beta).re / (t * t),
+                (0., 1.),
+                integral,
+            )
+        }
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau(p: R, m: R, beta: R) -> R {
+            thermal_self_energy_landau_w_method(p, m, beta, get_default_integration_method())
+        }
     }
 }
 
@@ -126,19 +155,30 @@ pub mod zero_momentum {
 
     mod native {
         use super::inlines;
+        use crate::Integral;
         use crate::{C, R};
 
         pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
             inlines::thermal_self_energy_landau_i(q, p, m, beta)
+        }
+
+        pub fn thermal_self_energy_landau_w_method(om: R, m: R, beta: R, integral: Integral) -> R {
+            inlines::thermal_self_energy_landau_w_method(om, m, beta, integral)
+        }
+
+        pub fn thermal_self_energy_landau(om: R, m: R, beta: R) -> R {
+            inlines::thermal_self_energy_landau(om, m, beta)
         }
     }
 
     mod ffi {}
 
     mod inlines {
+        use crate::consts::get_default_integration_method;
         use crate::low_level::oneloop::thermal::zero_momentum::*;
         use crate::low_level::oneloop::thermal::{d_j_m_i, j_0_i, j_m_i};
         use crate::{Num, C, R};
+        use peroxide::numerical::integral::{integrate, Integral};
 
         #[inline(always)]
         pub fn thermal_self_energy_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
@@ -153,6 +193,20 @@ pub mod zero_momentum {
             let t5 = -(s - m2) / 4. * d_j_m_i(q, m, beta);
 
             t5 + (t3 + t1) + t2 + t4
+        }
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau_w_method(om: R, m: R, beta: R, integral: Integral) -> R {
+            integrate(
+                |t| thermal_self_energy_landau_i((1. - t) / t, om, m, beta).re / (t * t),
+                (0., 1.),
+                integral,
+            )
+        }
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau(om: R, m: R, beta: R) -> R {
+            thermal_self_energy_landau_w_method(om, m, beta, get_default_integration_method())
         }
     }
 }
