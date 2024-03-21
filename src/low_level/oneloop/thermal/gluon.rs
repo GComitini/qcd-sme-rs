@@ -12,36 +12,36 @@ mod native {
     use crate::{Num, C, R};
     use peroxide::numerical::integral::Integral;
 
-    pub fn thermal_polarization_l_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
-        inlines::thermal_polarization_l_landau_i(q, om, p, m, beta)
+    pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_l_thermal_part_landau_i(q, om, p, m, beta)
     }
 
-    pub fn thermal_polarization_l_landau_w_method(
+    pub fn polarization_l_thermal_part_landau_w_method(
         om: R,
         p: R,
         m: R,
         beta: R,
         integral: Integral,
     ) -> R {
-        inlines::thermal_polarization_l_landau_w_method(om, p, m, beta, integral)
+        inlines::polarization_l_thermal_part_landau_w_method(om, p, m, beta, integral)
     }
 
-    pub fn thermal_polarization_l_landau(om: R, p: R, m: R, beta: R) -> R {
-        inlines::thermal_polarization_l_landau(om, p, m, beta)
+    pub fn polarization_l_thermal_part_landau(om: R, p: R, m: R, beta: R) -> R {
+        inlines::polarization_l_thermal_part_landau(om, p, m, beta)
     }
 
-    pub fn thermal_polarization_t_landau_w_method(
+    pub fn polarization_t_thermal_part_landau_w_method(
         om: R,
         p: R,
         m: R,
         beta: R,
         integral: Integral,
     ) -> R {
-        inlines::thermal_polarization_t_landau_w_method(om, p, m, beta, integral)
+        inlines::polarization_t_thermal_part_landau_w_method(om, p, m, beta, integral)
     }
 
-    pub fn thermal_polarization_t_landau(om: R, p: R, m: R, beta: R) -> R {
-        inlines::thermal_polarization_t_landau(om, p, m, beta)
+    pub fn polarization_t_thermal_part_landau(om: R, p: R, m: R, beta: R) -> R {
+        inlines::polarization_t_thermal_part_landau(om, p, m, beta)
     }
 }
 
@@ -68,7 +68,7 @@ pub(crate) mod inlines {
     use peroxide::numerical::integral::{integrate, Integral};
 
     #[inline(always)]
-    pub fn thermal_polarization_l_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+    pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
         let s = om * om + p * p;
         let s2 = s * s;
         let s_inv = s.inv();
@@ -105,7 +105,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn thermal_polarization_t_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+    pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
         let s = om * om + p * p;
         let s2 = s * s;
         let m2 = m * m;
@@ -135,7 +135,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn thermal_polarization_l_landau_w_method(
+    pub fn polarization_l_thermal_part_landau_w_method(
         om: R,
         p: R,
         m: R,
@@ -143,19 +143,25 @@ pub(crate) mod inlines {
         integral: Integral,
     ) -> R {
         integrate(
-            |t| thermal_polarization_l_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
+            |t| polarization_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
             (0., 1.),
             integral,
         )
     }
 
     #[inline(always)]
-    pub fn thermal_polarization_l_landau(om: R, p: R, m: R, beta: R) -> R {
-        thermal_polarization_l_landau_w_method(om, p, m, beta, get_default_integration_method())
+    pub fn polarization_l_thermal_part_landau(om: R, p: R, m: R, beta: R) -> R {
+        polarization_l_thermal_part_landau_w_method(
+            om,
+            p,
+            m,
+            beta,
+            get_default_integration_method(),
+        )
     }
 
     #[inline(always)]
-    pub fn thermal_polarization_t_landau_w_method(
+    pub fn polarization_t_thermal_part_landau_w_method(
         om: R,
         p: R,
         m: R,
@@ -163,15 +169,21 @@ pub(crate) mod inlines {
         integral: Integral,
     ) -> R {
         integrate(
-            |t| thermal_polarization_t_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
+            |t| polarization_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta).re / (t * t),
             (0., 1.),
             integral,
         )
     }
 
     #[inline(always)]
-    pub fn thermal_polarization_t_landau(om: R, p: R, m: R, beta: R) -> R {
-        thermal_polarization_t_landau_w_method(om, p, m, beta, get_default_integration_method())
+    pub fn polarization_t_thermal_part_landau(om: R, p: R, m: R, beta: R) -> R {
+        polarization_t_thermal_part_landau_w_method(
+            om,
+            p,
+            m,
+            beta,
+            get_default_integration_method(),
+        )
     }
 }
 
@@ -183,38 +195,38 @@ pub mod zero_matsubara {
         use crate::Integral;
         use crate::{C, R};
 
-        pub fn thermal_polarization_l_landau_i(q: R, p: R, m: R, beta: R) -> C {
-            inlines::thermal_polarization_l_landau_i(q, p, m, beta)
+        pub fn polarization_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::polarization_l_thermal_part_landau_i(q, p, m, beta)
         }
 
-        pub fn thermal_polarization_t_landau_i(q: R, p: R, m: R, beta: R) -> C {
-            inlines::thermal_polarization_t_landau_i(q, p, m, beta)
+        pub fn polarization_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::polarization_t_thermal_part_landau_i(q, p, m, beta)
         }
 
-        pub fn thermal_polarization_l_landau_w_method(
+        pub fn polarization_l_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::thermal_polarization_l_landau_w_method(p, m, beta, integral)
+            inlines::polarization_l_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
-        pub fn thermal_polarization_l_landau(p: R, m: R, beta: R) -> R {
-            inlines::thermal_polarization_l_landau(p, m, beta)
+        pub fn polarization_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            inlines::polarization_l_thermal_part_landau(p, m, beta)
         }
 
-        pub fn thermal_polarization_t_landau_w_method(
+        pub fn polarization_t_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::thermal_polarization_t_landau_w_method(p, m, beta, integral)
+            inlines::polarization_t_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
-        pub fn thermal_polarization_t_landau(p: R, m: R, beta: R) -> R {
-            inlines::thermal_polarization_t_landau(p, m, beta)
+        pub fn polarization_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            inlines::polarization_t_thermal_part_landau(p, m, beta)
         }
     }
 
@@ -231,7 +243,7 @@ pub mod zero_matsubara {
         use peroxide::numerical::integral::{integrate, Integral};
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau_i(q: R, p: R, m: R, beta: R) -> C {
+        pub fn polarization_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             let s = p * p;
             let s2 = s * s;
             let m2 = m * m;
@@ -266,7 +278,7 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau_i(q: R, p: R, m: R, beta: R) -> C {
+        pub fn polarization_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             let s = p * p;
             let s2 = s * s;
             let m2 = m * m;
@@ -296,41 +308,51 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau_w_method(
+        pub fn polarization_l_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
             integrate(
-                |t| thermal_polarization_l_landau_i((1. - t) / t, p, m, beta).re / (t * t),
+                |t| polarization_l_thermal_part_landau_i((1. - t) / t, p, m, beta).re / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau(p: R, m: R, beta: R) -> R {
-            thermal_polarization_l_landau_w_method(p, m, beta, get_default_integration_method())
+        pub fn polarization_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            polarization_l_thermal_part_landau_w_method(
+                p,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau_w_method(
+        pub fn polarization_t_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
             integrate(
-                |t| thermal_polarization_t_landau_i((1. - t) / t, p, m, beta).re / (t * t),
+                |t| polarization_t_thermal_part_landau_i((1. - t) / t, p, m, beta).re / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau(p: R, m: R, beta: R) -> R {
-            thermal_polarization_t_landau_w_method(p, m, beta, get_default_integration_method())
+        pub fn polarization_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            polarization_t_thermal_part_landau_w_method(
+                p,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
     }
 }
@@ -343,38 +365,38 @@ pub mod zero_momentum {
         use crate::Integral;
         use crate::{Num, C, R};
 
-        pub fn thermal_polarization_l_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            inlines::thermal_polarization_l_landau_i(q, om, m, beta)
+        pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
         }
 
-        pub fn thermal_polarization_t_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            inlines::thermal_polarization_t_landau_i(q, om, m, beta)
+        pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
         }
 
-        pub fn thermal_polarization_l_landau_w_method(
+        pub fn polarization_l_thermal_part_landau_w_method(
             om: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::thermal_polarization_l_landau_w_method(om, m, beta, integral)
+            inlines::polarization_l_thermal_part_landau_w_method(om, m, beta, integral)
         }
 
-        pub fn thermal_polarization_l_landau(om: R, m: R, beta: R) -> R {
-            inlines::thermal_polarization_l_landau(om, m, beta)
+        pub fn polarization_l_thermal_part_landau(om: R, m: R, beta: R) -> R {
+            inlines::polarization_l_thermal_part_landau(om, m, beta)
         }
 
-        pub fn thermal_polarization_t_landau_w_method(
+        pub fn polarization_t_thermal_part_landau_w_method(
             om: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::thermal_polarization_t_landau_w_method(om, m, beta, integral)
+            inlines::polarization_t_thermal_part_landau_w_method(om, m, beta, integral)
         }
 
-        pub fn thermal_polarization_t_landau(om: R, m: R, beta: R) -> R {
-            inlines::thermal_polarization_t_landau(om, m, beta)
+        pub fn polarization_t_thermal_part_landau(om: R, m: R, beta: R) -> R {
+            inlines::polarization_t_thermal_part_landau(om, m, beta)
         }
     }
 
@@ -390,7 +412,7 @@ pub mod zero_momentum {
         use peroxide::numerical::integral::{integrate, Integral};
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+        pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
             let s = om * om;
             let s2 = s * s;
             let m2 = m * m;
@@ -425,46 +447,56 @@ pub mod zero_momentum {
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            thermal_polarization_l_landau_i(q, om, m, beta)
+        pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            polarization_l_thermal_part_landau_i(q, om, m, beta)
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau_w_method(
+        pub fn polarization_l_thermal_part_landau_w_method(
             om: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
             integrate(
-                |t| thermal_polarization_l_landau_i((1. - t) / t, om, m, beta).re / (t * t),
+                |t| polarization_l_thermal_part_landau_i((1. - t) / t, om, m, beta).re / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_l_landau(om: R, m: R, beta: R) -> R {
-            thermal_polarization_l_landau_w_method(om, m, beta, get_default_integration_method())
+        pub fn polarization_l_thermal_part_landau(om: R, m: R, beta: R) -> R {
+            polarization_l_thermal_part_landau_w_method(
+                om,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau_w_method(
+        pub fn polarization_t_thermal_part_landau_w_method(
             om: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
             integrate(
-                |t| thermal_polarization_t_landau_i((1. - t) / t, om, m, beta).re / (t * t),
+                |t| polarization_t_thermal_part_landau_i((1. - t) / t, om, m, beta).re / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn thermal_polarization_t_landau(om: R, m: R, beta: R) -> R {
-            thermal_polarization_t_landau_w_method(om, m, beta, get_default_integration_method())
+        pub fn polarization_t_thermal_part_landau(om: R, m: R, beta: R) -> R {
+            polarization_t_thermal_part_landau_w_method(
+                om,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
     }
 }
