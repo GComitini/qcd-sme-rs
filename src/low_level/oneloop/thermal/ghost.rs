@@ -44,7 +44,6 @@ pub(crate) mod ffi {}
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
-    // See if it's better not to inline these
     use crate::consts::get_default_integration_method;
     use crate::low_level::oneloop::thermal::*;
     use crate::{Num, C, R};
@@ -83,5 +82,77 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn thermal_self_energy_landau(om: R, p: R, m: R, beta: R) -> R {
         thermal_self_energy_landau_w_method(om, p, m, beta, get_default_integration_method())
+    }
+}
+
+pub mod zero_matsubara {
+    pub use native::*;
+
+    mod native {
+        use super::inlines;
+        use crate::{C, R};
+
+        pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::thermal_self_energy_landau_i(q, p, m, beta)
+        }
+    }
+
+    mod ffi {}
+
+    mod inlines {
+        use crate::low_level::oneloop::thermal::zero_matsubara::*;
+        use crate::low_level::oneloop::thermal::{d_j_m_i, j_0_i, j_m_i};
+        use crate::{C, R};
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            let s = p * p;
+            let m2 = m * m;
+            let a = s + m2;
+
+            let t1 = -a * s / (2. * m2) * i_m_0_i(q, p, m, beta);
+            let t2 = s * s / (2. * m2) * i_0_0_i(q, p, beta);
+            let t3 = (s * 2. - m2) / (4. * m2) * (j_m_i(q, m, beta) - j_0_i(q, beta));
+            let t4 = a * a / 4. * d_i_m_0_i(q, p, m, beta);
+            let t5 = -(s - m2) / 4. * d_j_m_i(q, m, beta);
+
+            t5 + (t3 + t1) + t2 + t4
+        }
+    }
+}
+
+pub mod zero_momentum {
+    pub use native::*;
+
+    mod native {
+        use super::inlines;
+        use crate::{C, R};
+
+        pub fn thermal_self_energy_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::thermal_self_energy_landau_i(q, p, m, beta)
+        }
+    }
+
+    mod ffi {}
+
+    mod inlines {
+        use crate::low_level::oneloop::thermal::zero_momentum::*;
+        use crate::low_level::oneloop::thermal::{d_j_m_i, j_0_i, j_m_i};
+        use crate::{Num, C, R};
+
+        #[inline(always)]
+        pub fn thermal_self_energy_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            let s = om * om;
+            let m2 = m * m;
+            let a = s + m2;
+
+            let t1 = -a * s / (2. * m2) * i_m_0_i(q, om, m, beta);
+            let t2 = s * s / (2. * m2) * i_0_0_i(q, om, beta);
+            let t3 = (s * 2. - m2) / (4. * m2) * (j_m_i(q, m, beta) - j_0_i(q, beta));
+            let t4 = a * a / 4. * d_i_m_0_i(q, om, m, beta);
+            let t5 = -(s - m2) / 4. * d_j_m_i(q, m, beta);
+
+            t5 + (t3 + t1) + t2 + t4
+        }
     }
 }
