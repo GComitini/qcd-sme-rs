@@ -30,6 +30,10 @@ mod native {
         inlines::polarization_l_thermal_part_landau(om, p, m, beta)
     }
 
+    pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_t_thermal_part_landau_i(q, om, p, m, beta)
+    }
+
     pub fn polarization_t_thermal_part_landau_w_method(
         om: R,
         p: R,
