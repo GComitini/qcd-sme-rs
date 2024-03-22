@@ -246,6 +246,8 @@ pub mod zero_matsubara {
         use crate::{C, R};
         use peroxide::numerical::integral::{integrate, Integral};
 
+        const EPS: R = 1E-6;
+
         #[inline(always)]
         pub fn polarization_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             let s = p * p;
@@ -318,8 +320,25 @@ pub mod zero_matsubara {
             beta: R,
             integral: Integral,
         ) -> R {
+            // You may be thinking: did you spend countless ours of your life
+            // computing and coding the Matsubara limits to then end up using
+            // the ordinary thermal functions with omega=epsilon?! The answer
+            // is... yeah, 'cos apparently there's a perfectly-well-behaved
+            // logarithmic singularity in the integrands in the Matsubara limit
+            // which however fucks around with numerical integration and yields
+            // plots which look very much like the ECG of my grandma with
+            // arrythmia.
             integrate(
-                |t| polarization_l_thermal_part_landau_i((1. - t) / t, p, m, beta).re / (t * t),
+                |t| {
+                    super::super::polarization_l_thermal_part_landau_i(
+                        (1. - t) / t,
+                        EPS,
+                        p,
+                        m,
+                        beta,
+                    )
+                    .re / (t * t)
+                },
                 (0., 1.),
                 integral,
             )
@@ -343,7 +362,16 @@ pub mod zero_matsubara {
             integral: Integral,
         ) -> R {
             integrate(
-                |t| polarization_t_thermal_part_landau_i((1. - t) / t, p, m, beta).re / (t * t),
+                |t| {
+                    super::super::polarization_t_thermal_part_landau_i(
+                        (1. - t) / t,
+                        EPS,
+                        p,
+                        m,
+                        beta,
+                    )
+                    .re / (t * t)
+                },
                 (0., 1.),
                 integral,
             )
