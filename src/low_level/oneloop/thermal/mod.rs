@@ -262,6 +262,7 @@ mod native {
 //   be compiled into a C dynamic library. To do so, we need to double their
 //   number (one function for real arguments, another for complex arguments).
 pub(crate) mod ffi {
+    pub use super::ghost::ffi::*;
     pub use super::zero_matsubara::ffi::*;
     pub use super::zero_momentum::ffi::*;
 
