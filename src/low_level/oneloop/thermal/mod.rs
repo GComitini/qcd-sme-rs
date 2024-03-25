@@ -263,6 +263,7 @@ mod native {
 //   number (one function for real arguments, another for complex arguments).
 pub(crate) mod ffi {
     pub use super::ghost::ffi::*;
+    pub use super::gluon::ffi::*;
     pub use super::zero_matsubara::ffi::*;
     pub use super::zero_momentum::ffi::*;
 

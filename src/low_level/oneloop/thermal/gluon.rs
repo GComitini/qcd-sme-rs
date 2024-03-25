@@ -58,7 +58,35 @@ mod native {
 //   switch from generic to concrete argument types so that the functions can
 //   be compiled into a C dynamic library. To do so, we need to double their
 //   number (one function for real arguments, another for complex arguments).
-pub(crate) mod ffi {}
+pub(crate) mod ffi {
+    use super::inlines;
+    use crate::{C, R};
+
+    pub use super::zero_matsubara::ffi::*;
+    pub use super::zero_momentum::ffi::*;
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__gluon__polarization_l_thermal_part_landau_i(
+        q: R,
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+    ) -> C {
+        inlines::polarization_l_thermal_part_landau_i(q, om, p, m, beta)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__gluon__polarization_t_thermal_part_landau_i(
+        q: R,
+        om: R,
+        p: R,
+        m: R,
+        beta: R,
+    ) -> C {
+        inlines::polarization_t_thermal_part_landau_i(q, om, p, m, beta)
+    }
+}
 
 // For internal use only
 //
@@ -80,6 +108,7 @@ pub(crate) mod inlines {
         let m4 = m2 * m2;
         let a = s + m2 * 2.;
         let b = s + m2;
+        let b2 = b * b;
 
         let j_m_l_p_i = s_inv * (om * om * j_m_t_i(q, m, beta) + p * p * j_m_l_i(q, m, beta));
         let j_0_l_p_i = s_inv * (om * om * j_0_t_i(q, beta) + p * p * j_0_l_i(q, beta));
@@ -87,8 +116,8 @@ pub(crate) mod inlines {
         let d2_j_m_l_p_i =
             s_inv * (om * om * d2_j_m_t_i(q, m, beta) + p * p * d2_j_m_l_i(q, m, beta));
 
-        let t1 = (s2 * 3. / (m * 2.) - 1.) * i_0_0_l_i(q, om, p, beta);
-        let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m2) + 4.)
+        let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_l_i(q, om, p, beta);
+        let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
             * i_m_m_l_i_same_mass(q, om, p, m, beta);
         let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_l_i(q, om, p, m, beta);
         let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, om, p, m, beta);
@@ -96,9 +125,9 @@ pub(crate) mod inlines {
         let t6 = -(s * 2. + m2 * 3.) / m2 * j_m_i(q, m, beta);
         let t7 = (s * 2. + m2) / m2 * j_0_i(q, beta);
         let t8 = -(a * a / m2 + m2 * 8.) * d_i_m_m_l_i_same_mass(q, om, p, m, beta);
-        let t9 = b * b / m2 * d_i_m_0_l_i(q, om, p, m, beta);
+        let t9 = b2 / m2 * d_i_m_0_l_i(q, om, p, m, beta);
         let t10 = -s * 2. * (s + m2 * 4.) * d_i_m_m_i_same_mass(q, om, p, m, beta);
-        let t11 = b * b * d_i_m_0_i(q, om, p, m, beta);
+        let t11 = b2 * d_i_m_0_i(q, om, p, m, beta);
         let t12 = (s + m2 * 3.) * d_j_m_i(q, m, beta);
 
         let t13 = -m4 * d2_j_m_i(q, m, beta);
@@ -116,9 +145,10 @@ pub(crate) mod inlines {
         let m4 = m2 * m2;
         let a = s + m2 * 2.;
         let b = s + m2;
+        let b2 = b * b;
 
-        let t1 = (s2 * 3. / (m * 2.) - 1.) * i_0_0_t_i(q, om, p, beta);
-        let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m2) + 4.)
+        let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_t_i(q, om, p, beta);
+        let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
             * i_m_m_t_i_same_mass(q, om, p, m, beta);
         let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_t_i(q, om, p, m, beta);
         let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, om, p, m, beta);
@@ -126,9 +156,9 @@ pub(crate) mod inlines {
         let t6 = -(s * 2. + m2 * 3.) / m2 * j_m_i(q, m, beta);
         let t7 = (s * 2. + m2) / m2 * j_0_i(q, beta);
         let t8 = -(a * a / m2 + m2 * 8.) * d_i_m_m_t_i_same_mass(q, om, p, m, beta);
-        let t9 = b * b / m2 * d_i_m_0_t_i(q, om, p, m, beta);
+        let t9 = b2 / m2 * d_i_m_0_t_i(q, om, p, m, beta);
         let t10 = -s * 2. * (s + m2 * 4.) * d_i_m_m_i_same_mass(q, om, p, m, beta);
-        let t11 = b * b * d_i_m_0_i(q, om, p, m, beta);
+        let t11 = b2 * d_i_m_0_i(q, om, p, m, beta);
         let t12 = (s + m2 * 3.) * d_j_m_i(q, m, beta);
 
         let t13 = -m4 * d2_j_m_i(q, m, beta);
@@ -234,7 +264,30 @@ pub mod zero_matsubara {
         }
     }
 
-    mod ffi {}
+    pub(crate) mod ffi {
+        use super::inlines;
+        use crate::{C, R};
+
+        #[no_mangle]
+        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i(
+            q: R,
+            om: R,
+            m: R,
+            beta: R,
+        ) -> C {
+            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
+        }
+
+        #[no_mangle]
+        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i(
+            q: R,
+            om: R,
+            m: R,
+            beta: R,
+        ) -> C {
+            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
+        }
+    }
 
     mod inlines {
         use crate::consts::get_default_integration_method;
@@ -262,8 +315,8 @@ pub mod zero_matsubara {
             let d_j_m_l_p_i = d_j_m_l_i(q, m, beta);
             let d2_j_m_l_p_i = d2_j_m_l_i(q, m, beta);
 
-            let t1 = (s2 * 3. / (m * 2.) - 1.) * i_0_0_l_i(q, p, beta);
-            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m2) + 4.)
+            let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_l_i(q, p, beta);
+            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
                 * i_m_m_l_i_same_mass(q, p, m, beta);
             let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_l_i(q, p, m, beta);
             let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, p, m, beta);
@@ -292,8 +345,8 @@ pub mod zero_matsubara {
             let a = s + m2 * 2.;
             let b = s + m2;
 
-            let t1 = (s2 * 3. / (m * 2.) - 1.) * i_0_0_t_i(q, p, beta);
-            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m2) + 4.)
+            let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_t_i(q, p, beta);
+            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
                 * i_m_m_t_i_same_mass(q, p, m, beta);
             let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_t_i(q, p, m, beta);
             let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, p, m, beta);
@@ -432,7 +485,30 @@ pub mod zero_momentum {
         }
     }
 
-    mod ffi {}
+    pub(crate) mod ffi {
+        use super::inlines;
+        use crate::{C, R};
+
+        #[no_mangle]
+        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i(
+            q: R,
+            om: R,
+            m: R,
+            beta: R,
+        ) -> C {
+            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
+        }
+
+        #[no_mangle]
+        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i(
+            q: R,
+            om: R,
+            m: R,
+            beta: R,
+        ) -> C {
+            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
+        }
+    }
 
     mod inlines {
         use crate::consts::get_default_integration_method;
@@ -457,8 +533,8 @@ pub mod zero_momentum {
             let d_j_m_l_p_i = d_j_m_t_i(q, m, beta);
             let d2_j_m_l_p_i = d2_j_m_t_i(q, m, beta);
 
-            let t1 = (s2 * 3. / (m * 2.) - 1.) * i_0_0_l_i(q, om, beta);
-            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m2) + 4.)
+            let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_l_i(q, om, beta);
+            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
                 * i_m_m_l_i_same_mass(q, om, m, beta);
             let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_l_i(q, om, m, beta);
             let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, om, m, beta);
@@ -530,5 +606,274 @@ pub mod zero_momentum {
                 get_default_integration_method(),
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{Num, C, I, R};
+
+    const TOLERANCE: R = 1e-11;
+
+    fn assert_equal<T: Num>(lhs: T, rhs: T) {
+        if rhs != T::zero() {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
+            );
+        } else {
+            assert!(
+                (lhs - rhs).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_polarization_l_thermal_part_landau_i() {
+        use super::{
+            ffi::oneloop__gluon__polarization_l_thermal_part_landau_i,
+            polarization_l_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            -0.0017852067865610625 + 0. * I,
+            -0.0030398086246881196 + 0. * I,
+            -0.0026809417392170062 + 0. * I,
+            -0.0023335168072622214 + 0. * I,
+            0.0006964565160878051 + 0. * I,
+            -0.8974644543820465 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(
+                    polarization_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    res[i],
+                )
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(
+                    oneloop__gluon__polarization_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    res[i],
+                )
+            });
+    }
+
+    #[test]
+    fn test_polarization_t_thermal_part_landau_i() {
+        use super::{
+            ffi::oneloop__gluon__polarization_t_thermal_part_landau_i,
+            polarization_t_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.21, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 2.16, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 1.2, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 3.2),
+            (0.35, 0.75, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 6] = [
+            -0.004364759744835432 + 0. * I,
+            -0.003176656270982809 + 0. * I,
+            -0.0022201869715893826 + 0. * I,
+            -0.0017757726773228275 + 0. * I,
+            -0.0004258083320350534 + 0. * I,
+            -0.19221349678773383 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(
+                    polarization_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    res[i],
+                )
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, m, beta))| {
+                assert_equal(
+                    oneloop__gluon__polarization_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    res[i],
+                )
+            });
+    }
+
+    #[test]
+    fn test_zero_matsubara_polarization_l_thermal_part_landau_i() {
+        use super::zero_matsubara::{
+            ffi::oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i,
+            polarization_l_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 2.16, 1.2, 3.2),
+            (0.35, 2.16, 1.2, 3.2),
+            (0.35, 1.15, 1.2, 3.2),
+            (0.35, 1.15, 3.76, 3.2),
+            (0.35, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.0003208941584982947 + 0. * I,
+            -0.0030075249405222253 + 0. * I,
+            -0.01222669559611368 + 0. * I,
+            0.0019273974485877518 + 0. * I,
+            -18.665752022987885 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
+            assert_equal(
+                polarization_l_thermal_part_landau_i(*q, *p, *m, *beta),
+                res[i],
+            )
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
+            assert_equal(
+                oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i(
+                    *q, *p, *m, *beta,
+                ),
+                res[i],
+            )
+        });
+    }
+
+    #[test]
+    fn test_zero_matsubara_polarization_t_thermal_part_landau_i() {
+        use super::zero_matsubara::{
+            ffi::oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i,
+            polarization_t_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 2.16, 1.2, 3.2),
+            (0.35, 2.16, 1.2, 3.2),
+            (0.35, 1.15, 1.2, 3.2),
+            (0.35, 1.15, 3.76, 3.2),
+            (0.35, 1.15, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.007683815997018903 + 0. * I,
+            -0.003429309709538143 + 0. * I,
+            0.0029896620913042677 + 0. * I,
+            -0.0006726588299993001 + 0. * I,
+            1.046045679964218 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
+            assert_equal(
+                polarization_t_thermal_part_landau_i(*q, *p, *m, *beta),
+                res[i],
+            )
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
+            assert_equal(
+                oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i(
+                    *q, *p, *m, *beta,
+                ),
+                res[i],
+            )
+        });
+    }
+
+    #[test]
+    fn test_zero_momentum_polarization_l_thermal_part_landau_i() {
+        use super::zero_momentum::{
+            ffi::oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i,
+            polarization_l_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.003039308412097181 + 0. * I,
+            -0.004004367287641101 + 0. * I,
+            -0.0017951511301322243 + 0. * I,
+            -0.0007127085951006912 + 0. * I,
+            -0.28676848218619055 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                polarization_l_thermal_part_landau_i(*q, *om, *m, *beta),
+                res[i],
+            )
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i(
+                    *q, *om, *m, *beta,
+                ),
+                res[i],
+            )
+        });
+    }
+
+    #[test]
+    fn test_zero_momentum_polarization_t_thermal_part_landau_i() {
+        use super::zero_momentum::{
+            ffi::oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i,
+            polarization_t_thermal_part_landau_i,
+        };
+
+        let args: [(R, R, R, R); 5] = [
+            (0.62, 0.21, 1.2, 3.2),
+            (0.35, 0.21, 1.2, 3.2),
+            (0.35, 0.75, 1.2, 3.2),
+            (0.35, 0.75, 3.76, 3.2),
+            (0.35, 0.75, 3.76, 0.19),
+        ];
+
+        let res: [C; 5] = [
+            -0.003039308412097181 + 0. * I,
+            -0.004004367287641101 + 0. * I,
+            -0.0017951511301322243 + 0. * I,
+            -0.0007127085951006912 + 0. * I,
+            -0.28676848218619055 + 0. * I,
+        ];
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                polarization_t_thermal_part_landau_i(*q, *om, *m, *beta),
+                res[i],
+            )
+        });
+
+        args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
+            assert_equal(
+                oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i(
+                    *q, *om, *m, *beta,
+                ),
+                res[i],
+            )
+        });
     }
 }
