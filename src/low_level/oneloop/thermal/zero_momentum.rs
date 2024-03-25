@@ -277,87 +277,53 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn tlog_1o<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, en: T2, delta: T3) -> C {
-        r_0(om, en, delta).inv() * q * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_1o_same_mass<T1: Num, T2: Num>(q: R, om: T1, en: T2) -> C {
-        r_0_same_mass(om, en).inv() * q * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_1o_zero_mass<T: Num>(q: R, om: T) -> C {
-        r_0_same_mass(om, q).inv() * q * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_l_3o<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, en: T2, delta: T3) -> C {
-        ((r_0(om, en, delta).inv() * q * q / 3. + en * I * Into::<C>::into(om.inv())) * 4. + 1.)
-            * q
-            * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_l_3o_same_mass<T1: Num, T2: Num>(q: R, om: T1, en: T2) -> C {
-        ((r_0_same_mass(om, en).inv() * q * q / 3. + en * I * Into::<C>::into(om.inv())) * 4. + 1.)
-            * q
-            * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_l_3o_zero_mass<T: Num>(q: R, om: T) -> C {
-        ((r_0_same_mass(om, q).inv() * q / 3. + I * Into::<C>::into(om.inv())) * q * 4. + 1.)
-            * q
-            * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_t_3o<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, en: T2, delta: T3) -> C {
-        (-r_0(om, en, delta).inv() * q * q * 8. / 3. + 1.) * q * 4.
-    }
-
-    #[inline(always)]
-    pub fn tlog_t_3o_same_mass<T1: Num, T2: Num>(q: R, om: T1, en: T2) -> C {
-        (-r_0_same_mass(om, en).inv() * q * q * 8. / 3. + 1.) * q * 4.
-    }
-
-    #[inline(always)]
     pub fn i_m_m_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
         let en1 = energy(q, m1);
         let en2 = energy(q, m2);
         let delta = m2 * m2 - Into::<C>::into(m1 * m1);
-        let t1 = bose_distribution_zero_chempot(en1, beta) / en1
-            * (tlog_1o(q, om, en1, delta) + tlog_1o(q, -om, en1, delta));
-        let t2 = bose_distribution_zero_chempot(en2, beta) / en2
-            * (tlog_1o(q, om, en2, -delta) + tlog_1o(q, -om, en2, -delta));
-        (t1 + t2) * q / (16. * PI2)
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + en1 * omi2 + delta).inv();
+        let r01m_inv = (om2 - en1 * omi2 + delta).inv();
+        let r02p_inv = (om2 + en2 * omi2 - delta).inv();
+        let r02m_inv = (om2 - en2 * omi2 - delta).inv();
+        let t1 = bose_distribution_zero_chempot(en1, beta) / en1 * (r01p_inv + r01m_inv);
+        let t2 = bose_distribution_zero_chempot(en2, beta) / en2 * (r02p_inv + r02m_inv);
+        (t1 + t2) * q * q / (4. * PI2)
     }
 
     #[inline(always)]
     pub fn i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
-        let en = energy(q, m);
-        let t = bose_distribution_zero_chempot(en, beta) / en
-            * (tlog_1o_same_mass(q, om, en) + tlog_1o_same_mass(q, -om, en));
-        t * q / (8. * PI2)
+        let en1 = energy(q, m);
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + en1 * omi2).inv();
+        let r01m_inv = (om2 - en1 * omi2).inv();
+        bose_distribution_zero_chempot(en1, beta) / en1 * (r01p_inv + r01m_inv) * q * q / (2. * PI2)
     }
 
     #[inline(always)]
     pub fn i_m_0_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
         let en1 = energy(q, m);
         let delta = -m * m;
-        let t1 = bose_distribution_zero_chempot(en1, beta) * q / en1
-            * (tlog_1o(q, om, en1, delta) + tlog_1o(q, -om, en1, delta));
-        let t2 = bose_distribution_zero_chempot(q, beta)
-            * (tlog_1o(q, om, q, -delta) + tlog_1o(q, -om, q, -delta));
-        (t1 + t2) / (16. * PI2)
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (delta + (om2 + en1 * omi2)).inv();
+        let r01m_inv = (delta + (om2 - en1 * omi2)).inv();
+        let r02p_inv = (-delta + (om2 + q * omi2)).inv();
+        let r02m_inv = (-delta + (om2 - q * omi2)).inv();
+        let t1 = bose_distribution_zero_chempot(en1, beta) * q / en1 * (r01p_inv + r01m_inv);
+        let t2 = bose_distribution_zero_chempot(q, beta) * (r02p_inv + r02m_inv);
+        (t1 + t2) * q / (4. * PI2)
     }
 
     #[inline(always)]
     pub fn i_0_0_i<T: Num>(q: R, om: T, beta: R) -> C {
-        let t = bose_distribution_zero_chempot(q, beta)
-            * (tlog_1o_zero_mass(q, om) + tlog_1o_zero_mass(q, -om));
-        t / (8. * PI2)
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + q * omi2).inv();
+        let r01m_inv = (om2 - q * omi2).inv();
+        bose_distribution_zero_chempot(q, beta) * (r01p_inv + r01m_inv) * q / (2. * PI2)
     }
 
     #[inline(always)]
@@ -365,75 +331,76 @@ pub(crate) mod inlines {
         let en1 = energy(q, m1);
         let en2 = energy(q, m2);
         let delta = m2 * m2 - Into::<C>::into(m1 * m1);
-        let t1 = bose_distribution_zero_chempot(en1, beta) / en1
-            * (tlog_l_3o(q, om, en1, delta) + tlog_l_3o(q, -om, en1, delta));
-        let t2 = bose_distribution_zero_chempot(en2, beta) / en2
-            * (tlog_l_3o(q, om, en2, -delta) + tlog_l_3o(q, -om, en2, -delta));
-        (64. * PI2).inv() * q * (t1 + t2)
+        let q4 = q * q * q * q;
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + en1 * omi2 + delta).inv();
+        let r01m_inv = (om2 - en1 * omi2 + delta).inv();
+        let r02p_inv = (om2 + en2 * omi2 - delta).inv();
+        let r02m_inv = (om2 - en2 * omi2 - delta).inv();
+        let t1 = bose_distribution_zero_chempot(en1, beta) / en1 * (r01p_inv + r01m_inv);
+        let t2 = bose_distribution_zero_chempot(en2, beta) / en2 * (r02p_inv + r02m_inv);
+        (12. * PI2).inv() * q4 * (t1 + t2)
     }
 
     #[inline(always)]
     pub fn i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
-        let en = energy(q, m);
-        let t = bose_distribution_zero_chempot(en, beta) / en
-            * (tlog_l_3o_same_mass(q, om, en) + tlog_l_3o_same_mass(q, -om, en));
-        (32. * PI2).inv() * q * t
+        let en1 = energy(q, m);
+        let q4 = q * q * q * q;
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + en1 * omi2).inv();
+        let r01m_inv = (om2 - en1 * omi2).inv();
+        (en1 * 6. * PI2).inv()
+            * bose_distribution_zero_chempot(en1, beta)
+            * q4
+            * (r01p_inv + r01m_inv)
     }
 
     #[inline(always)]
     pub fn i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
         let en1 = energy(q, m);
         let delta = -m * m;
-        let t1 = bose_distribution_zero_chempot(en1, beta) * q / en1
-            * (tlog_l_3o(q, om, en1, delta) + tlog_l_3o(q, -om, en1, delta));
-        let t2 = bose_distribution_zero_chempot(q, beta)
-            * (tlog_l_3o(q, om, q, -delta) + tlog_l_3o(q, -om, q, -delta));
-        (64. * PI2).inv() * (t1 + t2)
+        let q3 = q * q * q;
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (delta + (om2 + en1 * omi2)).inv();
+        let r01m_inv = (delta + (om2 - en1 * omi2)).inv();
+        let r02p_inv = (-delta + (om2 + q * omi2)).inv();
+        let r02m_inv = (-delta + (om2 - q * omi2)).inv();
+        let t1 = bose_distribution_zero_chempot(en1, beta) * q / en1 * (r01p_inv + r01m_inv);
+        let t2 = bose_distribution_zero_chempot(q, beta) * (r02p_inv + r02m_inv);
+        (12. * PI2).inv() * q3 * (t1 + t2)
     }
 
     #[inline(always)]
     pub fn i_0_0_l_i<T: Num>(q: R, om: T, beta: R) -> C {
-        let t = bose_distribution_zero_chempot(q, beta)
-            * (tlog_l_3o_zero_mass(q, om) + tlog_l_3o_zero_mass(q, -om));
-        (32. * PI2).inv() * t
+        let q3 = q * q * q;
+        let om2 = om * om;
+        let omi2 = om * I * 2.;
+        let r01p_inv = (om2 + q * omi2).inv();
+        let r01m_inv = (om2 - q * omi2).inv();
+        bose_distribution_zero_chempot(q, beta) * (r01p_inv + r01m_inv) * q3 / (6. * PI2)
     }
 
     #[inline(always)]
     pub fn i_m_m_t_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, m1: T2, m2: T3, beta: R) -> C {
-        let en1 = energy(q, m1);
-        let en2 = energy(q, m2);
-        let delta = m2 * m2 - Into::<C>::into(m1 * m1);
-        let t1 = bose_distribution_zero_chempot(en1, beta) / en1
-            * (tlog_t_3o(q, om, en1, delta) + tlog_t_3o(q, -om, en1, delta));
-        let t2 = bose_distribution_zero_chempot(en2, beta) / en2
-            * (tlog_t_3o(q, om, en2, -delta) + tlog_t_3o(q, -om, en2, -delta));
-        -(128. * PI2).inv() * q * (t1 + t2)
+        i_m_m_l_i(q, om, m1, m2, beta)
     }
 
     #[inline(always)]
     pub fn i_m_m_t_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
-        let en1 = energy(q, m);
-        let t = bose_distribution_zero_chempot(en1, beta) / en1
-            * (tlog_t_3o_same_mass(q, om, en1) + tlog_t_3o_same_mass(q, -om, en1));
-        -(64. * PI2).inv() * q * t
+        i_m_m_l_i_same_mass(q, om, m, beta)
     }
 
     #[inline(always)]
     pub fn i_m_0_t_i<T1: Num, T2: Num>(q: R, om: T1, m: T2, beta: R) -> C {
-        let en = energy(q, m);
-        let delta = -m * m;
-        let t1 = bose_distribution_zero_chempot(en, beta) * q / en
-            * (tlog_t_3o(q, om, en, delta) + tlog_t_3o(q, -om, en, delta));
-        let t2 = bose_distribution_zero_chempot(q, beta)
-            * (tlog_t_3o(q, om, q, -delta) + tlog_t_3o(q, -om, q, -delta));
-        -(128. * PI2).inv() * (t1 + t2)
+        i_m_0_l_i(q, om, m, beta)
     }
 
     #[inline(always)]
     pub fn i_0_0_t_i<T: Num>(q: R, om: T, beta: R) -> C {
-        -bose_distribution_zero_chempot(q, beta)
-            * (tlog_t_3o_same_mass(q, om, q) + tlog_t_3o_same_mass(q, -om, q))
-            / (64. * PI2)
+        i_0_0_l_i(q, om, beta)
     }
 
     #[inline(always)]
@@ -848,12 +815,12 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            0.0003188375148046712 + 0. * I,
-            0.00015436425336714748 + 0. * I,
-            0.0001458594600172678 + 0. * I,
-            0.0001170780955146108 + 0. * I,
-            5.301182479635117e-07 + 0. * I,
-            0.001701740417471108 + 0. * I,
+            7.405693874095026e-05 + 0. * I,
+            1.546422006867255e-05 + 0. * I,
+            6.959426718792841e-06 + 0. * I,
+            1.3329677502054206e-06 + 0. * I,
+            7.737534548426272e-09 + 0. * I,
+            1.4183193664159363e-05 + 0. * I,
         ];
 
         args.iter()
@@ -886,12 +853,12 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            0.0003188375148046712 + 0. * I,
-            0.00015436425336714748 + 0. * I,
-            0.0001458594600172678 + 0. * I,
-            0.0001170780955146108 + 0. * I,
-            5.301182479635117e-07 + 0. * I,
-            0.001701740417471108 + 0. * I,
+            7.405693874095026e-05 + 0. * I,
+            1.546422006867255e-05 + 0. * I,
+            6.959426718792841e-06 + 0. * I,
+            1.3329677502054206e-06 + 0. * I,
+            7.737534548426272e-09 + 0. * I,
+            1.4183193664159363e-05 + 0. * I,
         ];
 
         args.iter()
@@ -923,11 +890,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            0.001704690774226598 + 0. * I,
-            0.00240154040771927 + 0. * I,
-            0.0023330101711370762 + 0. * I,
-            0.0021706117539837355 + 0. * I,
-            0.06556976006963762 + 0. * I,
+            0.00040419591963489015 + 0. * I,
+            0.00023159636341067437 + 0. * I,
+            0.00016306612682848078 + 0. * I,
+            2.3822615209209636e-05 + 0. * I,
+            0.0007113683179323609 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -954,10 +921,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            0.0033154512444313533 + 0. * I,
-            0.0056065930960837096 + 0. * I,
-            0.00495987643262272 + 0. * I,
-            0.14894238086188574 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
@@ -987,11 +954,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            0.00010371523563427974 + 0. * I,
-            4.7516323613142675e-05 + 0. * I,
-            4.742486677072001e-05 + 0. * I,
-            4.655068642714986e-09 + 0. * I,
-            0.0007853323085966955 + 0. * I,
+            6.768008178658155e-06 + 0. * I,
+            1.2018706385116842e-06 + 0. * I,
+            1.110413796089012e-06 + 0. * I,
+            1.3162150869743068e-11 + 0. * I,
+            2.2205177027431874e-06 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -1019,11 +986,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            0.001704690774226598 + 0. * I,
-            0.00240154040771927 + 0. * I,
-            0.0023330101711370762 + 0. * I,
-            0.0021706117539837355 + 0. * I,
-            0.06556976006963762 + 0. * I,
+            0.00040419591963489015 + 0. * I,
+            0.00023159636341067437 + 0. * I,
+            0.00016306612682848078 + 0. * I,
+            2.3822615209209636e-05 + 0. * I,
+            0.0007113683179323609 + 0. * I,
         ];
 
         args.iter()
@@ -1050,10 +1017,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            0.0033154512444313533 + 0. * I,
-            0.0056065930960837096 + 0. * I,
-            0.00495987643262272 + 0. * I,
-            0.14894238086188574 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
@@ -1080,10 +1047,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            0.0033154512444313533 + 0. * I,
-            0.0056065930960837096 + 0. * I,
-            0.00495987643262272 + 0. * I,
-            0.14894238086188574 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
@@ -1109,12 +1076,12 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            -4.833334929091021e-05 + 0. * I,
-            -5.398579658056491e-05 + 0. * I,
-            -6.249058993044463e-05 + 0. * I,
-            -5.653959613199727e-05 + 0. * I,
-            -2.5345282215911636e-07 + 0. * I,
-            -0.0008295954182393151 + 0. * I,
+            7.405693874095026e-05 + 0. * I,
+            1.546422006867255e-05 + 0. * I,
+            6.959426718792841e-06 + 0. * I,
+            1.3329677502054206e-06 + 0. * I,
+            7.737534548426272e-09 + 0. * I,
+            1.4183193664159363e-05 + 0. * I,
         ];
 
         args.iter()
@@ -1147,12 +1114,12 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            -4.833334929091021e-05 + 0. * I,
-            -5.398579658056491e-05 + 0. * I,
-            -6.249058993044463e-05 + 0. * I,
-            -5.653959613199727e-05 + 0. * I,
-            -2.5345282215911636e-07 + 0. * I,
-            -0.0008295954182393151 + 0. * I,
+            7.405693874095026e-05 + 0. * I,
+            1.546422006867255e-05 + 0. * I,
+            6.959426718792841e-06 + 0. * I,
+            1.3329677502054206e-06 + 0. * I,
+            7.737534548426272e-09 + 0. * I,
+            1.4183193664159363e-05 + 0. * I,
         ];
 
         args.iter()
@@ -1184,11 +1151,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -0.0002460515076609638 + 0. * I,
-            -0.0008533756587436235 + 0. * I,
-            -0.000921905895325817 + 0. * I,
-            -0.0010495719541780532 + 0. * I,
-            -0.03171782755792027 + 0. * I,
+            0.00040419591963489015 + 0. * I,
+            0.00023159636341067437 + 0. * I,
+            0.00016306612682848078 + 0. * I,
+            2.3822615209209636e-05 + 0. * I,
+            0.0007113683179323609 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -1215,10 +1182,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            -0.0004406124781603382 + 0. * I,
-            -0.0008337673573801303 + 0. * I,
-            -0.00148048402084112 + 0. * I,
-            -0.04445812670688913 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
@@ -1248,11 +1215,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -4.1705605549152645e-05 + 0. * I,
-            -2.1955355848803812e-05 + 0. * I,
-            -2.204681269122648e-05 + 0. * I,
-            -2.3077910950528783e-09 + 0. * I,
-            -0.000389335377744233 + 0. * I,
+            6.768008178658155e-06 + 0. * I,
+            1.2018706385116842e-06 + 0. * I,
+            1.110413796089012e-06 + 0. * I,
+            1.3162150869743068e-11 + 0. * I,
+            2.2205177027431874e-06 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -1280,11 +1247,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -0.0002460515076609638 + 0. * I,
-            -0.0008533756587436235 + 0. * I,
-            -0.000921905895325817 + 0. * I,
-            -0.0010495719541780532 + 0. * I,
-            -0.03171782755792027 + 0. * I,
+            0.00040419591963489015 + 0. * I,
+            0.00023159636341067437 + 0. * I,
+            0.00016306612682848078 + 0. * I,
+            2.3822615209209636e-05 + 0. * I,
+            0.0007113683179323609 + 0. * I,
         ];
 
         args.iter()
@@ -1311,10 +1278,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            -0.0004406124781603382 + 0. * I,
-            -0.0008337673573801303 + 0. * I,
-            -0.00148048402084112 + 0. * I,
-            -0.04445812670688913 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
@@ -1341,10 +1308,10 @@ mod tests {
         ];
 
         let res: [C; 4] = [
-            -0.0004406124781603382 + 0. * I,
-            -0.0008337673573801303 + 0. * I,
-            -0.00148048402084112 + 0. * I,
-            -0.04445812670688913 + 0. * I,
+            0.0008114087627035585 + 0. * I,
+            0.00131301946044115 + 0. * I,
+            0.0006663027969801598 + 0. * I,
+            0.020008709149369166 + 0. * I,
         ];
 
         args.iter()
