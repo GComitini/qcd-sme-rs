@@ -15,11 +15,11 @@ mod native {
         inlines::tlog(q, p, delta)
     }
 
-    pub fn tlog_same_mass(q: R, p: R) -> C {
+    pub fn tlog_same_mass(q: R, p: R) -> R {
         inlines::tlog_same_mass(q, p)
     }
 
-    pub fn tlog_zero_mass(q: R, p: R) -> C {
+    pub fn tlog_zero_mass(q: R, p: R) -> R {
         inlines::tlog_zero_mass(q, p)
     }
 
@@ -27,11 +27,11 @@ mod native {
         inlines::tlog_t(q, p, delta)
     }
 
-    pub fn tlog_t_same_mass(q: R, p: R) -> C {
+    pub fn tlog_t_same_mass(q: R, p: R) -> R {
         inlines::tlog_t_same_mass(q, p)
     }
 
-    pub fn tlog_t_zero_mass(q: R, p: R) -> C {
+    pub fn tlog_t_zero_mass(q: R, p: R) -> R {
         inlines::tlog_t_zero_mass(q, p)
     }
 
@@ -39,7 +39,7 @@ mod native {
         inlines::i_m_m_i(q, p, m1, m2, beta)
     }
 
-    pub fn i_m_m_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         inlines::i_m_m_i_same_mass(q, p, m, beta)
     }
 
@@ -47,7 +47,7 @@ mod native {
         inlines::i_m_0_i(q, p, m, beta)
     }
 
-    pub fn i_0_0_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_i(q, p, beta)
     }
 
@@ -55,7 +55,7 @@ mod native {
         inlines::i_m_m_l_i(q, p, m1, m2, beta)
     }
 
-    pub fn i_m_m_l_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_l_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         inlines::i_m_m_l_i_same_mass(q, p, m, beta)
     }
 
@@ -63,7 +63,7 @@ mod native {
         inlines::i_m_0_l_i(q, p, m, beta)
     }
 
-    pub fn i_0_0_l_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_l_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_l_i(q, p, beta)
     }
 
@@ -71,7 +71,7 @@ mod native {
         inlines::i_m_m_t_i(q, p, m1, m2, beta)
     }
 
-    pub fn i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         inlines::i_m_m_t_i_same_mass(q, p, m, beta)
     }
 
@@ -79,7 +79,7 @@ mod native {
         inlines::i_m_0_t_i(q, p, m, beta)
     }
 
-    pub fn i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_t_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_t_i(q, p, beta)
     }
 
@@ -119,7 +119,7 @@ mod native {
         inlines::d_i_m_m_t_i(q, p, m1, m2, beta)
     }
 
-    pub fn d_i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn d_i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         inlines::d_i_m_m_t_i_same_mass(q, p, m, beta)
     }
 
@@ -131,7 +131,7 @@ mod native {
         inlines::d_i_m_0_t_i(q, p, m, beta)
     }
 
-    pub fn d_i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub fn d_i_0_0_t_i(q: R, p: R, beta: R) -> R {
         inlines::d_i_0_0_t_i(q, p, beta)
     }
 }
@@ -155,12 +155,12 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__tlog_same_mass(q: R, p: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__tlog_same_mass(q: R, p: R) -> R {
         inlines::tlog_same_mass(q, p)
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__tlog_zero_mass(q: R, p: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__tlog_zero_mass(q: R, p: R) -> R {
         inlines::tlog_zero_mass(q, p)
     }
 
@@ -170,12 +170,12 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__tlog_t_same_mass(q: R, p: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__tlog_t_same_mass(q: R, p: R) -> R {
         inlines::tlog_t_same_mass(q, p)
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__tlog_t_zero_mass(q: R, p: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__tlog_t_zero_mass(q: R, p: R) -> R {
         inlines::tlog_t_zero_mass(q, p)
     }
 
@@ -185,7 +185,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_m_m_i_same_mass(q: R, p: R, m: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_m_m_i_same_mass(q: R, p: R, m: R, beta: R) -> R {
         inlines::i_m_m_i_same_mass(q, p, m, beta)
     }
 
@@ -195,7 +195,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_0_0_i(q: R, p: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_0_0_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_i(q, p, beta)
     }
 
@@ -205,7 +205,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_m_m_l_i_same_mass(q: R, p: R, m: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_m_m_l_i_same_mass(q: R, p: R, m: R, beta: R) -> R {
         inlines::i_m_m_l_i_same_mass(q, p, m, beta)
     }
 
@@ -215,7 +215,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_0_0_l_i(q: R, p: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_0_0_l_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_l_i(q, p, beta)
     }
 
@@ -225,7 +225,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_m_m_t_i_same_mass(q: R, p: R, m: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_m_m_t_i_same_mass(q: R, p: R, m: R, beta: R) -> R {
         inlines::i_m_m_t_i_same_mass(q, p, m, beta)
     }
 
@@ -235,7 +235,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__i_0_0_t_i(q: R, p: R, beta: R) -> R {
         inlines::i_0_0_t_i(q, p, beta)
     }
 
@@ -295,7 +295,7 @@ pub(crate) mod ffi {
         p: R,
         m: R,
         beta: R,
-    ) -> C {
+    ) -> R {
         inlines::d_i_m_m_t_i_same_mass(q, p, m, beta)
     }
 
@@ -305,7 +305,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__zero_matsubara__d_i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub extern "C" fn oneloop__zero_matsubara__d_i_0_0_t_i(q: R, p: R, beta: R) -> R {
         inlines::d_i_0_0_t_i(q, p, beta)
     }
 }
@@ -344,13 +344,13 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn tlog_same_mass(q: R, p: R) -> C {
+    pub fn tlog_same_mass(q: R, p: R) -> R {
         let rat = (p + 2. * q) / (p - 2. * q);
-        (Into::<C>::into(rat * rat)).ln() / 2.
+        (rat * rat).ln() / 2.
     }
 
     #[inline(always)]
-    pub fn tlog_zero_mass(q: R, p: R) -> C {
+    pub fn tlog_zero_mass(q: R, p: R) -> R {
         tlog_same_mass(q, p)
     }
 
@@ -362,12 +362,12 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn tlog_t_same_mass(q: R, p: R) -> C {
+    pub fn tlog_t_same_mass(q: R, p: R) -> R {
         p * p * (p + 2. * q) * (p - 2. * q) * tlog_same_mass(q, p)
     }
 
     #[inline(always)]
-    pub fn tlog_t_zero_mass(q: R, p: R) -> C {
+    pub fn tlog_t_zero_mass(q: R, p: R) -> R {
         tlog_t_same_mass(q, p)
     }
 
@@ -382,7 +382,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_m_m_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
         let t = bose_distribution_zero_chempot(en, beta) / en * tlog_same_mass(q, p);
         t * q / (p * 4. * PI2)
@@ -398,7 +398,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_0_0_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_i(q: R, p: R, beta: R) -> R {
         bose_distribution_zero_chempot(q, beta) * tlog_zero_mass(q, p) / (p * 4. * PI2)
     }
 
@@ -413,7 +413,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_m_m_l_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_l_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
         -bose_distribution_zero_chempot(en, beta) * en * q * tlog_same_mass(q, p) / (p * 4. * PI2)
     }
@@ -428,7 +428,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_0_0_l_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_l_i(q: R, p: R, beta: R) -> R {
         -bose_distribution_zero_chempot(q, beta) * q * q * tlog_same_mass(q, p) / (p * 4. * PI2)
     }
 
@@ -448,14 +448,14 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
         let qp = q * p;
         let p2 = p * p;
         let p3 = p2 * p;
         let t = bose_distribution_zero_chempot(en, beta) / en
             * (-p2 * 4. * qp + tlog_t_same_mass(q, p));
-        -(p3 * 32. * PI2).inv() * q * t
+        -t * q / (p3 * 32. * PI2)
     }
 
     #[inline(always)]
@@ -473,12 +473,12 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub fn i_0_0_t_i(q: R, p: R, beta: R) -> R {
         let qp = q * p;
         let p2 = p * p;
         let p3 = p2 * p;
         let t = bose_distribution_zero_chempot(q, beta) * (-p2 * 4. * qp + tlog_t_zero_mass(q, p));
-        -(p3 * 32. * PI2).inv() * t
+        -t / (p3 * 32. * PI2)
     }
 
     #[inline(always)]
@@ -609,7 +609,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> C {
+    pub fn d_i_m_m_t_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
         let b = bose_distribution_zero_chempot(en, beta);
         let tlogp = tlog_same_mass(q, p);
@@ -634,7 +634,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_i_0_0_t_i(q: R, p: R, beta: R) -> C {
+    pub fn d_i_0_0_t_i(q: R, p: R, beta: R) -> R {
         -bose_distribution_zero_chempot(q, beta) * tlog_same_mass(q, p) / (p * 16. * PI2)
     }
 }
@@ -693,10 +693,10 @@ mod tests {
 
         let args: [(R, R); 3] = [(0.03, 2.12), (0.047, 2.12), (0.047, 1.27)];
 
-        let res: [C; 3] = [
-            0.05661889399950811 + 0. * I,
-            0.08873742845995349 + 0. * I,
-            0.14830270994483524 + 0. * I,
+        let res: [R; 3] = [
+            0.05661889399950811,
+            0.08873742845995349,
+            0.14830270994483524,
         ];
 
         args.iter()
@@ -714,10 +714,10 @@ mod tests {
 
         let args: [(R, R); 3] = [(0.03, 2.12), (0.047, 2.12), (0.047, 1.27)];
 
-        let res: [C; 3] = [
-            0.05661889399950811 + 0. * I,
-            0.08873742845995349 + 0. * I,
-            0.14830270994483524 + 0. * I,
+        let res: [R; 3] = [
+            0.05661889399950811,
+            0.08873742845995349,
+            0.14830270994483524,
         ];
 
         args.iter()
@@ -762,11 +762,7 @@ mod tests {
 
         let args: [(R, R); 3] = [(0.03, 2.12), (0.047, 2.12), (0.047, 1.27)];
 
-        let res: [C; 3] = [
-            1.1427647021550913 + 0. * I,
-            1.788939355964949 + 0. * I,
-            0.3836880037917354 + 0. * I,
-        ];
+        let res: [R; 3] = [1.1427647021550913, 1.788939355964949, 0.3836880037917354];
 
         args.iter()
             .enumerate()
@@ -783,11 +779,7 @@ mod tests {
 
         let args: [(R, R); 3] = [(0.03, 2.12), (0.047, 2.12), (0.047, 1.27)];
 
-        let res: [C; 3] = [
-            1.1427647021550913 + 0. * I,
-            1.788939355964949 + 0. * I,
-            0.3836880037917354 + 0. * I,
-        ];
+        let res: [R; 3] = [1.1427647021550913, 1.788939355964949, 0.3836880037917354];
 
         args.iter()
             .enumerate()
@@ -948,12 +940,12 @@ mod tests {
             (0.35, 1.15, 3.76, 0.19),
         ];
 
-        let res: [C; 5] = [
-            9.462757686043952e-05 + 0. * I,
-            4.119200029357628e-05 + 0. * I,
-            0.00016266939999670026 + 0. * I,
-            1.6303682659986545e-08 + 0. * I,
-            0.0027505091169885637 + 0. * I,
+        let res: [R; 5] = [
+            9.462757686043952e-05,
+            4.119200029357628e-05,
+            0.00016266939999670026,
+            1.6303682659986545e-08,
+            0.0027505091169885637,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -1035,11 +1027,11 @@ mod tests {
             (0.35, 1.15, 0.19),
         ];
 
-        let res: [C; 4] = [
-            0.002444128404909455 + 0. * I,
-            0.0038186975145049497 + 0. * I,
-            0.01508023958599267 + 0. * I,
-            0.4528513599919876 + 0. * I,
+        let res: [R; 4] = [
+            0.002444128404909455,
+            0.0038186975145049497,
+            0.01508023958599267,
+            0.4528513599919876,
         ];
 
         args.iter()
@@ -1203,12 +1195,12 @@ mod tests {
             (0.35, 1.15, 3.76, 0.19),
         ];
 
-        let res: [C; 5] = [
-            -0.00017263855122418587 + 0. * I,
-            -6.436250045871297e-05 + 0. * I,
-            -0.0002541709374948442 + 0. * I,
-            -2.3249214509967408e-07 + 0. * I,
-            -0.03922253505916862 + 0. * I,
+        let res: [R; 5] = [
+            -0.00017263855122418587,
+            -6.436250045871297e-05,
+            -0.0002541709374948442,
+            -2.3249214509967408e-07,
+            -0.03922253505916862,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -1296,11 +1288,11 @@ mod tests {
             (0.35, 1.15, 0.19),
         ];
 
-        let res: [C; 4] = [
-            -0.0009395229588471947 + 0. * I,
-            -0.0004677904455268564 + 0. * I,
-            -0.0018473293492841018 + 0. * I,
-            -0.055474291599018476 + 0. * I,
+        let res: [R; 4] = [
+            -0.0009395229588471947,
+            -0.0004677904455268564,
+            -0.0018473293492841018,
+            -0.055474291599018476,
         ];
 
         args.iter()
@@ -1464,12 +1456,12 @@ mod tests {
             (0.35, 1.15, 3.76, 0.19),
         ];
 
-        let res: [C; 5] = [
-            1.1474231175378945e-05 + 0. * I,
-            1.657061934083353e-06 + 0. * I,
-            6.229442050158883e-06 + 0. * I,
-            6.243512691177725e-10 + 0. * I,
-            0.00010533104046035392 + 0. * I,
+        let res: [R; 5] = [
+            1.1474231175378945e-05,
+            1.657061934083353e-06,
+            6.229442050158883e-06,
+            6.243512691177725e-10,
+            0.00010533104046035392,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -1557,11 +1549,11 @@ mod tests {
             (0.35, 1.15, 0.19),
         ];
 
-        let res: [C; 4] = [
-            0.0002963670345443 + 0. * I,
-            0.00015361765012542159 + 0. * I,
-            0.0005774993859039186 + 0. * I,
-            0.01734199120709211 + 0. * I,
+        let res: [R; 4] = [
+            0.0002963670345443,
+            0.00015361765012542159,
+            0.0005774993859039186,
+            0.01734199120709211,
         ];
 
         args.iter()
@@ -2250,12 +2242,12 @@ mod tests {
             (0.35, 1.15, 3.76, 0.19),
         ];
 
-        let res: [C; 5] = [
-            -2.3656894215109883e-05 + 0. * I,
-            -1.0298000073394072e-05 + 0. * I,
-            -4.066734999917508e-05 + 0. * I,
-            -4.075920664996636e-09 + 0. * I,
-            -0.0006876272792471408 + 0. * I,
+        let res: [R; 5] = [
+            -2.3656894215109883e-05,
+            -1.0298000073394072e-05,
+            -4.066734999917508e-05,
+            -4.075920664996636e-09,
+            -0.0006876272792471408,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -2343,11 +2335,11 @@ mod tests {
             (0.35, 1.15, 0.19),
         ];
 
-        let res: [C; 4] = [
-            -0.0006110321012273639 + 0. * I,
-            -0.0009546743786262374 + 0. * I,
-            -0.0037700598964981675 + 0. * I,
-            -0.1132128399979969 + 0. * I,
+        let res: [R; 4] = [
+            -0.0006110321012273639,
+            -0.0009546743786262374,
+            -0.0037700598964981675,
+            -0.1132128399979969,
         ];
 
         args.iter()
