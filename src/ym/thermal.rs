@@ -1,7 +1,7 @@
 pub mod ghost {
-    use crate::R;
+    use crate::{C, R};
 
-    pub fn dressing_inv_landau(om: R, p: R, m: R, beta: R, g0: R) -> R {
+    pub fn dressing_inv_landau(om: R, p: R, m: R, beta: R, g0: R) -> C {
         inlines::dressing_inv_landau(om, p, m, beta, g0)
     }
 
@@ -10,17 +10,17 @@ pub mod ghost {
     pub(crate) mod inlines {
         use crate::low_level::oneloop::thermal::ghost::self_energy_thermal_part_landau;
         use crate::ym::ghost as ghost_vac;
-        use crate::R;
+        use crate::{Num, C, R};
         use std::f64::consts::PI;
 
         const PREFACTOR: R = (16. * PI * PI) / 3.;
 
         #[inline(always)]
-        pub fn dressing_inv_landau(om: R, p: R, m: R, beta: R, g0: R) -> R {
+        pub fn dressing_inv_landau<T: Num>(om: T, p: R, m: R, beta: R, g0: R) -> C {
             let sdim = om * om + p * p;
             let s = sdim / (m * m);
             ghost_vac::dressing_inv_landau(s, g0)
-                + PREFACTOR * self_energy_thermal_part_landau(om, p, m, beta) / sdim
+                + sdim.inv() * PREFACTOR * self_energy_thermal_part_landau(om, p, m, beta)
         }
     }
 }
@@ -138,10 +138,10 @@ pub mod zero_matsubara {
 
 pub mod zero_momentum {
     pub mod ghost {
-        use crate::R;
+        use crate::{Num, C, R};
 
-        pub fn dressing_inv_landau(p: R, m: R, beta: R, f0: R) -> R {
-            inlines::dressing_inv_landau(p, m, beta, f0)
+        pub fn dressing_inv_landau<T: Num>(om: R, m: R, beta: R, f0: R) -> C {
+            inlines::dressing_inv_landau(om, m, beta, f0)
         }
 
         pub(crate) mod ffi {}
@@ -149,17 +149,17 @@ pub mod zero_momentum {
         pub(crate) mod inlines {
             use crate::low_level::oneloop::thermal::ghost::zero_momentum::self_energy_thermal_part_landau;
             use crate::ym::ghost as ghost_vac;
-            use crate::R;
+            use crate::{Num, C, R};
             use std::f64::consts::PI;
 
             const PREFACTOR: R = (16. * PI * PI) / 3.;
 
             #[inline(always)]
-            pub fn dressing_inv_landau(om: R, m: R, beta: R, f0: R) -> R {
+            pub fn dressing_inv_landau<T: Num>(om: T, m: R, beta: R, f0: R) -> C {
                 let sdim = om * om;
                 let s = sdim / (m * m);
                 ghost_vac::dressing_inv_landau(s, f0)
-                    + PREFACTOR * self_energy_thermal_part_landau(om, m, beta) / sdim
+                    + sdim.inv() * PREFACTOR * self_energy_thermal_part_landau(om, m, beta)
             }
         }
     }
