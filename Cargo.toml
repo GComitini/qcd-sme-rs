@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 num = "0.4"
 peroxide = { version = "0.34", path = "submodules/peroxide", features = ["plot"] }
+rayon = "1.10"
 
 [build-dependencies]
 cbindgen = "0.26"
