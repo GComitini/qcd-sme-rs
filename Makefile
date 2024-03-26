@@ -2,7 +2,7 @@ CARGO = cargo
 CARGO_DOC = cargo-doc
 CC = gcc
 CYTHON = cython
-PYTHON_CFLAGS = `pkg-config --cflags python3`
+PYTHON_CFLAGS = `pkg-config --cflags --libs python3`
 TARGETS = debug release
 
 override BINARIES =
@@ -19,9 +19,11 @@ override CYTHON_PYX_SRC = python/pyqcd_sme_so.pyx
 override RUST_FILES = $(shell find src/ -type f -name '*.rs')
 
 override OS = $(shell uname -s)
+override PYTHON_VERSION = $(shell python --version | cut -d" " -f2 | cut -d. -f1-2)
 
 ifeq ($(OS),Linux)
 	override SHLIB_EXT = so
+	NO_AS_NEEDED_OPT = "-Wl,--no-as-needed"
 else
 	override SHLIB_EXT = dylib
 endif
@@ -32,7 +34,7 @@ ifneq (,$(filter $(TARGETS),debug))
 	override CDYLIBS += $(DEBUG_DIR)/libqcd_sme.$(SHLIB_EXT)
 	override CYTHON_PXD_HEADERS += $(DEBUG_DIR)/include/qcd_sme.pxd
 	override CYTHON_DYLIB_SRCS += $(DEBUG_DIR)/python/pyqcd_sme_so.c
-	override CYTHON_DYLIBS += $(DEBUG_DIR)/python/pyqcd_sme_so.$(SHLIB_EXT)
+	override CYTHON_DYLIBS += $(DEBUG_DIR)/python/pyqcd_sme_so.so
 endif
 ifneq (,$(filter $(TARGETS),release))
 	override CARGO_CLIPPY_CMDS += cargo-clippy-release
@@ -40,7 +42,7 @@ ifneq (,$(filter $(TARGETS),release))
 	override CDYLIBS += $(RELEASE_DIR)/libqcd_sme.$(SHLIB_EXT)
 	override CYTHON_PXD_HEADERS += $(RELEASE_DIR)/include/qcd_sme.pxd
 	override CYTHON_DYLIB_SRCS += $(RELEASE_DIR)/python/pyqcd_sme_so.c
-	override CYTHON_DYLIBS += $(RELEASE_DIR)/python/pyqcd_sme_so.$(SHLIB_EXT)
+	override CYTHON_DYLIBS += $(RELEASE_DIR)/python/pyqcd_sme_so.so
 endif
 
 
@@ -80,8 +82,8 @@ $(DEBUG_DIR)/python/pyqcd_sme_so.c: $(CYTHON_PYX_SRC) $(CYTHON_PXD_HEADERS)
 	mkdir -p $(DEBUG_DIR)/python
 	$(CYTHON) -3 -I$(DEBUG_DIR)/include $(CYTHON_PYX_SRC) -o $(DEBUG_DIR)/python/pyqcd_sme_so.c
 
-$(DEBUG_DIR)/python/pyqcd_sme_so.so: $(CYTHON_PXD_HEADERS) $(CYTHON_DYLIB_SRCS) $(DEBUG_DIR)/libqcd_sme.so
-	$(CC) -O3 -Wall -shared -fPIC $(PYTHON_CFLAGS) -I$(DEBUG_DIR)/include -Wl,--no-as-needed -L./$(DEBUG_DIR) -lqcd_sme \
+$(DEBUG_DIR)/python/pyqcd_sme_so.so: $(CYTHON_PXD_HEADERS) $(CYTHON_DYLIB_SRCS) $(DEBUG_DIR)/libqcd_sme.$(SHLIB_EXT)
+	$(CC) -O3 -Wall -shared -fPIC $(PYTHON_CFLAGS) -lpython$(PYTHON_VERSION) -I$(DEBUG_DIR)/include $(NO_AS_NEEDED_OPT) -L./$(DEBUG_DIR) -lqcd_sme \
 		-Wl,-rpath,$$(pwd)/$(DEBUG_DIR) -o $(DEBUG_DIR)/python/pyqcd_sme_so.so $(DEBUG_DIR)/python/pyqcd_sme_so.c
 
 $(RELEASE_DIR)/include/qcd_sme.pxd $(RELEASE_DIR)/libqcd_sme.$(SHLIB_EXT) &: $(RUST_FILES)
@@ -91,6 +93,6 @@ $(RELEASE_DIR)/python/pyqcd_sme_so.c: $(CYTHON_PYX_SRC) $(CYTHON_PXD_HEADERS)
 	mkdir -p $(RELEASE_DIR)/python
 	$(CYTHON) -3 -I$(RELEASE_DIR)/include $(CYTHON_PYX_SRC) -o $(RELEASE_DIR)/python/pyqcd_sme_so.c
 
-$(RELEASE_DIR)/python/pyqcd_sme_so.so: $(CYTHON_PXD_HEADERS) $(CYTHON_DYLIB_SRCS) $(RELEASE_DIR)/libqcd_sme.so
-	$(CC) -O3 -Wall -shared -fPIC $(PYTHON_CFLAGS) -I$(RELEASE_DIR)/include -Wl,--no-as-needed -L./$(RELEASE_DIR) -lqcd_sme \
+$(RELEASE_DIR)/python/pyqcd_sme_so.so: $(CYTHON_PXD_HEADERS) $(CYTHON_DYLIB_SRCS) $(RELEASE_DIR)/libqcd_sme.$(SHLIB_EXT)
+	$(CC) -O3 -Wall -shared -fPIC $(PYTHON_CFLAGS) -lpython$(PYTHON_VERSION) -I$(RELEASE_DIR)/include $(NO_AS_NEEDED_OPT) -L./$(RELEASE_DIR) -lqcd_sme \
 		-Wl,-rpath,$$(pwd)/$(RELEASE_DIR) -o $(RELEASE_DIR)/python/pyqcd_sme_so.so $(RELEASE_DIR)/python/pyqcd_sme_so.c
