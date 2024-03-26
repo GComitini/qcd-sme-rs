@@ -5,6 +5,7 @@ pub mod ghost;
 pub mod gluon;
 pub mod low_level;
 pub mod types;
+pub mod utils;
 pub mod ym;
 
 pub use consts::I;
