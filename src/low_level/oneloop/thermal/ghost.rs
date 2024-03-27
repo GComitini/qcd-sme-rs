@@ -162,7 +162,7 @@ pub mod zero_matsubara {
 
             let t1 = -a * s / (2. * m2) * i_m_0_i(q, p, m, beta);
             let t2 = s * s / (2. * m2) * i_0_0_i(q, p, beta);
-            let t3 = (s * 2. - m2) / (4. * m2) * (j_m_i(q, m, beta) - j_0_i(q, beta));
+            let t3 = s.mul_add(2., -m2) / (4. * m2) * (j_m_i(q, m, beta) - j_0_i(q, beta));
             let t4 = a * a / 4. * d_i_m_0_i(q, p, m, beta);
             let t5 = -(s - m2) / 4. * d_j_m_i(q, m, beta);
 

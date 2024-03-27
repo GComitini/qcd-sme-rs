@@ -859,7 +859,7 @@ pub(crate) mod inlines {
         let bq = q * beta;
         let bp = bose_distribution_zero_chempot(q, beta);
         let bm = bose_distribution_zero_chempot(-q, beta);
-        bp / (q3 * 8. * PI2) * (-bq * bm + 1.)
+        bp / (q3 * 8. * PI2) * (-bq).mul_add(bm, 1.)
     }
 
     #[inline(always)]
@@ -885,7 +885,7 @@ pub(crate) mod inlines {
     pub fn d2_j_0_l_i(q: R, beta: R) -> R {
         let bp = bose_distribution_zero_chempot(q, beta);
         let bm = bose_distribution_zero_chempot(-q, beta);
-        bp / (8. * PI2) * (bm * beta + 1. / q)
+        bp / (8. * PI2) * bm.mul_add(beta, 1. / q)
     }
 
     #[inline(always)]

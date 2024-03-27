@@ -307,7 +307,7 @@ pub mod zero_matsubara {
             let s2 = s * s;
             let m2 = m * m;
             let m4 = m2 * m2;
-            let a = s + m2 * 2.;
+            let a = m2.mul_add(2., s);
             let b = s + m2;
 
             let j_m_l_p_i = j_m_l_i(q, m, beta);
@@ -316,18 +316,18 @@ pub mod zero_matsubara {
             let d2_j_m_l_p_i = d2_j_m_l_i(q, m, beta);
 
             let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_l_i(q, p, beta);
-            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
+            let t2 = (4.0f64.mul_add(m4, s2.mul_add(3., s * m2 * 8.)) / (2. * m4) + 4.)
                 * i_m_m_l_i_same_mass(q, p, m, beta);
-            let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_l_i(q, p, m, beta);
+            let t3 = -(s2.mul_add(3., s * m2 * 4.) + m4) / m4 * i_m_0_l_i(q, p, m, beta);
             let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, p, m, beta);
             let t5 = -b * s * 2. / m2 * i_m_0_i(q, p, m, beta);
-            let t6 = -(s * 2. + m2 * 3.) / m2 * j_m_i(q, m, beta);
-            let t7 = (s * 2. + m2) / m2 * j_0_i(q, beta);
-            let t8 = -(a * a / m2 + m2 * 8.) * d_i_m_m_l_i_same_mass(q, p, m, beta);
+            let t6 = -s.mul_add(2., m2 * 3.) / m2 * j_m_i(q, m, beta);
+            let t7 = s.mul_add(2., m2) / m2 * j_0_i(q, beta);
+            let t8 = -m2.mul_add(8., a * a / m2) * d_i_m_m_l_i_same_mass(q, p, m, beta);
             let t9 = b * b / m2 * d_i_m_0_l_i(q, p, m, beta);
-            let t10 = -s * 2. * (s + m2 * 4.) * d_i_m_m_i_same_mass(q, p, m, beta);
+            let t10 = -s * 2. * m2.mul_add(4., s) * d_i_m_m_i_same_mass(q, p, m, beta);
             let t11 = b * b * d_i_m_0_i(q, p, m, beta);
-            let t12 = (s + m2 * 3.) * d_j_m_i(q, m, beta);
+            let t12 = m2.mul_add(3., s) * d_j_m_i(q, m, beta);
 
             let t13 = -m4 * d2_j_m_i(q, m, beta);
             let t14 = (j_m_l_p_i - j_0_l_p_i) / m2;
@@ -342,22 +342,22 @@ pub mod zero_matsubara {
             let s2 = s * s;
             let m2 = m * m;
             let m4 = m2 * m2;
-            let a = s + m2 * 2.;
+            let a = m2.mul_add(2., s);
             let b = s + m2;
 
             let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_t_i(q, p, beta);
-            let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
+            let t2 = (4.0f64.mul_add(m4, s2.mul_add(3., s * m2 * 8.)) / (2. * m4) + 4.)
                 * i_m_m_t_i_same_mass(q, p, m, beta);
-            let t3 = -(s2 * 3. + s * m2 * 4. + m4) / m4 * i_m_0_t_i(q, p, m, beta);
+            let t3 = -(s2.mul_add(3., s * m2 * 4.) + m4) / m4 * i_m_0_t_i(q, p, m, beta);
             let t4 = a * s * 2. / m2 * i_m_m_i_same_mass(q, p, m, beta);
             let t5 = -b * s * 2. / m2 * i_m_0_i(q, p, m, beta);
-            let t6 = -(s * 2. + m2 * 3.) / m2 * j_m_i(q, m, beta);
-            let t7 = (s * 2. + m2) / m2 * j_0_i(q, beta);
-            let t8 = -(a * a / m2 + m2 * 8.) * d_i_m_m_t_i_same_mass(q, p, m, beta);
+            let t6 = -s.mul_add(2., m2 * 3.) / m2 * j_m_i(q, m, beta);
+            let t7 = s.mul_add(2., m2) / m2 * j_0_i(q, beta);
+            let t8 = -m2.mul_add(8., a * a / m2) * d_i_m_m_t_i_same_mass(q, p, m, beta);
             let t9 = b * b / m2 * d_i_m_0_t_i(q, p, m, beta);
-            let t10 = -s * 2. * (s + m2 * 4.) * d_i_m_m_i_same_mass(q, p, m, beta);
+            let t10 = -s * 2. * m2.mul_add(4., s) * d_i_m_m_i_same_mass(q, p, m, beta);
             let t11 = b * b * d_i_m_0_i(q, p, m, beta);
-            let t12 = (s + m2 * 3.) * d_j_m_i(q, m, beta);
+            let t12 = m2.mul_add(3., s) * d_j_m_i(q, m, beta);
 
             let t13 = -m4 * d2_j_m_i(q, m, beta);
             let t14 = (j_m_t_i(q, m, beta) - j_0_t_i(q, beta)) / m2;

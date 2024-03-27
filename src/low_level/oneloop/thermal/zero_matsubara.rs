@@ -345,7 +345,7 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn tlog_same_mass(q: R, p: R) -> R {
-        let rat = (p + 2. * q) / (p - 2. * q);
+        let rat = 2.0f64.mul_add(q, p) / 2.0f64.mul_add(-q, p);
         (rat * rat).ln() / 2.
     }
 
@@ -363,7 +363,7 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn tlog_t_same_mass(q: R, p: R) -> R {
-        p * p * (p + 2. * q) * (p - 2. * q) * tlog_same_mass(q, p)
+        p * p * 2.0f64.mul_add(q, p) * 2.0f64.mul_add(-q, p) * tlog_same_mass(q, p)
     }
 
     #[inline(always)]
@@ -454,7 +454,7 @@ pub(crate) mod inlines {
         let p2 = p * p;
         let p3 = p2 * p;
         let t = bose_distribution_zero_chempot(en, beta) / en
-            * (-p2 * 4. * qp + tlog_t_same_mass(q, p));
+            * (-p2 * 4.).mul_add(qp, tlog_t_same_mass(q, p));
         -t * q / (p3 * 32. * PI2)
     }
 
@@ -477,7 +477,7 @@ pub(crate) mod inlines {
         let qp = q * p;
         let p2 = p * p;
         let p3 = p2 * p;
-        let t = bose_distribution_zero_chempot(q, beta) * (-p2 * 4. * qp + tlog_t_zero_mass(q, p));
+        let t = bose_distribution_zero_chempot(q, beta) * (-p2 * 4.).mul_add(qp, tlog_t_zero_mass(q, p));
         -t / (p3 * 32. * PI2)
     }
 
@@ -504,8 +504,8 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn d_i_m_m_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
-        let rpinv = (p + 2. * q).inv();
-        let rminv = (p - 2. * q).inv();
+        let rpinv = 2.0f64.mul_add(q, p).inv();
+        let rminv = 2.0f64.mul_add(-q, p).inv();
         -bose_distribution_zero_chempot(en, beta) * (en * p * 8. * PI2).inv() * (rpinv + rminv)
     }
 
@@ -530,8 +530,8 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn d_i_0_0_i(q: R, p: R, beta: R) -> R {
-        let rpinv = (p + 2. * q).inv();
-        let rminv = (p - 2. * q).inv();
+        let rpinv = 2.0f64.mul_add(q, p).inv();
+        let rminv = 2.0f64.mul_add(-q, p).inv();
         -bose_distribution_zero_chempot(q, beta) * (q * p * 8. * PI2).inv() * (rpinv + rminv)
     }
 
@@ -559,8 +559,8 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn d_i_m_m_l_i_same_mass<T: Num>(q: R, p: R, m: T, beta: R) -> T {
         let en = energy(q, m);
-        let r1pinv = (p + 2. * q).inv();
-        let r1minv = (p - 2. * q).inv();
+        let r1pinv = 2.0f64.mul_add(q, p).inv();
+        let r1minv = 2.0f64.mul_add(-q, p).inv();
         bose_distribution_zero_chempot(en, beta) * en * (r1pinv + r1minv) / (p * 8. * PI2)
     }
 
@@ -585,8 +585,8 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn d_i_0_0_l_i(q: R, p: R, beta: R) -> R {
-        let r1pinv = (p + 2. * q).inv();
-        let r1minv = (p - 2. * q).inv();
+        let r1pinv = 2.0f64.mul_add(q, p).inv();
+        let r1minv = 2.0f64.mul_add(-q, p).inv();
         bose_distribution_zero_chempot(q, beta) * q * (r1pinv + r1minv) / (p * 8. * PI2)
     }
 
