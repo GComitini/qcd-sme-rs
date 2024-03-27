@@ -11,10 +11,11 @@ mod native {
     use super::inlines;
     use crate::{Num, R};
 
-    pub fn statistic_distribution_exponential<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn statistic_distribution_exponential<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         inlines::statistic_distribution_exponential(en, beta, mu)
     }
 
@@ -56,10 +57,11 @@ pub(crate) mod inlines {
     use crate::{Num, R};
 
     #[inline(always)]
-    pub fn statistic_distribution_exponential<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn statistic_distribution_exponential<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         ((en - mu) * beta).exp()
     }
 

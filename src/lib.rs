@@ -1,3 +1,16 @@
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::inline_always)]
+#![allow(clippy::many_single_char_names)]
+#![allow(clippy::must_use_candidate)]
+#![allow(clippy::return_self_not_must_use)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::suspicious_operation_groupings)]
+#![allow(clippy::wildcard_imports)]
+// Temporary
+#![allow(clippy::suboptimal_flops)]
+
 pub mod common;
 pub mod consts;
 pub mod ffi;

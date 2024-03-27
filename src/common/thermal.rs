@@ -15,10 +15,11 @@ mod native {
     ///
     /// As a function of the energy `en`, inverse temperature `beta` and
     /// chemical potential `mu`.
-    pub fn fermi_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         inlines::fermi_distribution(en, beta, mu)
     }
 
@@ -26,10 +27,10 @@ mod native {
     /// at zero temperature.
     ///
     /// As a function of the energy `en` and chemical potential `mu`.
-    pub fn fermi_distribution_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_zero_temp<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        mu: T2,
+    ) -> T1 {
         inlines::fermi_distribution_zero_temp(en, mu)
     }
 
@@ -39,10 +40,11 @@ mod native {
     /// As a function of the energy `en`, inverse temperature `beta` and
     /// chemical potential `mu`. Equal to
     /// `fermi_distribution(en, beta, mu) + fermi_distribution(en, beta, -mu)`.
-    pub fn fermi_distribution_double<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_double<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         inlines::fermi_distribution_double(en, beta, mu)
     }
 
@@ -51,10 +53,13 @@ mod native {
     ///
     /// As a function of the energy `en` and chemical potential `mu`. Equal to
     /// `fermi_distribution_zero_temp(en, mu) + fermi_distribution_zero_temp(en, -mu)`.
-    pub fn fermi_distribution_double_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_double_zero_temp<
+        T1: Num + std::ops::Sub<T2, Output = T1>,
+        T2: Num,
+    >(
+        en: T1,
+        mu: T2,
+    ) -> T1 {
         inlines::fermi_distribution_double_zero_temp(en, mu)
     }
 
@@ -70,10 +75,11 @@ mod native {
     ///
     /// As a function of the energy `en`, inverse temperature `beta` and
     /// chemical potential `mu`.
-    pub fn bose_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn bose_distribution<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         inlines::bose_distribution(en, beta, mu)
     }
 
@@ -147,18 +153,19 @@ pub(crate) mod inlines {
     use crate::{Num, R};
 
     #[inline(always)]
-    pub fn fermi_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         (statistic_distribution_exponential(en, beta, mu) + 1.).inv()
     }
 
     #[inline(always)]
-    pub fn fermi_distribution_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_zero_temp<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        mu: T2,
+    ) -> T1 {
         if en.re() > mu.re() {
             T1::zero()
         } else {
@@ -167,19 +174,23 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn fermi_distribution_double<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_double<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         (statistic_distribution_exponential(en, beta, mu) + 1.).inv()
             + (statistic_distribution_exponential(en, beta, -mu) + 1.).inv()
     }
 
     #[inline(always)]
-    pub fn fermi_distribution_double_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn fermi_distribution_double_zero_temp<
+        T1: Num + std::ops::Sub<T2, Output = T1>,
+        T2: Num,
+    >(
+        en: T1,
+        mu: T2,
+    ) -> T1 {
         fermi_distribution_zero_temp(en, mu) + fermi_distribution_zero_temp(en, -mu)
     }
 
@@ -189,10 +200,11 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn bose_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
-    where
-        T1: std::ops::Sub<T2, Output = T1>,
-    {
+    pub fn bose_distribution<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
+        en: T1,
+        beta: R,
+        mu: T2,
+    ) -> T1 {
         (statistic_distribution_exponential(en, beta, mu) - 1.).inv()
     }
 

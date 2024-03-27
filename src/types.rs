@@ -13,12 +13,12 @@ pub type C = num::Complex<R>;
 
 /// An integer type for the number of colors.
 ///
-/// Used by [set_number_of_colors](crate::consts::set_number_of_colors).
+/// Used by [`set_number_of_colors`](crate::consts::set_number_of_colors).
 pub type NCTYPE = u32;
 
 /// An integer type for the number of fermions.
 ///
-/// Used by [set_number_of_fermions](crate::consts::set_number_of_fermions).
+/// Used by [`set_number_of_fermions`](crate::consts::set_number_of_fermions).
 pub type NFTYPE = u32;
 
 /// A number.
@@ -51,12 +51,12 @@ pub trait Num:
 impl Num for R {
     #[inline(always)]
     fn abs(&self) -> R {
-        (*self as R).abs()
+        (*self as Self).abs()
     }
 
     #[inline(always)]
     fn exp(&self) -> Self {
-        (*self as R).exp()
+        (*self as Self).exp()
     }
 
     #[inline(always)]
@@ -71,7 +71,7 @@ impl Num for R {
 
     #[inline(always)]
     fn ln(&self) -> Self {
-        (*self as R).ln()
+        (*self as Self).ln()
     }
 
     #[inline(always)]
@@ -81,19 +81,19 @@ impl Num for R {
 
     #[inline(always)]
     fn sqrt(&self) -> Self {
-        (*self as R).sqrt()
+        (*self as Self).sqrt()
     }
 }
 
 impl Num for C {
     #[inline(always)]
     fn abs(&self) -> R {
-        (*self as C).abs()
+        (*self as Self).abs()
     }
 
     #[inline(always)]
     fn exp(&self) -> Self {
-        (*self as C).exp()
+        (*self as Self).exp()
     }
 
     #[inline(always)]
@@ -108,7 +108,7 @@ impl Num for C {
 
     #[inline(always)]
     fn ln(&self) -> Self {
-        (*self as C).ln()
+        (*self as Self).ln()
     }
 
     #[inline(always)]
@@ -118,6 +118,6 @@ impl Num for C {
 
     #[inline(always)]
     fn sqrt(&self) -> Self {
-        (*self as C).sqrt()
+        (*self as Self).sqrt()
     }
 }

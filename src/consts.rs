@@ -105,6 +105,10 @@ pub extern "C" fn get_default_tol_integral() -> R {
 }
 
 /// Set the default tolerance for numerical integrals.
+///
+/// # Panics
+///
+/// This function panics if `tol <= 0.`.
 #[no_mangle]
 pub extern "C" fn set_default_tol_integral(tol: R) {
     assert!(tol > 0.);
@@ -146,8 +150,6 @@ pub(crate) fn max_iter_integral() -> u32 {
 /// Get the default integration method. Equals
 /// `crate::Integral::G7K15(tol_integral(), max_iter_integral())` if never
 /// changed.
-#[no_mangle]
-// Add 'extern "C"' after redefining Integral
 pub fn get_default_integration_method() -> crate::Integral {
     crate::Integral::G7K15(tol_integral(), max_iter_integral())
 }
