@@ -58,7 +58,7 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_landau_sep(
+    pub extern "C" fn qcd__gluon__dressing_inv_landau_sep(
         s: R,
         ln_s_pl_1: R,
         ln_s: R,
@@ -69,12 +69,12 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_landau(s: R, f0: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing_inv_landau(s: R, f0: R) -> R {
         inlines::dressing_inv_landau(s, f0)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_landau_sep__complex(
+    pub extern "C" fn qcd__gluon__dressing_inv_landau_sep__complex(
         s: C,
         ln_s: C,
         ln_s_pl_1: C,
@@ -85,12 +85,12 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_landau__complex(s: C, f0: R) -> C {
+    pub extern "C" fn qcd__gluon__dressing_inv_landau__complex(s: C, f0: R) -> C {
         inlines::dressing_inv_landau(s, f0)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_sep(
+    pub extern "C" fn qcd__gluon__dressing_inv_sep(
         s: R,
         ln_s: R,
         ln_s_pl_1: R,
@@ -102,12 +102,12 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv(s: R, f0: R, xi: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing_inv(s: R, f0: R, xi: R) -> R {
         inlines::dressing_inv(s, f0, xi)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv_sep__complex(
+    pub extern "C" fn qcd__gluon__dressing_inv_sep__complex(
         s: C,
         ln_s: C,
         ln_s_pl_1: C,
@@ -119,22 +119,28 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_inv__complex(s: C, f0: R, xi: R) -> C {
+    pub extern "C" fn qcd__gluon__dressing_inv__complex(s: C, f0: R, xi: R) -> C {
         inlines::dressing_inv(s, f0, xi)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, s_q: R, f0: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing_landau_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        s_q: R,
+        f0: R,
+    ) -> R {
         inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_landau(s: R, f0: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing_landau(s: R, f0: R) -> R {
         inlines::dressing_landau(s, f0)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_landau_sep__complex(
+    pub extern "C" fn qcd__gluon__dressing_landau_sep__complex(
         s: C,
         ln_s: C,
         ln_s_pl_1: C,
@@ -145,22 +151,29 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_landau__complex(s: C, f0: R) -> C {
+    pub extern "C" fn qcd__gluon__dressing_landau__complex(s: C, f0: R) -> C {
         inlines::dressing_landau(s, f0)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_sep(s: R, ln_s: R, ln_s_pl_1: R, s_q: R, f0: R, xi: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        s_q: R,
+        f0: R,
+        xi: R,
+    ) -> R {
         inlines::dressing_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing(s: R, f0: R, xi: R) -> R {
+    pub extern "C" fn qcd__gluon__dressing(s: R, f0: R, xi: R) -> R {
         inlines::dressing(s, f0, xi)
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing_sep__complex(
+    pub extern "C" fn qcd__gluon__dressing_sep__complex(
         s: C,
         ln_s: C,
         ln_s_pl_1: C,
@@ -172,7 +185,7 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn gluon__dressing__complex(s: C, f0: R, xi: R) -> C {
+    pub extern "C" fn qcd__gluon__dressing__complex(s: C, f0: R, xi: R) -> C {
         inlines::dressing(s, f0, xi)
     }
 }
@@ -279,7 +292,9 @@ mod tests {
     #[test]
     fn test_dressing_inv_landau_0() {
         use gluon::dressing_inv_landau;
-        use gluon::ffi::{gluon__dressing_inv_landau, gluon__dressing_inv_landau__complex};
+        use gluon::ffi::{
+            qcd__gluon__dressing_inv_landau, qcd__gluon__dressing_inv_landau__complex,
+        };
 
         const REAL_RESULTS: [R; 4] = [
             1.1452200013339067,
@@ -301,7 +316,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, -0.876), REAL_RESULTS[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(gluon__dressing_inv_landau(s, -0.876), REAL_RESULTS[i])
+            assert_equal(qcd__gluon__dressing_inv_landau(s, -0.876), REAL_RESULTS[i])
         });
 
         COMPLEX_TEST_VAL
@@ -311,7 +326,7 @@ mod tests {
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                gluon__dressing_inv_landau__complex(s, -0.876),
+                qcd__gluon__dressing_inv_landau__complex(s, -0.876),
                 complex_results[i],
             )
         });
@@ -319,17 +334,16 @@ mod tests {
 
     fn test_dressing_inv(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
         use gluon::dressing_inv;
-        use gluon::ffi::{gluon__dressing_inv, gluon__dressing_inv__complex};
+        use gluon::ffi::{qcd__gluon__dressing_inv, qcd__gluon__dressing_inv__complex};
 
         REAL_TEST_VAL
             .iter()
             .enumerate()
             .for_each(|(i, &s)| assert_equal(dressing_inv(s, -0.876, xi), real_results[i]));
 
-        REAL_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(gluon__dressing_inv(s, -0.876, xi), real_results[i]));
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_inv(s, -0.876, xi), real_results[i])
+        });
 
         COMPLEX_TEST_VAL
             .iter()
@@ -338,7 +352,7 @@ mod tests {
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                gluon__dressing_inv__complex(s, -0.876, xi),
+                qcd__gluon__dressing_inv__complex(s, -0.876, xi),
                 complex_results[i],
             )
         });
@@ -383,7 +397,7 @@ mod tests {
     #[test]
     fn test_dressing_landau_0() {
         use gluon::dressing_landau;
-        use gluon::ffi::{gluon__dressing_landau, gluon__dressing_landau__complex};
+        use gluon::ffi::{qcd__gluon__dressing_landau, qcd__gluon__dressing_landau__complex};
 
         let mut real_results: [R; 4] = [
             1.1452200013339067,
@@ -410,10 +424,9 @@ mod tests {
             .enumerate()
             .for_each(|(i, &s)| assert_equal(dressing_landau(s, -0.876), real_results[i]));
 
-        REAL_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(gluon__dressing_landau(s, -0.876), real_results[i]));
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_landau(s, -0.876), real_results[i])
+        });
 
         COMPLEX_TEST_VAL
             .iter()
@@ -422,7 +435,7 @@ mod tests {
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                gluon__dressing_landau__complex(s, -0.876),
+                qcd__gluon__dressing_landau__complex(s, -0.876),
                 complex_results[i],
             )
         });
@@ -430,7 +443,7 @@ mod tests {
 
     fn test_dressing(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
         use gluon::dressing;
-        use gluon::ffi::{gluon__dressing, gluon__dressing__complex};
+        use gluon::ffi::{qcd__gluon__dressing, qcd__gluon__dressing__complex};
 
         REAL_TEST_VAL
             .iter()
@@ -440,7 +453,7 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(gluon__dressing(s, -0.876, xi), real_results[i]));
+            .for_each(|(i, &s)| assert_equal(qcd__gluon__dressing(s, -0.876, xi), real_results[i]));
 
         COMPLEX_TEST_VAL
             .iter()
@@ -448,7 +461,10 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing(s, -0.876, xi), complex_results[i]));
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(gluon__dressing__complex(s, -0.876, xi), complex_results[i])
+            assert_equal(
+                qcd__gluon__dressing__complex(s, -0.876, xi),
+                complex_results[i],
+            )
         });
     }
 
