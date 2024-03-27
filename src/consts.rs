@@ -1,3 +1,8 @@
+//! Constants, static variables and their getter/setter functions.
+//!
+//! Note: the static variables defined in this module are not multithread-safe.
+//! Do not change them while multithreading!
+
 use crate::{
     types::{NCTYPE, NFTYPE},
     C, R,
@@ -10,7 +15,7 @@ pub const I: C = C { re: 0., im: 1. };
 // If you change this line you MUST also change the value of NF_DIV_NC.
 static mut NC: NCTYPE = 3;
 
-/// Get the number of colors.
+/// Get the number of colors. Equals `3` if never changed.
 #[no_mangle]
 pub extern "C" fn get_number_of_colors() -> NCTYPE {
     nc()
@@ -35,7 +40,7 @@ pub(crate) fn nc() -> NCTYPE {
 // If you change this line you MUST also change the value of NF_DIV_NC.
 static mut NF: NCTYPE = 1;
 
-/// Get the number of fermions.
+/// Get the number of fermions. Equals `1` if never changed.
 #[no_mangle]
 pub extern "C" fn get_number_of_fermions() -> NFTYPE {
     nf()
@@ -68,13 +73,14 @@ pub(crate) fn nf_div_nc() -> R {
 /// The default quark mass.
 static mut M_QUARK: R = 0.5;
 
-/// Get the default quark mass.
+/// Get the default quark mass. Equals `0.5` (in arbitrary units) if never
+/// changed.
 #[no_mangle]
 pub extern "C" fn get_default_quark_mass() -> R {
     m_quark()
 }
 
-/// Set the number of colors.
+/// Set the default quark mass.
 #[no_mangle]
 pub extern "C" fn set_default_quark_mass(m: R) {
     unsafe {
@@ -89,9 +95,10 @@ pub(crate) fn m_quark() -> R {
 }
 
 /// The default tolerance for numerical integrals.
-static mut TOL_INTEGRAL: R = 1E-12;
+static mut TOL_INTEGRAL: R = 1E-10;
 
-/// Get the default tolerance for numerical integrals.
+/// Get the default tolerance for numerical integrals. Equals `1E-10` if never
+/// changed.
 #[no_mangle]
 pub extern "C" fn get_default_tol_integral() -> R {
     tol_integral()
@@ -100,6 +107,7 @@ pub extern "C" fn get_default_tol_integral() -> R {
 /// Set the default tolerance for numerical integrals.
 #[no_mangle]
 pub extern "C" fn set_default_tol_integral(tol: R) {
+    assert!(tol > 0.);
     unsafe {
         TOL_INTEGRAL = tol;
     }
@@ -111,16 +119,17 @@ pub(crate) fn tol_integral() -> R {
     unsafe { TOL_INTEGRAL }
 }
 
-/// The default max iterations for numerical integrals.
-static mut MAX_ITER_INTEGRAL: u32 = 20;
+/// The default maximum number of iterations for numerical integrals.
+static mut MAX_ITER_INTEGRAL: u32 = 50;
 
-/// Get the default max iterations for numerical integrals.
+/// Get the default maximum number of iterations for numerical integrals.
+/// Equals `50` if never changed.
 #[no_mangle]
 pub extern "C" fn get_default_max_iter_integral() -> u32 {
     max_iter_integral()
 }
 
-/// Set the default max iterations for numerical integrals.
+/// Set the default maximum number of iterations for numerical integrals.
 #[no_mangle]
 pub extern "C" fn set_default_max_iter_integral(iter: u32) {
     unsafe {
@@ -134,7 +143,9 @@ pub(crate) fn max_iter_integral() -> u32 {
     unsafe { MAX_ITER_INTEGRAL }
 }
 
-/// Get the default integration method
+/// Get the default integration method. Equals
+/// `crate::Integral::G7K15(tol_integral(), max_iter_integral())` if never
+/// changed.
 #[no_mangle]
 // Add 'extern "C"' after redefining Integral
 pub fn get_default_integration_method() -> crate::Integral {
