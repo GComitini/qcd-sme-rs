@@ -1,3 +1,4 @@
+/// Common thermal functions.
 pub mod thermal;
 
 pub use native::*;
@@ -13,10 +14,18 @@ mod native {
     use super::inlines;
     use crate::{Num, R};
 
-    pub fn energy_2<T: Num>(p: R, m: T) -> T {
-        inlines::energy_2(p, m)
+    /// Relativistic energy squared.
+    ///
+    /// As a function of the momentum `p` and mass `m`,
+    /// `p^2 + m^2`.
+    pub fn energy_squared<T: Num>(p: R, m: T) -> T {
+        inlines::energy_squared(p, m)
     }
 
+    /// Relativistic energy.
+    ///
+    /// As a function of the momentum `p` and mass `m`,
+    /// `sqrt(p^2 + m^2)`.
     pub fn energy<T: Num>(p: R, m: T) -> T {
         inlines::energy(p, m)
     }
@@ -38,8 +47,8 @@ pub(crate) mod ffi {
     pub use super::thermal::ffi::*;
 
     #[no_mangle]
-    pub extern "C" fn energy_2(p: R, m: R) -> R {
-        inlines::energy_2(p, m)
+    pub extern "C" fn energy_squared(p: R, m: R) -> R {
+        inlines::energy_squared(p, m)
     }
 
     #[no_mangle]
@@ -57,12 +66,12 @@ pub(crate) mod inlines {
     use crate::{Num, R};
 
     #[inline(always)]
-    pub fn energy_2<T: Num>(p: R, m: T) -> T {
+    pub fn energy_squared<T: Num>(p: R, m: T) -> T {
         m * m + p * p
     }
 
     #[inline(always)]
     pub fn energy<T: Num>(p: R, m: T) -> T {
-        energy_2(p, m).sqrt()
+        energy_squared(p, m).sqrt()
     }
 }

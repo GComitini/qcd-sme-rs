@@ -1,3 +1,4 @@
+/// Common functions.
 pub mod common;
 pub mod consts;
 pub mod ffi;

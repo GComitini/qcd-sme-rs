@@ -11,6 +11,10 @@ mod native {
     use super::inlines;
     use crate::{Num, R};
 
+    /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics).
+    ///
+    /// As a function of the energy `en`, inverse temperature `beta` and
+    /// chemical potential `mu`.
     pub fn fermi_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
@@ -18,6 +22,10 @@ mod native {
         inlines::fermi_distribution(en, beta, mu)
     }
 
+    /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics)
+    /// at zero temperature.
+    ///
+    /// As a function of the energy `en` and chemical potential `mu`.
     pub fn fermi_distribution_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
@@ -25,6 +33,12 @@ mod native {
         inlines::fermi_distribution_zero_temp(en, mu)
     }
 
+    /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics),
+    /// summed over positive and negative chemical potential.
+    ///
+    /// As a function of the energy `en`, inverse temperature `beta` and
+    /// chemical potential `mu`. Equal to
+    /// `fermi_distribution(en, beta, mu) + fermi_distribution(en, beta, -mu)`.
     pub fn fermi_distribution_double<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
@@ -32,6 +46,11 @@ mod native {
         inlines::fermi_distribution_double(en, beta, mu)
     }
 
+    /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics),
+    /// summed over positive and negative chemical potential, at zero temperature.
+    ///
+    /// As a function of the energy `en` and chemical potential `mu`. Equal to
+    /// `fermi_distribution_zero_temp(en, mu) + fermi_distribution_zero_temp(en, -mu)`.
     pub fn fermi_distribution_double_zero_temp<T1: Num, T2: Num>(en: T1, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
@@ -39,10 +58,18 @@ mod native {
         inlines::fermi_distribution_double_zero_temp(en, mu)
     }
 
+    /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics),
+    /// at zero chemical potential.
+    ///
+    /// As a function of the energy `en` and inverse temperature `beta`.
     pub fn fermi_distribution_zero_chempot<T: Num>(en: T, beta: R) -> T {
         inlines::fermi_distribution_zero_chempot(en, beta)
     }
 
+    /// The [Bose-Einstein distribution](https://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics).
+    ///
+    /// As a function of the energy `en`, inverse temperature `beta` and
+    /// chemical potential `mu`.
     pub fn bose_distribution<T1: Num, T2: Num>(en: T1, beta: R, mu: T2) -> T1
     where
         T1: std::ops::Sub<T2, Output = T1>,
@@ -50,6 +77,10 @@ mod native {
         inlines::bose_distribution(en, beta, mu)
     }
 
+    /// The [Bose-Einstein distribution](https://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics)
+    /// at zero chemical potential.
+    ///
+    /// As a function of the energy `en` and inverse temperature `beta`.
     pub fn bose_distribution_zero_chempot<T: Num>(en: T, beta: R) -> T {
         inlines::bose_distribution_zero_chempot(en, beta)
     }
@@ -109,7 +140,7 @@ pub(crate) mod ffi {
 // - Here we define the building blocks for the other functions. This module
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
-pub mod inlines {
+pub(crate) mod inlines {
     use crate::low_level::common::inlines::{
         statistic_distribution_exponential, statistic_distribution_exponential_zero_chempot,
     };
