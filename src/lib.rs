@@ -1,9 +1,8 @@
 pub mod common;
 pub mod consts;
 pub mod ffi;
-pub mod ghost;
-pub mod gluon;
 pub mod low_level;
+pub mod qcd;
 pub mod types;
 pub mod utils;
 pub mod ym;

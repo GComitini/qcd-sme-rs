@@ -242,7 +242,7 @@ pub(crate) mod inlines {
 
 #[cfg(test)]
 mod tests {
-    use crate::gluon;
+    use crate::qcd::gluon;
     use crate::{Num, C, I, R};
 
     const TOLERANCE: R = 1e-12;
