@@ -1,3 +1,5 @@
+//! Common functions.
+
 /// Common thermal functions.
 pub mod thermal;
 
