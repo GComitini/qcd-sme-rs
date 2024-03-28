@@ -11,6 +11,14 @@ def bose(q, m, beta):
     return 1/(np.exp(beta*en(q, m))-1)
 
 
+def fermi(q, m, beta, mu):
+    return 1/(np.exp(beta*(en(q, m)-mu))+1)
+
+
+def fermi_double(q, m, beta, mu):
+    return fermi(q, m, beta, mu)+fermi(q, m, beta, -mu)
+
+
 def j_m_i(q, m, beta):
     return q**2*bose(q, m, beta)/(en(q, m)*2*np.pi**2)
 
@@ -410,6 +418,14 @@ def gluon_pol_t_zp(q, om, m, beta):
     return gluon_pol_l_zp(q, om, m, beta)
 
 
+def gluon_pol_quark_l(q, om, p, m, beta, mu):
+    s = om*om+p*p
+    eg = en(q, m)
+    t1 = (s-4*eg**2+4j*eg*om)/(8*q*p)*tlog(q, om, p, eg, 0)
+    t1opp = (s-4*eg**2-4j*eg*om)/(8*q*p)*tlog(q, -om, p, eg, 0)
+    return -(s/(p*p))*fermi_double(q, m, beta, mu)*q**2/eg*(1-t1-t1opp)/(6*np.pi**2)
+
+
 Qlog = [
     (0.03, 0., 2.12, 4., 2.),
     (0.047, 0., 2.12, 4., 2.),
@@ -591,6 +607,28 @@ Qigzp = [(0.62, 0.21, 1.2, 3.2),
          (0.35, 0.75, 3.76, 3.2),
          (0.35, 0.75, 3.76, 0.19)]
 
+Qigq = [(0.62, 0.21, 2.16, 1.2, 3.2, 0.8),
+        (0.35, 0.21, 2.16, 1.2, 3.2, 0.8),
+        (0.35, 0.75, 2.16, 1.2, 3.2, 0.8),
+        (0.35, 0.75, 1.15, 1.2, 3.2, 0.8),
+        (0.35, 0.75, 1.15, 3.76, 3.2, 0.8),
+        (0.35, 0.75, 1.15, 3.76, 0.19, 0.8),
+        (0.35, 0.75, 1.15, 3.76, 0.19, 5.9)]
+
+Qigqzm = [(0.62, 0, 2.16, 1.2, 3.2, 0.8),
+          (0.35, 0, 2.16, 1.2, 3.2, 0.8),
+          (0.35, 0, 1.15, 1.2, 3.2, 0.8),
+          (0.35, 0, 1.15, 3.76, 3.2, 0.8),
+          (0.35, 0, 1.15, 3.76, 0.19, 0.8),
+          (0.35, 0, 1.15, 3.76, 0.19, 5.9)]
+
+Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
+          (0.35, 0.21, 1.2, 3.2, 0.8),
+          (0.35, 0.75, 1.2, 3.2, 0.8),
+          (0.35, 0.75, 3.76, 3.2, 0.8),
+          (0.35, 0.75, 3.76, 0.19, 0.8),
+          (0.35, 0.75, 3.76, 0.19, 5.9)]
+
 # reslog = [tlog(*args) for args in Qlog]
 # reslogs = [tlog(*args) for args in Qlogs]
 # reslog0 = [tlog(*args) for args in Qlog0]
@@ -714,6 +752,10 @@ Qigzp = [(0.62, 0.21, 1.2, 3.2),
 # resglpolt = [gluon_pol_t(*args) for args in Qig]
 # resglpoltzm = [gluon_pol_t(*args) for args in Qigzm]
 # resglpoltzp = [gluon_pol_t_zp(*args) for args in Qigzp]
+
+resglpolql = [gluon_pol_quark_l(*args) for args in Qigq]
+resglpolqlzm = [gluon_pol_quark_l(*args) for args in Qigqzm]
+# resglpolqlzp = [gluon_pol_quark_l_zp(*args) for args in Qigzp]
 
 # print(str(reslog).replace('j', '*I').replace('(', '').replace(')', ''))
 # print(str(reslogs).replace('j', '*I').replace('(', '').replace(')', ''))
@@ -917,5 +959,12 @@ Qigzp = [(0.62, 0.21, 1.2, 3.2),
 #                                                '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 # print(str(resglpoltzm).replace('j', '*I').replace('(',
 #                                                  '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resglpoltzp).replace('j', '*I').replace('(',
+#                                                  '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+print(str(resglpolql).replace('j', '*I').replace('(',
+                                                 '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+print(str(resglpolqlzm).replace('j', '*I').replace('(',
+                                                   '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 # print(str(resglpoltzp).replace('j', '*I').replace('(',
 #                                                  '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
