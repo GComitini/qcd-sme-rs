@@ -12,40 +12,40 @@ mod native {
     use crate::{Num, C, R};
     use peroxide::numerical::integral::Integral;
 
-    pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_l_thermal_part_landau_i(q, om, p, m, beta)
+    pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_glue_l_thermal_part_landau_i(q, om, p, m, beta)
     }
 
-    pub fn polarization_l_thermal_part_landau_w_method<T: Num>(
+    pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
         om: T,
         p: R,
         m: R,
         beta: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_l_thermal_part_landau_w_method(om, p, m, beta, integral)
+        inlines::polarization_glue_l_thermal_part_landau_w_method(om, p, m, beta, integral)
     }
 
-    pub fn polarization_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_l_thermal_part_landau(om, p, m, beta)
+    pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_glue_l_thermal_part_landau(om, p, m, beta)
     }
 
-    pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_t_thermal_part_landau_i(q, om, p, m, beta)
+    pub fn polarization_glue_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_glue_t_thermal_part_landau_i(q, om, p, m, beta)
     }
 
-    pub fn polarization_t_thermal_part_landau_w_method<T: Num>(
+    pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
         om: T,
         p: R,
         m: R,
         beta: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_t_thermal_part_landau_w_method(om, p, m, beta, integral)
+        inlines::polarization_glue_t_thermal_part_landau_w_method(om, p, m, beta, integral)
     }
 
-    pub fn polarization_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_t_thermal_part_landau(om, p, m, beta)
+    pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
+        inlines::polarization_glue_t_thermal_part_landau(om, p, m, beta)
     }
 }
 
@@ -66,25 +66,25 @@ pub(crate) mod ffi {
     pub use super::zero_momentum::ffi::*;
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__polarization_l_thermal_part_landau_i(
+    pub extern "C" fn oneloop__gluon__polarization_glue_l_thermal_part_landau_i(
         q: R,
         om: R,
         p: R,
         m: R,
         beta: R,
     ) -> C {
-        inlines::polarization_l_thermal_part_landau_i(q, om, p, m, beta)
+        inlines::polarization_glue_l_thermal_part_landau_i(q, om, p, m, beta)
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__polarization_t_thermal_part_landau_i(
+    pub extern "C" fn oneloop__gluon__polarization_glue_t_thermal_part_landau_i(
         q: R,
         om: R,
         p: R,
         m: R,
         beta: R,
     ) -> C {
-        inlines::polarization_t_thermal_part_landau_i(q, om, p, m, beta)
+        inlines::polarization_glue_t_thermal_part_landau_i(q, om, p, m, beta)
     }
 }
 
@@ -100,7 +100,7 @@ pub(crate) mod inlines {
     use peroxide::numerical::integral::{complex_integrate, Integral};
 
     #[inline(always)]
-    pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+    pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
         let s = om * om + p * p;
         let s2 = s * s;
         let s_inv = s.inv();
@@ -138,7 +138,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
+    pub fn polarization_glue_t_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
         let s = om * om + p * p;
         let s2 = s * s;
         let m2 = m * m;
@@ -169,7 +169,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn polarization_l_thermal_part_landau_w_method<T: Num>(
+    pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
         om: T,
         p: R,
         m: R,
@@ -177,15 +177,15 @@ pub(crate) mod inlines {
         integral: Integral,
     ) -> C {
         complex_integrate(
-            |t| polarization_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
+            |t| polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
             (0., 1.),
             integral,
         )
     }
 
     #[inline(always)]
-    pub fn polarization_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        polarization_l_thermal_part_landau_w_method(
+    pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
+        polarization_glue_l_thermal_part_landau_w_method(
             om,
             p,
             m,
@@ -195,7 +195,7 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn polarization_t_thermal_part_landau_w_method<T: Num>(
+    pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
         om: T,
         p: R,
         m: R,
@@ -203,15 +203,15 @@ pub(crate) mod inlines {
         integral: Integral,
     ) -> C {
         complex_integrate(
-            |t| polarization_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
+            |t| polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
             (0., 1.),
             integral,
         )
     }
 
     #[inline(always)]
-    pub fn polarization_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        polarization_t_thermal_part_landau_w_method(
+    pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
+        polarization_glue_t_thermal_part_landau_w_method(
             om,
             p,
             m,
@@ -229,38 +229,38 @@ pub mod zero_matsubara {
         use crate::Integral;
         use crate::{C, R};
 
-        pub fn polarization_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
-            inlines::polarization_l_thermal_part_landau_i(q, p, m, beta)
+        pub fn polarization_glue_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::polarization_glue_l_thermal_part_landau_i(q, p, m, beta)
         }
 
-        pub fn polarization_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
-            inlines::polarization_t_thermal_part_landau_i(q, p, m, beta)
+        pub fn polarization_glue_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+            inlines::polarization_glue_t_thermal_part_landau_i(q, p, m, beta)
         }
 
-        pub fn polarization_l_thermal_part_landau_w_method(
+        pub fn polarization_glue_l_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_l_thermal_part_landau_w_method(p, m, beta, integral)
+            inlines::polarization_glue_l_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
-        pub fn polarization_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            inlines::polarization_l_thermal_part_landau(p, m, beta)
+        pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            inlines::polarization_glue_l_thermal_part_landau(p, m, beta)
         }
 
-        pub fn polarization_t_thermal_part_landau_w_method(
+        pub fn polarization_glue_t_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_t_thermal_part_landau_w_method(p, m, beta, integral)
+            inlines::polarization_glue_t_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
-        pub fn polarization_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            inlines::polarization_t_thermal_part_landau(p, m, beta)
+        pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            inlines::polarization_glue_t_thermal_part_landau(p, m, beta)
         }
     }
 
@@ -269,23 +269,23 @@ pub mod zero_matsubara {
         use crate::{C, R};
 
         #[no_mangle]
-        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i(
+        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_glue_l_thermal_part_landau_i(
             q: R,
             om: R,
             m: R,
             beta: R,
         ) -> C {
-            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
+            inlines::polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
         }
 
         #[no_mangle]
-        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i(
+        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_glue_t_thermal_part_landau_i(
             q: R,
             om: R,
             m: R,
             beta: R,
         ) -> C {
-            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
+            inlines::polarization_glue_t_thermal_part_landau_i(q, om, m, beta)
         }
     }
 
@@ -302,7 +302,7 @@ pub mod zero_matsubara {
         const EPS: R = 1E-6;
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+        pub fn polarization_glue_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             let s = p * p;
             let s2 = s * s;
             let m2 = m * m;
@@ -337,7 +337,7 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
+        pub fn polarization_glue_t_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             let s = p * p;
             let s2 = s * s;
             let m2 = m * m;
@@ -367,7 +367,7 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau_w_method(
+        pub fn polarization_glue_l_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
@@ -383,7 +383,7 @@ pub mod zero_matsubara {
             // arrythmia.
             integrate(
                 |t| {
-                    super::super::polarization_l_thermal_part_landau_i(
+                    super::super::polarization_glue_l_thermal_part_landau_i(
                         (1. - t) / t,
                         EPS,
                         p,
@@ -398,8 +398,8 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            polarization_l_thermal_part_landau_w_method(
+        pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            polarization_glue_l_thermal_part_landau_w_method(
                 p,
                 m,
                 beta,
@@ -408,7 +408,7 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau_w_method(
+        pub fn polarization_glue_t_thermal_part_landau_w_method(
             p: R,
             m: R,
             beta: R,
@@ -416,7 +416,7 @@ pub mod zero_matsubara {
         ) -> R {
             integrate(
                 |t| {
-                    super::super::polarization_t_thermal_part_landau_i(
+                    super::super::polarization_glue_t_thermal_part_landau_i(
                         (1. - t) / t,
                         EPS,
                         p,
@@ -431,8 +431,8 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            polarization_t_thermal_part_landau_w_method(
+        pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
+            polarization_glue_t_thermal_part_landau_w_method(
                 p,
                 m,
                 beta,
@@ -450,38 +450,38 @@ pub mod zero_momentum {
         use crate::Integral;
         use crate::{Num, C, R};
 
-        pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
+        pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            inlines::polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
         }
 
-        pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
+        pub fn polarization_glue_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            inlines::polarization_glue_t_thermal_part_landau_i(q, om, m, beta)
         }
 
-        pub fn polarization_l_thermal_part_landau_w_method<T: Num>(
+        pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
             om: T,
             m: R,
             beta: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_l_thermal_part_landau_w_method(om, m, beta, integral)
+            inlines::polarization_glue_l_thermal_part_landau_w_method(om, m, beta, integral)
         }
 
-        pub fn polarization_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            inlines::polarization_l_thermal_part_landau(om, m, beta)
+        pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
+            inlines::polarization_glue_l_thermal_part_landau(om, m, beta)
         }
 
-        pub fn polarization_t_thermal_part_landau_w_method<T: Num>(
+        pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
             om: T,
             m: R,
             beta: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_t_thermal_part_landau_w_method(om, m, beta, integral)
+            inlines::polarization_glue_t_thermal_part_landau_w_method(om, m, beta, integral)
         }
 
-        pub fn polarization_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            inlines::polarization_t_thermal_part_landau(om, m, beta)
+        pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
+            inlines::polarization_glue_t_thermal_part_landau(om, m, beta)
         }
     }
 
@@ -490,23 +490,23 @@ pub mod zero_momentum {
         use crate::{C, R};
 
         #[no_mangle]
-        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i(
+        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_glue_l_thermal_part_landau_i(
             q: R,
             om: R,
             m: R,
             beta: R,
         ) -> C {
-            inlines::polarization_l_thermal_part_landau_i(q, om, m, beta)
+            inlines::polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
         }
 
         #[no_mangle]
-        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i(
+        pub extern "C" fn oneloop__zero_momentum__gluon__polarization_glue_t_thermal_part_landau_i(
             q: R,
             om: R,
             m: R,
             beta: R,
         ) -> C {
-            inlines::polarization_t_thermal_part_landau_i(q, om, m, beta)
+            inlines::polarization_glue_t_thermal_part_landau_i(q, om, m, beta)
         }
     }
 
@@ -520,7 +520,7 @@ pub mod zero_momentum {
         use peroxide::numerical::integral::{complex_integrate, Integral};
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+        pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
             let s = om * om;
             let s2 = s * s;
             let m2 = m * m;
@@ -555,27 +555,27 @@ pub mod zero_momentum {
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
-            polarization_l_thermal_part_landau_i(q, om, m, beta)
+        pub fn polarization_glue_t_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
+            polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
         }
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau_w_method<T: Num>(
+        pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
             om: T,
             m: R,
             beta: R,
             integral: Integral,
         ) -> C {
             complex_integrate(
-                |t| polarization_l_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
+                |t| polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn polarization_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            polarization_l_thermal_part_landau_w_method(
+        pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
+            polarization_glue_l_thermal_part_landau_w_method(
                 om,
                 m,
                 beta,
@@ -584,22 +584,22 @@ pub mod zero_momentum {
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau_w_method<T: Num>(
+        pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
             om: T,
             m: R,
             beta: R,
             integral: Integral,
         ) -> C {
             complex_integrate(
-                |t| polarization_t_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
+                |t| polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
                 (0., 1.),
                 integral,
             )
         }
 
         #[inline(always)]
-        pub fn polarization_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            polarization_t_thermal_part_landau_w_method(
+        pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
+            polarization_glue_t_thermal_part_landau_w_method(
                 om,
                 m,
                 beta,
@@ -630,10 +630,10 @@ mod tests {
     }
 
     #[test]
-    fn test_polarization_l_thermal_part_landau_i() {
+    fn test_polarization_glue_l_thermal_part_landau_i() {
         use super::{
-            ffi::oneloop__gluon__polarization_l_thermal_part_landau_i,
-            polarization_l_thermal_part_landau_i,
+            ffi::oneloop__gluon__polarization_glue_l_thermal_part_landau_i,
+            polarization_glue_l_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R, R); 6] = [
@@ -658,7 +658,7 @@ mod tests {
             .enumerate()
             .for_each(|(i, (q, om, p, m, beta))| {
                 assert_equal(
-                    polarization_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    polarization_glue_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
                 )
             });
@@ -667,17 +667,17 @@ mod tests {
             .enumerate()
             .for_each(|(i, (q, om, p, m, beta))| {
                 assert_equal(
-                    oneloop__gluon__polarization_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    oneloop__gluon__polarization_glue_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
                 )
             });
     }
 
     #[test]
-    fn test_polarization_t_thermal_part_landau_i() {
+    fn test_polarization_glue_t_thermal_part_landau_i() {
         use super::{
-            ffi::oneloop__gluon__polarization_t_thermal_part_landau_i,
-            polarization_t_thermal_part_landau_i,
+            ffi::oneloop__gluon__polarization_glue_t_thermal_part_landau_i,
+            polarization_glue_t_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R, R); 6] = [
@@ -702,7 +702,7 @@ mod tests {
             .enumerate()
             .for_each(|(i, (q, om, p, m, beta))| {
                 assert_equal(
-                    polarization_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    polarization_glue_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
                 )
             });
@@ -711,17 +711,17 @@ mod tests {
             .enumerate()
             .for_each(|(i, (q, om, p, m, beta))| {
                 assert_equal(
-                    oneloop__gluon__polarization_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
+                    oneloop__gluon__polarization_glue_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
                 )
             });
     }
 
     #[test]
-    fn test_zero_matsubara_polarization_l_thermal_part_landau_i() {
+    fn test_zero_matsubara_polarization_glue_l_thermal_part_landau_i() {
         use super::zero_matsubara::{
-            ffi::oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i,
-            polarization_l_thermal_part_landau_i,
+            ffi::oneloop__zero_matsubara__gluon__polarization_glue_l_thermal_part_landau_i,
+            polarization_glue_l_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R); 5] = [
@@ -742,14 +742,14 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
-                polarization_l_thermal_part_landau_i(*q, *p, *m, *beta),
+                polarization_glue_l_thermal_part_landau_i(*q, *p, *m, *beta),
                 res[i],
             )
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
-                oneloop__zero_matsubara__gluon__polarization_l_thermal_part_landau_i(
+                oneloop__zero_matsubara__gluon__polarization_glue_l_thermal_part_landau_i(
                     *q, *p, *m, *beta,
                 ),
                 res[i],
@@ -758,10 +758,10 @@ mod tests {
     }
 
     #[test]
-    fn test_zero_matsubara_polarization_t_thermal_part_landau_i() {
+    fn test_zero_matsubara_polarization_glue_t_thermal_part_landau_i() {
         use super::zero_matsubara::{
-            ffi::oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i,
-            polarization_t_thermal_part_landau_i,
+            ffi::oneloop__zero_matsubara__gluon__polarization_glue_t_thermal_part_landau_i,
+            polarization_glue_t_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R); 5] = [
@@ -782,14 +782,14 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
-                polarization_t_thermal_part_landau_i(*q, *p, *m, *beta),
+                polarization_glue_t_thermal_part_landau_i(*q, *p, *m, *beta),
                 res[i],
             )
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
-                oneloop__zero_matsubara__gluon__polarization_t_thermal_part_landau_i(
+                oneloop__zero_matsubara__gluon__polarization_glue_t_thermal_part_landau_i(
                     *q, *p, *m, *beta,
                 ),
                 res[i],
@@ -798,10 +798,10 @@ mod tests {
     }
 
     #[test]
-    fn test_zero_momentum_polarization_l_thermal_part_landau_i() {
+    fn test_zero_momentum_polarization_glue_l_thermal_part_landau_i() {
         use super::zero_momentum::{
-            ffi::oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i,
-            polarization_l_thermal_part_landau_i,
+            ffi::oneloop__zero_momentum__gluon__polarization_glue_l_thermal_part_landau_i,
+            polarization_glue_l_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R); 5] = [
@@ -822,14 +822,14 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
             assert_equal(
-                polarization_l_thermal_part_landau_i(*q, *om, *m, *beta),
+                polarization_glue_l_thermal_part_landau_i(*q, *om, *m, *beta),
                 res[i],
             )
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
             assert_equal(
-                oneloop__zero_momentum__gluon__polarization_l_thermal_part_landau_i(
+                oneloop__zero_momentum__gluon__polarization_glue_l_thermal_part_landau_i(
                     *q, *om, *m, *beta,
                 ),
                 res[i],
@@ -838,10 +838,10 @@ mod tests {
     }
 
     #[test]
-    fn test_zero_momentum_polarization_t_thermal_part_landau_i() {
+    fn test_zero_momentum_polarization_glue_t_thermal_part_landau_i() {
         use super::zero_momentum::{
-            ffi::oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i,
-            polarization_t_thermal_part_landau_i,
+            ffi::oneloop__zero_momentum__gluon__polarization_glue_t_thermal_part_landau_i,
+            polarization_glue_t_thermal_part_landau_i,
         };
 
         let args: [(R, R, R, R); 5] = [
@@ -862,14 +862,14 @@ mod tests {
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
             assert_equal(
-                polarization_t_thermal_part_landau_i(*q, *om, *m, *beta),
+                polarization_glue_t_thermal_part_landau_i(*q, *om, *m, *beta),
                 res[i],
             )
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
             assert_equal(
-                oneloop__zero_momentum__gluon__polarization_t_thermal_part_landau_i(
+                oneloop__zero_momentum__gluon__polarization_glue_t_thermal_part_landau_i(
                     *q, *om, *m, *beta,
                 ),
                 res[i],

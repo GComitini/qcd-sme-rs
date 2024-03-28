@@ -40,7 +40,7 @@ pub mod gluon {
 
     pub(crate) mod inlines {
         use crate::low_level::oneloop::thermal::gluon::{
-            polarization_l_thermal_part_landau, polarization_t_thermal_part_landau,
+            polarization_glue_l_thermal_part_landau, polarization_glue_t_thermal_part_landau,
         };
         use crate::ym::gluon as gluon_vac;
         use crate::{Num, C, R};
@@ -53,7 +53,7 @@ pub mod gluon {
             let sdim = om * om + p * p;
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, f0)
-                - sdim.inv() * PREFACTOR * polarization_l_thermal_part_landau(om, p, m, beta)
+                - sdim.inv() * PREFACTOR * polarization_glue_l_thermal_part_landau(om, p, m, beta)
         }
 
         #[inline(always)]
@@ -61,7 +61,7 @@ pub mod gluon {
             let sdim = om * om + p * p;
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, f0)
-                - sdim.inv() * PREFACTOR * polarization_t_thermal_part_landau(om, p, m, beta)
+                - sdim.inv() * PREFACTOR * polarization_glue_t_thermal_part_landau(om, p, m, beta)
         }
     }
 }
@@ -109,7 +109,7 @@ pub mod zero_matsubara {
 
         pub(crate) mod inlines {
             use crate::low_level::oneloop::thermal::gluon::zero_matsubara::{
-                polarization_l_thermal_part_landau, polarization_t_thermal_part_landau,
+                polarization_glue_l_thermal_part_landau, polarization_glue_t_thermal_part_landau,
             };
             use crate::ym::gluon as gluon_vac;
             use crate::R;
@@ -122,7 +122,7 @@ pub mod zero_matsubara {
                 let sdim = p * p;
                 let s = sdim / (m * m);
                 gluon_vac::dressing_inv_landau(s, f0)
-                    - PREFACTOR * polarization_l_thermal_part_landau(p, m, beta) / sdim
+                    - PREFACTOR * polarization_glue_l_thermal_part_landau(p, m, beta) / sdim
             }
 
             #[inline(always)]
@@ -130,7 +130,7 @@ pub mod zero_matsubara {
                 let sdim = p * p;
                 let s = sdim / (m * m);
                 gluon_vac::dressing_inv_landau(s, f0)
-                    - PREFACTOR * polarization_t_thermal_part_landau(p, m, beta) / sdim
+                    - PREFACTOR * polarization_glue_t_thermal_part_landau(p, m, beta) / sdim
             }
         }
     }
@@ -178,7 +178,7 @@ pub mod zero_momentum {
         pub(crate) mod ffi {}
 
         pub(crate) mod inlines {
-            use crate::low_level::oneloop::thermal::gluon::zero_momentum::polarization_l_thermal_part_landau;
+            use crate::low_level::oneloop::thermal::gluon::zero_momentum::polarization_glue_l_thermal_part_landau;
             use crate::ym::gluon as gluon_vac;
             use crate::{Num, C, R};
             use std::f64::consts::PI;
@@ -190,7 +190,7 @@ pub mod zero_momentum {
                 let sdim = om * om;
                 let s = sdim / (m * m);
                 gluon_vac::dressing_inv_landau(s, f0)
-                    - sdim.inv() * PREFACTOR * polarization_l_thermal_part_landau(om, m, beta)
+                    - sdim.inv() * PREFACTOR * polarization_glue_l_thermal_part_landau(om, m, beta)
             }
 
             #[inline(always)]
