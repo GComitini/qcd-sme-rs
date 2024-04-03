@@ -671,7 +671,7 @@ pub mod zero_matsubara {
             let nc = get_number_of_colors();
             let s = p * p;
             let en = energy(q, mq);
-            let t1 = (s - en * en * 4.) / (4. * q * p) * tlog_same_mass(q, p);
+            let t1 = (en * en).mul_add(-4., s) / (4. * q * p) * tlog_same_mass(q, p);
             -fermi_distribution_double(en, beta, mu) * q * q / (en * nc as R * 2. * PI2) * (1. - t1)
         }
 
@@ -681,7 +681,7 @@ pub mod zero_matsubara {
             let p2 = p * p;
             let q2 = q * q;
             let en = energy(q, mq);
-            let t1 = (p2 + 4. * q2) * tlog_same_mass(q, p);
+            let t1 = 4.0f64.mul_add(q2, p2) * tlog_same_mass(q, p);
             -fermi_distribution_double(en, beta, mu) * q2 / (en * nc as R * 4. * PI2)
                 * (1. - t1 / (4. * q * p))
         }
@@ -1043,7 +1043,7 @@ pub mod zero_momentum {
                 * 2.
                 * fermi_distribution_double(en, beta, mu)
                 * q2
-                * (q2 - 3. * en2)
+                * 3.0f64.mul_add(-en2, q2)
         }
 
         #[inline(always)]
