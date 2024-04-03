@@ -1,6 +1,8 @@
 use peroxide::prelude::*;
-use qcd_sme::low_level::oneloop::thermal::gluon::polarization_quark_l_thermal_part_landau_i;
 use qcd_sme::low_level::oneloop::thermal::gluon::zero_momentum::polarization_quark_l_thermal_part_landau_i as polarization_quark_l_thermal_part_landau_i_zero_momentum;
+use qcd_sme::low_level::oneloop::thermal::gluon::{
+    polarization_quark_l_thermal_part_landau_i, polarization_quark_t_thermal_part_landau_i,
+};
 use rayon::prelude::*;
 
 fn main() {
@@ -42,6 +44,17 @@ fn main() {
             .collect();
         plot.insert_image(glplt);
         legend.push(format!("p = {p} GeV (long.)"));
+        let glplt = momenta
+            .par_iter()
+            .map(|&q| {
+                eprint!("Computing {q} (transverse)... ");
+                let res = polarization_quark_t_thermal_part_landau_i(q, om, p, mq, beta, 1.2).re;
+                eprintln!("Computed {res}.");
+                res
+            })
+            .collect();
+        plot.insert_image(glplt);
+        legend.push(format!("p = {p} GeV (trans.)"));
     }
 
     let glplt = momenta
@@ -60,5 +73,5 @@ fn main() {
     /* PLOT */
 
     plot.set_legend(legend.iter().map(|s| s.as_str()).collect());
-    plot.savefig().ok();
+    plot.savefig().expect("WTF");
 }

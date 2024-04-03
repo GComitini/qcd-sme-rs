@@ -33,6 +33,17 @@ mod native {
         inlines::polarization_quark_l_thermal_part_landau_i(q, om, p, mq, beta, mu)
     }
 
+    pub fn polarization_quark_t_thermal_part_landau_i<T: Num>(
+        q: R,
+        om: T,
+        p: R,
+        mq: R,
+        beta: R,
+        mu: R,
+    ) -> C {
+        inlines::polarization_quark_t_thermal_part_landau_i(q, om, p, mq, beta, mu)
+    }
+
     pub fn polarization_glue_t_thermal_part_landau_i<T: Num>(
         q: R,
         om: T,
@@ -120,6 +131,18 @@ pub(crate) mod ffi {
         mu: R,
     ) -> C {
         inlines::polarization_quark_l_thermal_part_landau_i(q, om, p, mq, beta, mu)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__gluon__polarization_quark_t_thermal_part_landau_i(
+        q: R,
+        om: R,
+        p: R,
+        mq: R,
+        beta: R,
+        mu: R,
+    ) -> C {
+        inlines::polarization_quark_t_thermal_part_landau_i(q, om, p, mq, beta, mu)
     }
 }
 
@@ -235,10 +258,36 @@ pub(crate) mod inlines {
         let en = energy(q, mq);
         let tl = tlog_same_mass(q, om, p, en);
         let tl_opp = tlog_same_mass(q, -om, p, en);
-        let t1 = (s - en * en * 4. + om * 4. * I * en) / (8. * q * p) * tl;
-        let t1_opp = (s - en * en * 4. - om * 4. * I * en) / (8. * q * p) * tl_opp;
+        let t1 = (s - en * en * 4. + om * 4. * I * en) * tl;
+        let t1_opp = (s - en * en * 4. - om * 4. * I * en) * tl_opp;
         -s * fermi_distribution_double(en, beta, mu) * q * q / (p2 * en * nc as R * 2. * PI2)
-            * (1. - t1 - t1_opp)
+            * (1. - (t1 + t1_opp) / (8. * q * p))
+    }
+
+    #[inline(always)]
+    pub fn polarization_quark_t_thermal_part_landau_i<T: Num>(
+        q: R,
+        om: T,
+        p: R,
+        mq: R,
+        beta: R,
+        mu: R,
+    ) -> C {
+        let nc = get_number_of_colors();
+        let p2 = p * p;
+        let om2 = om * om;
+        let s = om2 + p2;
+        let q2 = q * q;
+        let en = energy(q, mq);
+        let a = -om2 + p2;
+        let b = a * s + 4. * q2 * p2 + om2 * 4. * en * en;
+        let c = om * s * 4. * I * en;
+        let tl = tlog_same_mass(q, om, p, en);
+        let tl_opp = tlog_same_mass(q, -om, p, en);
+        let t1 = (b - c) * tl;
+        let t1_opp = (b + c) * tl_opp;
+        -fermi_distribution_double(en, beta, mu) * q2 / (p2 * en * nc as R * 4. * PI2)
+            * (a - (t1 + t1_opp) / (8. * q * p))
     }
 
     #[inline(always)]
@@ -339,6 +388,10 @@ pub mod zero_matsubara {
         pub fn polarization_quark_l_thermal_part_landau_i(q: R, p: R, mq: R, beta: R, mu: R) -> R {
             inlines::polarization_quark_l_thermal_part_landau_i(q, p, mq, beta, mu)
         }
+
+        pub fn polarization_quark_t_thermal_part_landau_i(q: R, p: R, mq: R, beta: R, mu: R) -> R {
+            inlines::polarization_quark_t_thermal_part_landau_i(q, p, mq, beta, mu)
+        }
     }
 
     pub(crate) mod ffi {
@@ -374,6 +427,17 @@ pub mod zero_matsubara {
             mu: R,
         ) -> R {
             inlines::polarization_quark_l_thermal_part_landau_i(q, p, mq, beta, mu)
+        }
+
+        #[no_mangle]
+        pub extern "C" fn oneloop__zero_matsubara__gluon__polarization_quark_t_thermal_part_landau_i(
+            q: R,
+            p: R,
+            mq: R,
+            beta: R,
+            mu: R,
+        ) -> R {
+            inlines::polarization_quark_t_thermal_part_landau_i(q, p, mq, beta, mu)
         }
     }
 
@@ -463,9 +527,19 @@ pub mod zero_matsubara {
             let nc = get_number_of_colors();
             let s = p * p;
             let en = energy(q, mq);
-            let tl = tlog_same_mass(q, p);
-            let t1 = (s - en * en * 4.) / (4. * q * p) * tl;
+            let t1 = (s - en * en * 4.) / (4. * q * p) * tlog_same_mass(q, p);
             -fermi_distribution_double(en, beta, mu) * q * q / (en * nc as R * 2. * PI2) * (1. - t1)
+        }
+
+        #[inline(always)]
+        pub fn polarization_quark_t_thermal_part_landau_i(q: R, p: R, mq: R, beta: R, mu: R) -> R {
+            let nc = get_number_of_colors();
+            let p2 = p * p;
+            let q2 = q * q;
+            let en = energy(q, mq);
+            let t1 = (p2 + 4. * q2) * tlog_same_mass(q, p);
+            -fermi_distribution_double(en, beta, mu) * q2 / (en * nc as R * 4. * PI2)
+                * (1. - t1 / (4. * q * p))
         }
 
         #[inline(always)]
@@ -952,6 +1026,56 @@ mod tests {
     }
 
     #[test]
+    fn test_polarization_quark_t_thermal_part_landau_i() {
+        use super::{
+            ffi::oneloop__gluon__polarization_quark_t_thermal_part_landau_i,
+            polarization_quark_t_thermal_part_landau_i,
+        };
+
+        assert_eq!(crate::consts::get_number_of_colors(), 3);
+
+        let args: [(R, R, R, R, R, R); 7] = [
+            (0.62, 0.21, 2.16, 1.2, 3.2, 0.8),
+            (0.35, 0.21, 2.16, 1.2, 3.2, 0.8),
+            (0.35, 0.75, 2.16, 1.2, 3.2, 0.8),
+            (0.35, 0.75, 1.15, 1.2, 3.2, 0.8),
+            (0.35, 0.75, 1.15, 3.76, 3.2, 0.8),
+            (0.35, 0.75, 1.15, 3.76, 0.19, 0.8),
+            (0.35, 0.75, 1.15, 3.76, 0.19, 5.9),
+        ];
+
+        let res: [C; 7] = [
+            0.0001555678194717369 + 0. * I,
+            1.801267697432198e-05 + 0. * I,
+            -2.3742678845706716e-05 + 0. * I,
+            -0.00015027646885955933 + 0. * I,
+            -3.597043163726963e-08 + 0. * I,
+            -0.0003218137257399576 + 0. * I,
+            -0.00036053181120629027 + 0. * I,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, mq, beta, mu))| {
+                assert_equal(
+                    polarization_quark_t_thermal_part_landau_i(*q, *om, *p, *mq, *beta, *mu),
+                    res[i],
+                )
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, p, mq, beta, mu))| {
+                assert_equal(
+                    oneloop__gluon__polarization_quark_t_thermal_part_landau_i(
+                        *q, *om, *p, *mq, *beta, *mu,
+                    ),
+                    res[i],
+                )
+            });
+    }
+
+    #[test]
     fn test_zero_matsubara_polarization_glue_l_thermal_part_landau_i() {
         use super::zero_matsubara::{
             ffi::oneloop__zero_matsubara__gluon__polarization_glue_l_thermal_part_landau_i,
@@ -1080,6 +1204,54 @@ mod tests {
     }
 
     #[test]
+    fn test_zero_matsubara_polarization_quark_t_thermal_part_landau_i() {
+        use super::zero_matsubara::{
+            ffi::oneloop__zero_matsubara__gluon__polarization_quark_t_thermal_part_landau_i,
+            polarization_quark_t_thermal_part_landau_i,
+        };
+
+        assert_eq!(crate::consts::get_number_of_colors(), 3);
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 2.16, 1.2, 3.2, 0.8),
+            (0.35, 2.16, 1.2, 3.2, 0.8),
+            (0.35, 1.15, 1.2, 3.2, 0.8),
+            (0.35, 1.15, 3.76, 3.2, 0.8),
+            (0.35, 1.15, 3.76, 0.19, 0.8),
+            (0.35, 1.15, 3.76, 0.19, 5.9),
+        ];
+
+        let res: [R; 6] = [
+            0.00018211145069647552,
+            2.336631910538359e-05,
+            9.444246149959117e-05,
+            1.1909109425785625e-08,
+            0.00010654625758190622,
+            0.00011936506168260148,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, p, mq, beta, mu))| {
+                assert_equal(
+                    polarization_quark_t_thermal_part_landau_i(*q, *p, *mq, *beta, *mu),
+                    res[i],
+                )
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, p, mq, beta, mu))| {
+                assert_equal(
+                    oneloop__zero_matsubara__gluon__polarization_quark_t_thermal_part_landau_i(
+                        *q, *p, *mq, *beta, *mu,
+                    ),
+                    res[i],
+                )
+            });
+    }
+
+    #[test]
     fn test_zero_momentum_polarization_glue_l_thermal_part_landau_i() {
         use super::zero_momentum::{
             ffi::oneloop__zero_momentum__gluon__polarization_glue_l_thermal_part_landau_i,
@@ -1200,6 +1372,54 @@ mod tests {
             .for_each(|(i, (q, om, mq, beta, mu))| {
                 assert_equal(
                     oneloop__zero_momentum__gluon__polarization_quark_l_thermal_part_landau_i(
+                        *q, *om, *mq, *beta, *mu,
+                    ),
+                    res[i],
+                )
+            });
+    }
+
+    #[test]
+    fn test_zero_momentum_polarization_quark_t_thermal_part_landau_i() {
+        use super::zero_momentum::{
+            ffi::oneloop__zero_momentum__gluon__polarization_quark_t_thermal_part_landau_i,
+            polarization_quark_t_thermal_part_landau_i,
+        };
+
+        assert_eq!(crate::consts::get_number_of_colors(), 3);
+
+        let args: [(R, R, R, R, R); 6] = [
+            (0.62, 0.21, 1.2, 3.2, 0.8),
+            (0.35, 0.21, 1.2, 3.2, 0.8),
+            (0.35, 0.75, 1.2, 3.2, 0.8),
+            (0.35, 0.75, 3.76, 3.2, 0.8),
+            (0.35, 0.75, 3.76, 0.19, 0.8),
+            (0.35, 0.75, 3.76, 0.19, 5.9),
+        ];
+
+        let res: [R; 6] = [
+            -0.0006552698065849495,
+            -0.00030880656355125976,
+            -0.0002853078006088784,
+            -3.975991731807946e-08,
+            -0.0003557168080792885,
+            -0.00039851384461139094,
+        ];
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, mq, beta, mu))| {
+                assert_equal(
+                    polarization_quark_t_thermal_part_landau_i(*q, *om, *mq, *beta, *mu),
+                    res[i],
+                )
+            });
+
+        args.iter()
+            .enumerate()
+            .for_each(|(i, (q, om, mq, beta, mu))| {
+                assert_equal(
+                    oneloop__zero_momentum__gluon__polarization_quark_t_thermal_part_landau_i(
                         *q, *om, *mq, *beta, *mu,
                     ),
                     res[i],

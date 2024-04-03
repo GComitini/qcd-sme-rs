@@ -431,6 +431,18 @@ def gluon_pol_quark_l_zp(q, om, m, beta, mu):
     return -2/(9*np.pi**2)*fermi_double(q, m, beta, mu)*q**2/eg*(3*eg**2-q**2)/(om**2+4*eg**2)
 
 
+def gluon_pol_quark_trace(q, om, p, m, beta, mu):
+    s = om*om+p*p
+    eg = en(q, m)
+    t1 = (s-2*m*m)/(8*q*p)*tlog(q, om, p, eg, 0)
+    t1opp = (s-2*m*m)/(8*q*p)*tlog(q, -om, p, eg, 0)
+    return -fermi_double(q, m, beta, mu)*q**2/eg*(1-t1-t1opp)/(3*np.pi**2)
+
+
+def gluon_pol_quark_t(q, om, p, m, beta, mu):
+    return (gluon_pol_quark_trace(q, om, p, m, beta, mu)-gluon_pol_quark_l(q, om, p, m, beta, mu))/2
+
+
 Qlog = [
     (0.03, 0., 2.12, 4., 2.),
     (0.047, 0., 2.12, 4., 2.),
@@ -762,6 +774,10 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
 # resglpolqlzm = [gluon_pol_quark_l(*args) for args in Qigqzm]
 # resglpolqlzp = [gluon_pol_quark_l_zp(*args) for args in Qigqzp]
 
+# resglpolqt = [gluon_pol_quark_t(*args) for args in Qigq]
+# resglpolqtzm = [gluon_pol_quark_t(*args) for args in Qigqzm]
+# resglpolqtzp = [gluon_pol_quark_t_zp(*args) for args in Qigqzp]
+
 # print(str(reslog).replace('j', '*I').replace('(', '').replace(')', ''))
 # print(str(reslogs).replace('j', '*I').replace('(', '').replace(')', ''))
 # print(str(reslog0).replace('j', '*I').replace('(', '').replace(')', ''))
@@ -970,6 +986,13 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
 # print(str(resglpolql).replace('j', '*I').replace('(',
 #                                                 '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 # print(str(resglpolqlzm).replace('j', '*I').replace('(',
+#                                                   '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resglpolqlzp).replace('j', '*I').replace('(',
+#                                                   '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+# print(str(resglpolqt).replace('j', '*I').replace('(',
+#                                                 '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resglpolqtzm).replace('j', '*I').replace('(',
 #                                                   '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 # print(str(resglpolqlzp).replace('j', '*I').replace('(',
 #                                                   '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
