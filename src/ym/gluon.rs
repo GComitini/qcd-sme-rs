@@ -366,7 +366,7 @@ mod tests {
             1.224310148974833,
             1.7199708898738115,
         ];
-        for v in real_results.iter_mut() {
+        for v in &mut real_results {
             *v = v.inv();
         }
         let mut complex_results: [C; 5] = [
@@ -376,7 +376,7 @@ mod tests {
             1.2225243812835327 + 0.06907180360840477 * I,
             1.740527303983705 + 0.36449585222116365 * I,
         ];
-        for v in complex_results.iter_mut() {
+        for v in &mut complex_results {
             *v = v.inv();
         }
 
@@ -437,7 +437,7 @@ mod tests {
             1.224310148974833,
             1.7199708898738115,
         ];
-        for v in real_results.iter_mut() {
+        for v in &mut real_results {
             *v = v.inv();
         }
         let mut complex_results: [C; 5] = [
@@ -447,7 +447,7 @@ mod tests {
             1.2225243812835327 + 0.06907180360840477 * I,
             1.740527303983705 + 0.36449585222116365 * I,
         ];
-        for v in complex_results.iter_mut() {
+        for v in &mut complex_results {
             *v = v.inv();
         }
         test_dressing(0., real_results, complex_results)
@@ -461,7 +461,7 @@ mod tests {
             1.0590022119885176,
             1.3114932289936028,
         ];
-        for v in real_results.iter_mut() {
+        for v in &mut real_results {
             *v = v.inv();
         }
         let mut complex_results: [C; 5] = [
@@ -471,7 +471,7 @@ mod tests {
             1.0407408674458878 + 0.006474361373422277 * I,
             1.3124101738042617 + 0.24944668950975402 * I,
         ];
-        for v in complex_results.iter_mut() {
+        for v in &mut complex_results {
             *v = v.inv();
         }
         test_dressing(1., real_results, complex_results)

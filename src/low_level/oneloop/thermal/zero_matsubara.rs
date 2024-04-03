@@ -477,7 +477,8 @@ pub(crate) mod inlines {
         let qp = q * p;
         let p2 = p * p;
         let p3 = p2 * p;
-        let t = bose_distribution_zero_chempot(q, beta) * (-p2 * 4.).mul_add(qp, tlog_t_zero_mass(q, p));
+        let t = bose_distribution_zero_chempot(q, beta)
+            * (-p2 * 4.).mul_add(qp, tlog_t_zero_mass(q, p));
         -t / (p3 * 32. * PI2)
     }
 
