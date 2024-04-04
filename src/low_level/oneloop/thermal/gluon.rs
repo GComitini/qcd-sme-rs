@@ -590,7 +590,7 @@ pub mod zero_matsubara {
         use crate::common::thermal::inlines::fermi_distribution_double;
         use crate::consts::{
             get_default_integration_method, get_default_max_iter_integral,
-            get_default_tol_integral, get_number_of_colors,
+            get_default_tol_integral, get_matsubara_reg, get_number_of_colors,
         };
         use crate::low_level::oneloop::thermal::zero_matsubara::*;
         use crate::low_level::oneloop::thermal::{
@@ -601,7 +601,6 @@ pub mod zero_matsubara {
         use peroxide::numerical::integral::{integrate, Integral};
         use std::f64::consts::PI;
 
-        const EPS: R = 1E-5;
         const DEFAULT_TOL_INT_REPL: R = 1E-8;
         const PI2: R = PI * PI;
 
@@ -709,7 +708,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_glue_l_thermal_part_landau_i(
                         (1. - t) / t,
-                        EPS,
+                        get_matsubara_reg(),
                         p,
                         m,
                         beta,
@@ -732,7 +731,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_glue_t_thermal_part_landau_i(
                         (1. - t) / t,
-                        EPS,
+                        get_matsubara_reg(),
                         p,
                         m,
                         beta,
@@ -756,7 +755,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_quark_l_thermal_part_landau_i(
                         (1. - t) / t,
-                        EPS,
+                        get_matsubara_reg(),
                         p,
                         mq,
                         mu,
@@ -781,7 +780,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_quark_t_thermal_part_landau_i(
                         (1. - t) / t,
-                        EPS,
+                        get_matsubara_reg(),
                         p,
                         mq,
                         mu,

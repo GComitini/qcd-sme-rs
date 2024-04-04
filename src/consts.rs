@@ -153,3 +153,32 @@ pub(crate) fn max_iter_integral() -> u32 {
 pub fn get_default_integration_method() -> crate::Integral {
     crate::Integral::G7K15(tol_integral(), max_iter_integral())
 }
+
+/// The regulator for integrals in the matsubara limit.
+static mut MATSUBARA_REG: R = 1E-5;
+
+/// Get the regulator for integrals in the matsubara limit. Equals `1E-5` if never
+/// changed.
+#[no_mangle]
+pub extern "C" fn get_matsubara_reg() -> R {
+    matsubara_reg()
+}
+
+/// Set the regulator for integrals in the matsubara limit.
+///
+/// # Panics
+///
+/// This function panics if `reg <= 0.`.
+#[no_mangle]
+pub extern "C" fn set_matsubara_reg(reg: R) {
+    assert!(reg > 0.);
+    unsafe {
+        MATSUBARA_REG = reg;
+    }
+}
+
+// This is just an alias to avoid typing "unsafe { MATSUBARA_REG }" every time.
+#[inline(always)]
+pub(crate) fn matsubara_reg() -> R {
+    unsafe { MATSUBARA_REG }
+}
