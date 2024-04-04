@@ -805,6 +805,7 @@ pub mod zero_matsubara {
             let (mut integral, dti) =
                 (get_default_integration_method(), get_default_tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
                 if ti == dti && mi == get_default_max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
@@ -817,6 +818,7 @@ pub mod zero_matsubara {
             let (mut integral, dti) =
                 (get_default_integration_method(), get_default_tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
                 if ti == dti && mi == get_default_max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
@@ -829,6 +831,7 @@ pub mod zero_matsubara {
             let (mut integral, dti) =
                 (get_default_integration_method(), get_default_tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
                 if ti == dti && mi == get_default_max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
@@ -841,6 +844,7 @@ pub mod zero_matsubara {
             let (mut integral, dti) =
                 (get_default_integration_method(), get_default_tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
                 if ti == dti && mi == get_default_max_iter_integral() {
                     integral = crate::Integral::G7K15(1E-8, mi);
                 }
