@@ -588,7 +588,10 @@ pub mod zero_matsubara {
     mod inlines {
         use crate::common::inlines::energy;
         use crate::common::thermal::inlines::fermi_distribution_double;
-        use crate::consts::{get_default_integration_method, get_number_of_colors};
+        use crate::consts::{
+            get_default_integration_method, get_default_max_iter_integral,
+            get_default_tol_integral, get_number_of_colors,
+        };
         use crate::low_level::oneloop::thermal::zero_matsubara::*;
         use crate::low_level::oneloop::thermal::{
             d2_j_m_i, d2_j_m_l_i, d2_j_m_t_i, d_j_m_i, d_j_m_l_i, d_j_m_t_i, j_0_i, j_0_l_i,
@@ -598,7 +601,8 @@ pub mod zero_matsubara {
         use peroxide::numerical::integral::{integrate, Integral};
         use std::f64::consts::PI;
 
-        const EPS: R = 1E-6;
+        const EPS: R = 1E-5;
+        const DEFAULT_TOL_INT_REPL: R = 1E-8;
         const PI2: R = PI * PI;
 
         #[inline(always)]
@@ -791,45 +795,57 @@ pub mod zero_matsubara {
         }
 
         #[inline(always)]
+        // To make things worse, if EPS (the regulator for the matsubara frequency)
+        // is too small, the integral's convergence becomes very slow. So, unless the
+        // user customized the integration method, we increase the tolerance of the
+        // default integration method to DEFAULT_TOL_INT_REPL. This does not increase
+        // the error meaningfully, since the error due to EPS being non zero is larger
+        // by at least two orders of magnitude (given the defaults at the time of writing).
         pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            polarization_glue_l_thermal_part_landau_w_method(
-                p,
-                m,
-                beta,
-                get_default_integration_method(),
-            )
+            let (mut integral, dti) =
+                (get_default_integration_method(), get_default_tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                if ti == dti && mi == get_default_max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_glue_l_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
         #[inline(always)]
         pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            polarization_glue_t_thermal_part_landau_w_method(
-                p,
-                m,
-                beta,
-                get_default_integration_method(),
-            )
+            let (mut integral, dti) =
+                (get_default_integration_method(), get_default_tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                if ti == dti && mi == get_default_max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_glue_t_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
         #[inline(always)]
         pub fn polarization_quark_l_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            polarization_quark_l_thermal_part_landau_w_method(
-                p,
-                mq,
-                beta,
-                mu,
-                get_default_integration_method(),
-            )
+            let (mut integral, dti) =
+                (get_default_integration_method(), get_default_tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                if ti == dti && mi == get_default_max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_quark_l_thermal_part_landau_w_method(p, mq, beta, mu, integral)
         }
 
         #[inline(always)]
         pub fn polarization_quark_t_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            polarization_quark_t_thermal_part_landau_w_method(
-                p,
-                mq,
-                beta,
-                mu,
-                get_default_integration_method(),
-            )
+            let (mut integral, dti) =
+                (get_default_integration_method(), get_default_tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                if ti == dti && mi == get_default_max_iter_integral() {
+                    integral = crate::Integral::G7K15(1E-8, mi);
+                }
+            }
+            polarization_quark_t_thermal_part_landau_w_method(p, mq, beta, mu, integral)
         }
     }
 }
