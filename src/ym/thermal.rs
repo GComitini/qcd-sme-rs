@@ -5,6 +5,14 @@ pub mod ghost {
         inlines::dressing_inv_landau(om, p, m, beta, g0)
     }
 
+    pub fn dressing_landau(om: R, p: R, m: R, beta: R, g0: R) -> C {
+        inlines::dressing_landau(om, p, m, beta, g0)
+    }
+
+    pub fn propagator_landau(om: R, p: R, m: R, beta: R, g0: R) -> C {
+        inlines::propagator_landau(om, p, m, beta, g0)
+    }
+
     pub(crate) mod ffi {}
 
     pub(crate) mod inlines {
@@ -22,6 +30,16 @@ pub mod ghost {
             ghost_vac::dressing_inv_landau(s, g0)
                 + sdim.inv() * PREFACTOR * self_energy_thermal_part_landau(om, p, m, beta)
         }
+
+        #[inline(always)]
+        pub fn dressing_landau<T: Num>(om: T, p: R, m: R, beta: R, g0: R) -> C {
+            dressing_inv_landau(om, p, m, beta, g0).inv()
+        }
+
+        #[inline(always)]
+        pub fn propagator_landau<T: Num>(om: T, p: R, m: R, beta: R, g0: R) -> C {
+            (om * om + p * p).inv() * dressing_landau(om, p, m, beta, g0)
+        }
     }
 }
 
@@ -34,6 +52,22 @@ pub mod gluon {
 
     pub fn dressing_t_inv_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
         inlines::dressing_t_inv_landau(om, p, m, beta, f0)
+    }
+
+    pub fn dressing_l_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+        inlines::dressing_l_landau(om, p, m, beta, f0)
+    }
+
+    pub fn dressing_t_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+        inlines::dressing_t_landau(om, p, m, beta, f0)
+    }
+
+    pub fn propagator_l_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+        inlines::propagator_l_landau(om, p, m, beta, f0)
+    }
+
+    pub fn propagator_t_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+        inlines::propagator_t_landau(om, p, m, beta, f0)
     }
 
     pub(crate) mod ffi {}
@@ -62,6 +96,26 @@ pub mod gluon {
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, f0)
                 - sdim.inv() * PREFACTOR * polarization_glue_t_thermal_part_landau(om, p, m, beta)
+        }
+
+        #[inline(always)]
+        pub fn dressing_l_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+            dressing_l_inv_landau(om, p, m, beta, f0).inv()
+        }
+
+        #[inline(always)]
+        pub fn dressing_t_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+            dressing_t_inv_landau(om, p, m, beta, f0).inv()
+        }
+
+        #[inline(always)]
+        pub fn propagator_l_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+            (om * om + p * p).inv() * dressing_l_landau(om, p, m, beta, f0)
+        }
+
+        #[inline(always)]
+        pub fn propagator_t_landau<T: Num>(om: T, p: R, m: R, beta: R, f0: R) -> C {
+            (om * om + p * p).inv() * dressing_t_landau(om, p, m, beta, f0)
         }
     }
 }

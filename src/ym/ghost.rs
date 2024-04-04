@@ -44,6 +44,22 @@ pub(crate) mod native {
     pub fn dressing<T: Num>(s: T, g0: R, xi: R) -> T {
         inlines::dressing(s, g0, xi)
     }
+
+    pub fn propagator_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
+        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    pub fn propagator_landau<T: Num>(s: T, g0: R) -> T {
+        inlines::propagator_landau(s, g0)
+    }
+
+    pub fn propagator_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
+        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
+
+    pub fn propagator<T: Num>(s: T, g0: R, xi: R) -> T {
+        inlines::propagator(s, g0, xi)
+    }
 }
 
 // For use in other languages, e.g. C/C++/Python
@@ -160,6 +176,57 @@ pub(crate) mod ffi {
     pub extern "C" fn ym__ghost__dressing__complex(s: C, g0: R, xi: R) -> C {
         inlines::dressing(s, g0, xi)
     }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
+        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_landau(s: R, g0: R) -> R {
+        inlines::propagator_landau(s, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_landau_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        g0: R,
+    ) -> C {
+        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_landau__complex(s: C, g0: R) -> C {
+        inlines::propagator_landau(s, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
+        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator(s: R, g0: R, xi: R) -> R {
+        inlines::propagator(s, g0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        g0: R,
+        xi: R,
+    ) -> C {
+        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__ghost__propagator__complex(s: C, g0: R, xi: R) -> C {
+        inlines::propagator(s, g0, xi)
+    }
 }
 
 // For internal use only
@@ -215,6 +282,26 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn dressing<T: Num>(s: T, g0: R, xi: R) -> T {
         dressing_inv(s, g0, xi).inv()
+    }
+
+    #[inline(always)]
+    pub fn propagator_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
+        s.inv() * dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    #[inline(always)]
+    pub fn propagator_landau<T: Num>(s: T, g0: R) -> T {
+        s.inv() * dressing_landau(s, g0)
+    }
+
+    #[inline(always)]
+    pub fn propagator_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
+        s.inv() * dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
+
+    #[inline(always)]
+    pub fn propagator<T: Num>(s: T, g0: R, xi: R) -> T {
+        s.inv() * dressing(s, g0, xi)
     }
 }
 
