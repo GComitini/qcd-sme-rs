@@ -42,6 +42,8 @@ fn asymptotics_test(t: R, mu: R, nc: u32, nf: u32) -> R {
 */
 fn main() {
     set_default_tol_integral(1E-4);
+    // Set it a posteriori.
+    let rem = 2.02;
 
     println!("*** TEMPERATURE COMPARISONS ***");
 
@@ -58,10 +60,11 @@ fn main() {
             let (mut y1, mut y2) = (vec![], vec![]);
             for t in &temps {
                 print!("Computing nf = {nf}, nc = {nc}, T = {t}... ");
-                y1.push(asymptotics_known(*t, mu, nc, nf, 2.02));
+                y1.push(asymptotics_known(*t, mu, nc, nf, rem));
                 y2.push(asymptotics_test(*t, mu, nc, nf));
-                println!("First diff: {}.", y2[0] - y1[0]);
+                println!("Diff: {}.", y2.last().unwrap() - y1.last().unwrap());
             }
+            println!("Last diff: {}.", y2.last().unwrap() - y1.last().unwrap());
             plot.insert_image(y1);
             legends.push(format!("nf = {nf}, nc = {nc} (known)"));
             plot.insert_image(y2);
@@ -86,10 +89,11 @@ fn main() {
             let (mut y1, mut y2) = (vec![], vec![]);
             for mu in &chempots {
                 print!("Computing nf = {nf}, nc = {nc}, mu = {mu}... ");
-                y1.push(asymptotics_known(t, *mu, nc, nf, 2.02));
+                y1.push(asymptotics_known(t, *mu, nc, nf, rem));
                 y2.push(asymptotics_test(t, *mu, nc, nf));
-                println!("First diff: {}.", y2[0] - y1[0]);
+                println!("Diff: {}.", y2.last().unwrap() - y1.last().unwrap());
             }
+            println!("Last diff: {}.", y2.last().unwrap() - y1.last().unwrap());
             plot.insert_image(y1);
             legends.push(format!("nf = {nf}, nc = {nc} (known)"));
             plot.insert_image(y2);
