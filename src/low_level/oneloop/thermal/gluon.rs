@@ -845,7 +845,7 @@ pub mod zero_matsubara {
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
                 if ti == dti && mi == get_default_max_iter_integral() {
-                    integral = crate::Integral::G7K15(1E-8, mi);
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
             polarization_quark_t_thermal_part_landau_w_method(p, mq, beta, mu, integral)
