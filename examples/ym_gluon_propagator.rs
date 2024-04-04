@@ -1,7 +1,7 @@
 // Peroxide is used to plot the propagators (and internally for the thermal
 // integrals)
 use peroxide::fuga::*;
-use qcd_sme::ym::thermal::gluon::{propagator_l_landau, propagator_t_landau};
+use qcd_sme::ym::thermal::zero_matsubara::gluon::{propagator_l_landau, propagator_t_landau};
 // Rayon is used to parallelize the computation of the values of the propagator
 // using par_iter
 use rayon::prelude::*;
@@ -25,13 +25,13 @@ fn main() {
     let m = 0.450;
     let f0 = -0.42;
 
-    let norm = propagator_t_landau(0.001, renpoint, m, beta, f0).re * (renpoint * renpoint);
+    let norm = propagator_t_landau(renpoint, m, beta, f0) * (renpoint * renpoint);
 
     let glplt = momenta
         .par_iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_t_landau(0.001, p, m, beta, f0).re / norm;
+            let res = propagator_t_landau(p, m, beta, f0) / norm;
             eprintln!("Computed {res}.");
             res
         })
@@ -41,13 +41,13 @@ fn main() {
     let m = 0.425;
     let f0 = -1.42;
 
-    let norm = propagator_l_landau(0.001, renpoint, m, beta, f0).re * (renpoint * renpoint);
+    let norm = propagator_l_landau(renpoint, m, beta, f0) * (renpoint * renpoint);
 
     let glpll = momenta
         .par_iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_l_landau(0.001, p, m, beta, f0).re / norm;
+            let res = propagator_l_landau(p, m, beta, f0) / norm;
             eprintln!("Computed {res}.");
             res
         })
