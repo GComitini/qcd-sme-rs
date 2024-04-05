@@ -11,6 +11,12 @@ mod native {
     use super::inlines;
     use crate::{Num, R};
 
+    /// The relativistic fermi momentum `sqrt(mu^2-m^2)` as a function of
+    /// the mass `m` and chemical potential `mu`.
+    pub fn fermi_momentum(m: R, mu: R) -> R {
+        inlines::fermi_momentum(m, mu)
+    }
+
     /// The [Fermi-Dirac distribution](https://en.wikipedia.org/wiki/Fermi%E2%80%93Dirac_statistics).
     ///
     /// As a function of the energy `en`, inverse temperature `beta` and
@@ -106,6 +112,11 @@ pub(crate) mod ffi {
     use crate::R;
 
     #[no_mangle]
+    pub extern "C" fn fermi_momentum(m: R, mu: R) -> R {
+        inlines::fermi_momentum(m, mu)
+    }
+
+    #[no_mangle]
     pub extern "C" fn fermi_distribution(en: R, beta: R, mu: R) -> R {
         inlines::fermi_distribution(en, beta, mu)
     }
@@ -151,6 +162,11 @@ pub(crate) mod inlines {
         statistic_distribution_exponential, statistic_distribution_exponential_zero_chempot,
     };
     use crate::{Num, R};
+
+    #[inline(always)]
+    pub fn fermi_momentum(m: R, mu: R) -> R {
+        (mu * mu - m * m).sqrt()
+    }
 
     #[inline(always)]
     pub fn fermi_distribution<T1: Num + std::ops::Sub<T2, Output = T1>, T2: Num>(
