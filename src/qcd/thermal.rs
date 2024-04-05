@@ -34,7 +34,7 @@ pub mod gluon {
     pub(crate) mod inlines {
         use crate::consts::{m_quark, nf};
         use crate::low_level::oneloop::thermal::gluon as gluon_thermal_parts;
-        use crate::ym::thermal::gluon as ym_thermal;
+        use crate::qcd::gluon as gluon_vac;
         use crate::{Num, C, R};
         use std::f64::consts::PI;
 
@@ -43,33 +43,37 @@ pub mod gluon {
         #[inline(always)]
         pub fn dressing_l_inv_landau<T: Num>(om: T, p: R, m: R, beta: R, mu: R, f0: R) -> C {
             let sdim = om * om + p * p;
-            ym_thermal::dressing_l_inv_landau(om, p, m, beta, f0)
+            let s = sdim / (m * m);
+            gluon_vac::dressing_inv_landau(s, f0)
                 - sdim.inv()
                     * PREFACTOR
-                    * (nf() as R)
-                    * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
-                        om,
-                        p,
-                        m_quark(),
-                        beta,
-                        mu,
-                    )
+                    * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(om, p, m, beta)
+                        + (nf() as R)
+                            * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                                om,
+                                p,
+                                m_quark(),
+                                beta,
+                                mu,
+                            ))
         }
 
         #[inline(always)]
         pub fn dressing_t_inv_landau<T: Num>(om: T, p: R, m: R, beta: R, mu: R, f0: R) -> C {
             let sdim = om * om + p * p;
-            ym_thermal::dressing_t_inv_landau(om, p, m, beta, f0)
+            let s = sdim / (m * m);
+            gluon_vac::dressing_inv_landau(s, f0)
                 - sdim.inv()
                     * PREFACTOR
-                    * (nf() as R)
-                    * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
-                        om,
-                        p,
-                        m_quark(),
-                        beta,
-                        mu,
-                    )
+                    * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(om, p, m, beta)
+                        + (nf() as R)
+                            * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                                om,
+                                p,
+                                m_quark(),
+                                beta,
+                                mu,
+                            ))
         }
 
         #[inline(always)]
@@ -131,7 +135,7 @@ pub mod zero_matsubara {
         pub(crate) mod inlines {
             use crate::consts::{m_quark, nf};
             use crate::low_level::oneloop::thermal::gluon::zero_matsubara as gluon_thermal_parts;
-            use crate::ym::thermal::zero_matsubara::gluon as ym_thermal;
+            use crate::qcd::gluon as gluon_vac;
             use crate::R;
             use std::f64::consts::PI;
 
@@ -139,30 +143,36 @@ pub mod zero_matsubara {
 
             #[inline(always)]
             pub fn dressing_l_inv_landau(p: R, m: R, beta: R, mu: R, f0: R) -> R {
-                ym_thermal::dressing_l_inv_landau(p, m, beta, f0)
+                let sdim = p * p;
+                let s = sdim / (m * m);
+                gluon_vac::dressing_inv_landau(s, f0)
                     - PREFACTOR
-                        * (nf() as R)
-                        * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
-                            p,
-                            m_quark(),
-                            beta,
-                            mu,
-                        )
-                        / (p * p)
+                        * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta)
+                            + (nf() as R)
+                                * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                                    p,
+                                    m_quark(),
+                                    beta,
+                                    mu,
+                                ))
+                        / sdim
             }
 
             #[inline(always)]
             pub fn dressing_t_inv_landau(p: R, m: R, beta: R, mu: R, f0: R) -> R {
-                ym_thermal::dressing_t_inv_landau(p, m, beta, f0)
+                let sdim = p * p;
+                let s = sdim / (m * m);
+                gluon_vac::dressing_inv_landau(s, f0)
                     - PREFACTOR
-                        * (nf() as R)
-                        * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
-                            p,
-                            m_quark(),
-                            beta,
-                            mu,
-                        )
-                        / (p * p)
+                        * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta)
+                            + (nf() as R)
+                                * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                                    p,
+                                    m_quark(),
+                                    beta,
+                                    mu,
+                                ))
+                        / sdim
             }
 
             #[inline(always)]
@@ -225,7 +235,7 @@ pub mod zero_momentum {
         pub(crate) mod inlines {
             use crate::consts::{m_quark, nf};
             use crate::low_level::oneloop::thermal::gluon::zero_momentum as gluon_thermal_parts;
-            use crate::ym::thermal::zero_momentum::gluon as ym_thermal;
+            use crate::qcd::ghost as gluon_vac;
             use crate::{Num, C, R};
             use std::f64::consts::PI;
 
@@ -234,31 +244,37 @@ pub mod zero_momentum {
             #[inline(always)]
             pub fn dressing_l_inv_landau<T: Num>(om: T, m: R, beta: R, mu: R, f0: R) -> C {
                 let sdim = om * om;
-                ym_thermal::dressing_l_inv_landau(om, m, beta, f0)
+                let s = sdim / (m * m);
+                gluon_vac::dressing_inv_landau(s, f0)
                     - sdim.inv()
                         * PREFACTOR
-                        * (nf() as R)
-                        * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
-                            om,
-                            m_quark(),
-                            beta,
-                            mu,
-                        )
+                        * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(
+                            om, m, beta,
+                        ) + (nf() as R)
+                            * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                                om,
+                                m_quark(),
+                                beta,
+                                mu,
+                            ))
             }
 
             #[inline(always)]
             pub fn dressing_t_inv_landau<T: Num>(om: T, m: R, beta: R, mu: R, f0: R) -> C {
                 let sdim = om * om;
-                ym_thermal::dressing_t_inv_landau(om, m, beta, f0)
+                let s = sdim / (m * m);
+                gluon_vac::dressing_inv_landau(s, f0)
                     - sdim.inv()
                         * PREFACTOR
-                        * (nf() as R)
-                        * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
-                            om,
-                            m_quark(),
-                            beta,
-                            mu,
-                        )
+                        * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(
+                            om, m, beta,
+                        ) + (nf() as R)
+                            * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                                om,
+                                m_quark(),
+                                beta,
+                                mu,
+                            ))
             }
 
             #[inline(always)]
