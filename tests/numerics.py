@@ -3,6 +3,10 @@
 import numpy as np
 
 
+def f_q(s):
+    return 4/9*((s-2)/(2*s)*np.sqrt((4+s)/s)*np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))-2/s+5/6)
+
+
 def en(q, m):
     return np.sqrt(q**2+m**2)
 
@@ -443,6 +447,9 @@ def gluon_pol_quark_t(q, om, p, m, beta, mu):
     return (gluon_pol_quark_trace(q, om, p, m, beta, mu)-gluon_pol_quark_l(q, om, p, m, beta, mu))/2
 
 
+rtv = [1., 1.834, 2.5, 8.18]
+ctv = [1-0.5j, 1+0.5j, 1.347+0j, 2.56+0.732j, 7.28+5.166j]
+
 Qlog = [
     (0.03, 0., 2.12, 4., 2.),
     (0.047, 0., 2.12, 4., 2.),
@@ -646,6 +653,9 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
           (0.35, 0.75, 3.76, 0.19, 0.8),
           (0.35, 0.75, 3.76, 0.19, 5.9)]
 
+resfqr = [f_q(arg) for arg in rtv]
+resfqc = [f_q(arg) for arg in ctv]
+
 # reslog = [tlog(*args) for args in Qlog]
 # reslogs = [tlog(*args) for args in Qlogs]
 # reslog0 = [tlog(*args) for args in Qlog0]
@@ -777,6 +787,11 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
 # resglpolqt = [gluon_pol_quark_t(*args) for args in Qigq]
 # resglpolqtzm = [gluon_pol_quark_t(*args) for args in Qigqzm]
 # resglpolqtzp = [gluon_pol_quark_t_zp(*args) for args in Qigqzp]
+
+# print(str(resfqr).replace('j', '*I').replace('(',
+#                                             '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resfqc).replace('j', '*I').replace('(',
+#                                             '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 
 # print(str(reslog).replace('j', '*I').replace('(', '').replace(')', ''))
 # print(str(reslogs).replace('j', '*I').replace('(', '').replace(')', ''))

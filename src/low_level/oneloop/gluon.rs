@@ -27,6 +27,10 @@ mod native {
         inlines::f_xi(s)
     }
 
+    pub fn f_q<T: Num>(s: T) -> T {
+        inlines::f_q(s)
+    }
+
     pub fn f_q_crossed<T: Num>(s: T) -> T {
         inlines::f_q_crossed(s)
     }
@@ -83,6 +87,16 @@ pub(crate) mod ffi {
     #[no_mangle]
     pub extern "C" fn oneloop__gluon__f_xi__complex(s: C) -> C {
         inlines::f_xi(s)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__gluon__f_q(s: R) -> R {
+        inlines::f_q(s)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn oneloop__gluon__f_q__complex(s: C) -> C {
+        inlines::f_q(s)
     }
 
     #[no_mangle]
@@ -185,7 +199,19 @@ pub(crate) mod inlines {
         f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
-    // Defined so that f_q_crossed(0)=0.
+    // Defined so that f_q(0)=0.
+    //
+    // Don't define a "sep" variant as s is p^2/M_QUARK^2 and its logarithms
+    // are unlikely to appear in other expressions.
+    #[inline(always)]
+    pub fn f_q<T: Num>(s: T) -> T {
+        let sinv = s.inv();
+        let a2 = sinv * 4. + 1.;
+        let a = a2.sqrt();
+        ((-sinv + 0.5) * a * ((a - 1.) / (a + 1.)).ln() - sinv * 2. + 5. / 6.) * 4. / 9.
+    }
+
+    // Equal to f_q(s)+2s*df_q(s)/ds modulo a constant defined so that f_q_crossed(0)=0.
     //
     // Don't define a "sep" variant as s is p^2/M_QUARK^2 and its logarithms
     // are unlikely to appear in other expressions.
@@ -313,6 +339,46 @@ mod tests {
             .iter()
             .enumerate()
             .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_xi__complex(s), complex_results[i]));
+    }
+
+    #[test]
+    fn test_f_q() {
+        use gluon::f_q;
+        use gluon::ffi::{oneloop__gluon__f_q, oneloop__gluon__f_q__complex};
+
+        const REAL_RESULTS: [R; 4] = [
+            -0.040286361891847346,
+            -0.06882604993530607,
+            -0.0891399017500785,
+            -0.2116655881071791,
+        ];
+        let complex_results: [C; 5] = [
+            -0.04108195144887958 + 0.018275406354830614 * I,
+            -0.04108195144887958 - 0.018275406354830614 * I,
+            -0.05263306134948051 + 0. * I,
+            -0.09192015626362243 - 0.021049245646939316 * I,
+            -0.21395381256611867 - 0.08636454168837476 * I,
+        ];
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(f_q(s), REAL_RESULTS[i]));
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q(s), REAL_RESULTS[i]));
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(f_q(s), complex_results[i]));
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q__complex(s), complex_results[i]));
     }
 
     #[test]
