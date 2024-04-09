@@ -27,8 +27,8 @@ mod native {
         inlines::f_xi(s)
     }
 
-    pub fn f_q<T: Num>(s: T) -> T {
-        inlines::f_q(s)
+    pub fn f_q_crossed<T: Num>(s: T) -> T {
+        inlines::f_q_crossed(s)
     }
 }
 
@@ -86,13 +86,13 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_q(s: R) -> R {
-        inlines::f_q(s)
+    pub extern "C" fn oneloop__gluon__f_q_crossed(s: R) -> R {
+        inlines::f_q_crossed(s)
     }
 
     #[no_mangle]
-    pub extern "C" fn oneloop__gluon__f_q__complex(s: C) -> C {
-        inlines::f_q(s)
+    pub extern "C" fn oneloop__gluon__f_q_crossed__complex(s: C) -> C {
+        inlines::f_q_crossed(s)
     }
 }
 
@@ -185,12 +185,12 @@ pub(crate) mod inlines {
         f_xi_sep(s, ln_s, ln_s_pl_1)
     }
 
-    // Defined so that f_q(0)=0.
+    // Defined so that f_q_crossed(0)=0.
     //
     // Don't define a "sep" variant as s is p^2/M_QUARK^2 and its logarithms
     // are unlikely to appear in other expressions.
     #[inline(always)]
-    pub fn f_q<T: Num>(s: T) -> T {
+    pub fn f_q_crossed<T: Num>(s: T) -> T {
         let sinv = s.inv();
         let sinv2 = sinv * sinv;
         let a2 = sinv * 4. + 1.;
@@ -316,9 +316,9 @@ mod tests {
     }
 
     #[test]
-    fn test_f_q() {
-        use gluon::f_q;
-        use gluon::ffi::{oneloop__gluon__f_q, oneloop__gluon__f_q__complex};
+    fn test_f_q_crossed() {
+        use gluon::f_q_crossed;
+        use gluon::ffi::{oneloop__gluon__f_q_crossed, oneloop__gluon__f_q_crossed__complex};
 
         const REAL_RESULTS: [R; 4] = [
             -0.11357849147764694,
@@ -337,21 +337,20 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(f_q(s), REAL_RESULTS[i]));
+            .for_each(|(i, &s)| assert_equal(f_q_crossed(s), REAL_RESULTS[i]));
 
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q(s), REAL_RESULTS[i]));
+            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q_crossed(s), REAL_RESULTS[i]));
 
         COMPLEX_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(f_q(s), complex_results[i]));
+            .for_each(|(i, &s)| assert_equal(f_q_crossed(s), complex_results[i]));
 
-        COMPLEX_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(oneloop__gluon__f_q__complex(s), complex_results[i]));
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(oneloop__gluon__f_q_crossed__complex(s), complex_results[i])
+        });
     }
 }

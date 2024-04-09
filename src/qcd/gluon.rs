@@ -202,7 +202,7 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R) -> T {
-        f_sep(s, ln_s, ln_s_pl_1) + f_q(s_q) * nf_div_nc() + f0
+        f_sep(s, ln_s, ln_s_pl_1) + f_q_crossed(s_q) * nf_div_nc() + f0
     }
 
     #[inline(always)]
