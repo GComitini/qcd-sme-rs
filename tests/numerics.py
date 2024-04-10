@@ -3,6 +3,10 @@
 import numpy as np
 
 
+nq = 1
+nc = 3
+
+
 def f(s):
     la = (3*s**3-34*s**2-28*s-24)/s*np.sqrt((s+4)/s) * \
         np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))
@@ -22,8 +26,24 @@ def f_q(s):
     return 4/9*((s-2)/(2*s)*np.sqrt((4+s)/s)*np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))-2/s+5/6)
 
 
+def f_q_crossed(s):
+    return 4/9*((s**2+2*s+16)/(2*s*(4+s))*np.sqrt((4+s)/s)*np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))+4/s-1/6)
+
+
 def g(s):
     return (1+s)**2*(2*s-1)/s**2 * np.log(1+s)-2*s*np.log(s)+1/s+2
+
+
+def ym_gluon_dressing_inv(s, xi, f0):
+    return f(s)+xi*f_xi(s)+f0
+
+
+def qcd_gluon_dressing_inv(s, mq, xi, f0):
+    return ym_gluon_dressing_inv(s, xi, f0)+nq/nc*f_q(s/mq**2)
+
+
+def qcd_gluon_dressing_crossed_inv(s, mq, xi, f0):
+    return ym_gluon_dressing_inv(s, xi, f0)+nq/nc*f_q_crossed(s/mq**2)
 
 
 def en(q, m):
@@ -681,6 +701,19 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
 # resfqr = [f_q(arg) for arg in rtv]
 # resfqc = [f_q(arg) for arg in ctv]
 
+# resfqcr = [f_q_crossed(arg) for arg in rtv]
+# resfqcc = [f_q_crossed(arg) for arg in ctv]
+
+# resqcdgldrinvlandr = [qcd_gluon_dressing_inv(
+#    arg, 0.5, 0, -0.876) for arg in rtv]
+# resqcdgldrinvlandc = [qcd_gluon_dressing_inv(
+#    arg, 0.5, 0, -0.876) for arg in ctv]
+
+# resqcdgldrinvfeynr = [qcd_gluon_dressing_inv(
+#    arg, 0.5, 1, -0.876) for arg in rtv]
+# resqcdgldrinvfeync = [qcd_gluon_dressing_inv(
+#    arg, 0.5, 1, -0.876) for arg in ctv]
+
 # reslog = [tlog(*args) for args in Qlog]
 # reslogs = [tlog(*args) for args in Qlogs]
 # reslog0 = [tlog(*args) for args in Qlog0]
@@ -827,6 +860,21 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
 #                                             '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 # print(str(resfqc).replace('j', '*I').replace('(',
 #                                             '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+# print(str(resfqcr).replace('j', '*I').replace('(',
+#                                              '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resfqcc).replace('j', '*I').replace('(',
+#                                              '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+# print(str(resqcdgldrinvlandr).replace('j', '*I').replace('(',
+#                                                         '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resqcdgldrinvlandc).replace('j', '*I').replace('(',
+#                                                         '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+# print(str(resqcdgldrinvfeynr).replace('j', '*I').replace('(',
+#                                                         '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resqcdgldrinvfeync).replace('j', '*I').replace('(',
+#                                                         '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 
 # print(str(reslog).replace('j', '*I').replace('(', '').replace(')', ''))
 # print(str(reslogs).replace('j', '*I').replace('(', '').replace(')', ''))
