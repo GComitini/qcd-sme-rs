@@ -379,7 +379,7 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R) -> T {
-        f_sep(s, ln_s, ln_s_pl_1) + f_q_crossed(s_q) * nf_div_nc() + f0
+        f_sep(s, ln_s, ln_s_pl_1) + f_q(s_q) * nf_div_nc() + f0
     }
 
     #[inline(always)]
@@ -530,6 +530,233 @@ mod tests {
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
             );
         }
+    }
+
+    #[test]
+    fn test_dressing_inv_landau_0() {
+        use gluon::dressing_inv_landau;
+        use gluon::ffi::{
+            qcd__gluon__dressing_inv_landau, qcd__gluon__dressing_inv_landau__complex,
+        };
+
+        const REAL_RESULTS: [R; 4] = [
+            1.1452200013339067,
+            1.0278169334356733,
+            1.0479069719664291,
+            1.446544935725117,
+        ];
+        let complex_results: [C; 5] = [
+            1.0283574166816276 + 0.13902433016869392 * I,
+            1.0283574166816276 - 0.13902433016869392 * I,
+            1.058123207942039 + 0. * I,
+            1.0412407008118778 + 0.0464390633718008 * I,
+            1.4593613027930297 + 0.31457224197479217 * I,
+        ];
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, -0.876), REAL_RESULTS[i]));
+
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_inv_landau(s, -0.876), REAL_RESULTS[i])
+        });
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, -0.876), complex_results[i]));
+
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(
+                qcd__gluon__dressing_inv_landau__complex(s, -0.876),
+                complex_results[i],
+            )
+        });
+    }
+
+    fn test_dressing_inv(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
+        use gluon::dressing_inv;
+        use gluon::ffi::{qcd__gluon__dressing_inv, qcd__gluon__dressing_inv__complex};
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_inv(s, -0.876, xi), real_results[i]));
+
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_inv(s, -0.876, xi), real_results[i])
+        });
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_inv(s, -0.876, xi), complex_results[i]));
+
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(
+                qcd__gluon__dressing_inv__complex(s, -0.876, xi),
+                complex_results[i],
+            )
+        });
+    }
+
+    #[test]
+    fn test_dressing_inv_landau() {
+        const REAL_RESULTS: [R; 4] = [
+            1.1452200013339067,
+            1.0278169334356733,
+            1.0479069719664291,
+            1.446544935725117,
+        ];
+        let complex_results: [C; 5] = [
+            1.0283574166816276 + 0.13902433016869392 * I,
+            1.0283574166816276 - 0.13902433016869392 * I,
+            1.058123207942039 + 0. * I,
+            1.0412407008118778 + 0.0464390633718008 * I,
+            1.4593613027930297 + 0.31457224197479217 * I,
+        ];
+        test_dressing_inv(0., REAL_RESULTS, complex_results)
+    }
+
+    #[test]
+    fn test_dressing_inv_feynman() {
+        const REAL_RESULTS: [R; 4] = [
+            1.22855333466724,
+            0.9368302219977984,
+            0.8825990349801137,
+            1.0380672748449082,
+        ];
+        let complex_results: [C; 5] = [
+            1.0581546818021597 + 0.28073060483034323 * I,
+            1.0581546818021597 - 0.28073060483034323 * I,
+            1.0497388896929305 + 0. * I,
+            0.8594571869742331 - 0.016158378863181694 * I,
+            1.0312441726135864 + 0.19952307926338256 * I,
+        ];
+        test_dressing_inv(1., REAL_RESULTS, complex_results)
+    }
+
+    #[test]
+    fn test_dressing_landau_0() {
+        use gluon::dressing_landau;
+        use gluon::ffi::{qcd__gluon__dressing_landau, qcd__gluon__dressing_landau__complex};
+
+        let mut real_results: [R; 4] = [
+            1.1452200013339067,
+            1.0278169334356733,
+            1.0479069719664291,
+            1.446544935725117,
+        ];
+        for v in &mut real_results {
+            *v = v.inv();
+        }
+        let mut complex_results: [C; 5] = [
+            1.0283574166816276 + 0.13902433016869392 * I,
+            1.0283574166816276 - 0.13902433016869392 * I,
+            1.058123207942039 + 0. * I,
+            1.0412407008118778 + 0.0464390633718008 * I,
+            1.4593613027930297 + 0.31457224197479217 * I,
+        ];
+        for v in &mut complex_results {
+            *v = v.inv();
+        }
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_landau(s, -0.876), real_results[i]));
+
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_landau(s, -0.876), real_results[i])
+        });
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing_landau(s, -0.876), complex_results[i]));
+
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(
+                qcd__gluon__dressing_landau__complex(s, -0.876),
+                complex_results[i],
+            )
+        });
+    }
+
+    fn test_dressing(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
+        use gluon::dressing;
+        use gluon::ffi::{qcd__gluon__dressing, qcd__gluon__dressing__complex};
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing(s, -0.876, xi), real_results[i]));
+
+        REAL_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(qcd__gluon__dressing(s, -0.876, xi), real_results[i]));
+
+        COMPLEX_TEST_VAL
+            .iter()
+            .enumerate()
+            .for_each(|(i, &s)| assert_equal(dressing(s, -0.876, xi), complex_results[i]));
+
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(
+                qcd__gluon__dressing__complex(s, -0.876, xi),
+                complex_results[i],
+            )
+        });
+    }
+
+    #[test]
+    fn test_dressing_landau() {
+        let mut real_results: [R; 4] = [
+            1.1452200013339067,
+            1.0278169334356733,
+            1.0479069719664291,
+            1.446544935725117,
+        ];
+        for v in &mut real_results {
+            *v = v.inv();
+        }
+        let mut complex_results: [C; 5] = [
+            1.0283574166816276 + 0.13902433016869392 * I,
+            1.0283574166816276 - 0.13902433016869392 * I,
+            1.058123207942039 + 0. * I,
+            1.0412407008118778 + 0.0464390633718008 * I,
+            1.4593613027930297 + 0.31457224197479217 * I,
+        ];
+        for v in &mut complex_results {
+            *v = v.inv();
+        }
+        test_dressing(0., real_results, complex_results)
+    }
+
+    #[test]
+    fn test_dressing_feynman() {
+        let mut real_results = [
+            1.22855333466724,
+            0.9368302219977984,
+            0.8825990349801137,
+            1.0380672748449082,
+        ];
+        for v in &mut real_results {
+            *v = v.inv();
+        }
+        let mut complex_results: [C; 5] = [
+            1.0581546818021597 + 0.28073060483034323 * I,
+            1.0581546818021597 - 0.28073060483034323 * I,
+            1.0497388896929305 + 0. * I,
+            0.8594571869742331 - 0.016158378863181694 * I,
+            1.0312441726135864 + 0.19952307926338256 * I,
+        ];
+        for v in &mut complex_results {
+            *v = v.inv();
+        }
+        test_dressing(1., real_results, complex_results)
     }
 
     #[test]

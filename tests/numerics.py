@@ -3,8 +3,27 @@
 import numpy as np
 
 
+def f(s):
+    la = (3*s**3-34*s**2-28*s-24)/s*np.sqrt((s+4)/s) * \
+        np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))
+    lb = 2*(1+s)**2/s**3*(3*s**3-20*s**2+11*s-2)*np.log(1+s)
+    lc = (2-3*s**2)*np.log(s)
+    ra = -(4+s)/s*(s**2-20*s+12)
+    rb = 2*(1+s)**2/s**2*(s**2-10*s+1)
+    rc = 2/s**2+2-s**2
+    return (la+lb+lc+ra+rb+rc)/72 + 5/(8*s)
+
+
+def f_xi(s):
+    return 1/(4*s)-(2*s*np.log(s)-2*(1-s)*(1-s**3)/s**3*np.log(1+s)+(3*s**2-3*s+2)/s**2)/12
+
+
 def f_q(s):
     return 4/9*((s-2)/(2*s)*np.sqrt((4+s)/s)*np.log((np.sqrt(s+4)-np.sqrt(s))/(np.sqrt(s+4)+np.sqrt(s)))-2/s+5/6)
+
+
+def g(s):
+    return (1+s)**2*(2*s-1)/s**2 * np.log(1+s)-2*s*np.log(s)+1/s+2
 
 
 def en(q, m):
@@ -653,8 +672,14 @@ Qigqzp = [(0.62, 0.21, 1.2, 3.2, 0.8),
           (0.35, 0.75, 3.76, 0.19, 0.8),
           (0.35, 0.75, 3.76, 0.19, 5.9)]
 
-resfqr = [f_q(arg) for arg in rtv]
-resfqc = [f_q(arg) for arg in ctv]
+# resfr = [f(arg) for arg in rtv]
+# resfc = [f(arg) for arg in ctv]
+
+# resfxir = [f_xi(arg) for arg in rtv]
+# resfxic = [f_xi(arg) for arg in ctv]
+
+# resfqr = [f_q(arg) for arg in rtv]
+# resfqc = [f_q(arg) for arg in ctv]
 
 # reslog = [tlog(*args) for args in Qlog]
 # reslogs = [tlog(*args) for args in Qlogs]
@@ -787,6 +812,16 @@ resfqc = [f_q(arg) for arg in ctv]
 # resglpolqt = [gluon_pol_quark_t(*args) for args in Qigq]
 # resglpolqtzm = [gluon_pol_quark_t(*args) for args in Qigqzm]
 # resglpolqtzp = [gluon_pol_quark_t_zp(*args) for args in Qigqzp]
+
+# print(str(resfr).replace('j', '*I').replace('(',
+#                                            '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resfc).replace('j', '*I').replace('(',
+#                                            '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+
+# print(str(resfxir).replace('j', '*I').replace('(',
+#                                              '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
+# print(str(resfxic).replace('j', '*I').replace('(',
+#                                              '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
 
 # print(str(resfqr).replace('j', '*I').replace('(',
 #                                             '').replace(')', '').replace('+0*I', '+0.*I').replace('-0*I', '+0.*I'))
