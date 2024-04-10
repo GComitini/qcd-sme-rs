@@ -42,6 +42,51 @@ mod native {
     pub fn dressing<T: Num>(s: T, f0: R, xi: R) -> T {
         inlines::dressing(s, f0, xi)
     }
+
+    pub fn dressing_crossed_inv_landau_sep<T: Num>(
+        s: T,
+        ln_s: T,
+        ln_s_pl_1: T,
+        s_q: T,
+        f0: R,
+    ) -> T {
+        inlines::dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    pub fn dressing_crossed_inv_landau<T: Num>(s: T, f0: R) -> T {
+        inlines::dressing_crossed_inv_landau(s, f0)
+    }
+
+    pub fn dressing_crossed_inv_sep<T: Num>(
+        s: T,
+        ln_s: T,
+        ln_s_pl_1: T,
+        s_q: T,
+        f0: R,
+        xi: R,
+    ) -> T {
+        inlines::dressing_crossed_inv_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    pub fn dressing_crossed_inv<T: Num>(s: T, f0: R, xi: R) -> T {
+        inlines::dressing_crossed_inv(s, f0, xi)
+    }
+
+    pub fn dressing_crossed_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R) -> T {
+        inlines::dressing_crossed_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    pub fn dressing_crossed_landau<T: Num>(s: T, f0: R) -> T {
+        inlines::dressing_crossed_landau(s, f0)
+    }
+
+    pub fn dressing_crossed_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R, xi: R) -> T {
+        inlines::dressing_crossed_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    pub fn dressing_crossed<T: Num>(s: T, f0: R, xi: R) -> T {
+        inlines::dressing_crossed(s, f0, xi)
+    }
 }
 
 // For use in other languages, e.g. C/C++/Python
@@ -188,6 +233,138 @@ pub(crate) mod ffi {
     pub extern "C" fn qcd__gluon__dressing__complex(s: C, f0: R, xi: R) -> C {
         inlines::dressing(s, f0, xi)
     }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_landau_sep(
+        s: R,
+        ln_s_pl_1: R,
+        ln_s: R,
+        s_q: R,
+        f0: R,
+    ) -> R {
+        inlines::dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_landau(s: R, f0: R) -> R {
+        inlines::dressing_crossed_inv_landau(s, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_landau_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        s_q: C,
+        f0: R,
+    ) -> C {
+        inlines::dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_landau__complex(s: C, f0: R) -> C {
+        inlines::dressing_crossed_inv_landau(s, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        s_q: R,
+        f0: R,
+        xi: R,
+    ) -> R {
+        inlines::dressing_crossed_inv_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv(s: R, f0: R, xi: R) -> R {
+        inlines::dressing_crossed_inv(s, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        s_q: C,
+        f0: R,
+        xi: R,
+    ) -> C {
+        inlines::dressing_crossed_inv_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_inv__complex(s: C, f0: R, xi: R) -> C {
+        inlines::dressing_crossed_inv(s, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_landau_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        s_q: R,
+        f0: R,
+    ) -> R {
+        inlines::dressing_crossed_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_landau(s: R, f0: R) -> R {
+        inlines::dressing_crossed_landau(s, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_landau_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        s_q: C,
+        f0: R,
+    ) -> C {
+        inlines::dressing_crossed_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_landau__complex(s: C, f0: R) -> C {
+        inlines::dressing_crossed_landau(s, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        s_q: R,
+        f0: R,
+        xi: R,
+    ) -> R {
+        inlines::dressing_crossed_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed(s: R, f0: R, xi: R) -> R {
+        inlines::dressing_crossed(s, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        s_q: C,
+        f0: R,
+        xi: R,
+    ) -> C {
+        inlines::dressing_crossed_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__dressing_crossed__complex(s: C, f0: R, xi: R) -> C {
+        inlines::dressing_crossed(s, f0, xi)
+    }
 }
 
 // For internal use only
@@ -251,6 +428,72 @@ pub(crate) mod inlines {
     pub fn dressing<T: Num>(s: T, f0: R, xi: R) -> T {
         dressing_inv(s, f0, xi).inv()
     }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv_landau_sep<T: Num>(
+        s: T,
+        ln_s: T,
+        ln_s_pl_1: T,
+        s_q: T,
+        f0: R,
+    ) -> T {
+        f_sep(s, ln_s, ln_s_pl_1) + f_q_crossed(s_q) * nf_div_nc() + f0
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv_landau<T: Num>(s: T, f0: R) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let x = m_quark();
+        let x2 = x * x;
+        let s_q = s / x2;
+        dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv_sep<T: Num>(
+        s: T,
+        ln_s: T,
+        ln_s_pl_1: T,
+        s_q: T,
+        f0: R,
+        xi: R,
+    ) -> T {
+        dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0)
+            + f_xi_sep(s, ln_s, ln_s_pl_1) * xi
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv<T: Num>(s: T, f0: R, xi: R) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let x = m_quark();
+        let x2 = x * x;
+        let s_q = s / x2;
+        dressing_crossed_inv_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi)
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R) -> T {
+        dressing_crossed_inv_landau_sep(s, ln_s, ln_s_pl_1, s_q, f0).inv()
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_landau<T: Num>(s: T, f0: R) -> T {
+        dressing_crossed_inv_landau(s, f0).inv()
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, s_q: T, f0: R, xi: R) -> T {
+        dressing_crossed_inv_sep(s, ln_s, ln_s_pl_1, s_q, f0, xi).inv()
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed<T: Num>(s: T, f0: R, xi: R) -> T {
+        dressing_crossed_inv(s, f0, xi).inv()
+    }
 }
 
 #[cfg(test)]
@@ -290,10 +533,11 @@ mod tests {
     }
 
     #[test]
-    fn test_dressing_inv_landau_0() {
-        use gluon::dressing_inv_landau;
+    fn test_dressing_crossed_inv_landau_0() {
+        use gluon::dressing_crossed_inv_landau;
         use gluon::ffi::{
-            qcd__gluon__dressing_inv_landau, qcd__gluon__dressing_inv_landau__complex,
+            qcd__gluon__dressing_crossed_inv_landau,
+            qcd__gluon__dressing_crossed_inv_landau__complex,
         };
 
         const REAL_RESULTS: [R; 4] = [
@@ -310,56 +554,61 @@ mod tests {
             1.4593613027930297 + 0.31457224197479217 * I,
         ];
 
-        REAL_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, -0.876), REAL_RESULTS[i]));
-
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing_inv_landau(s, -0.876), REAL_RESULTS[i])
+            assert_equal(dressing_crossed_inv_landau(s, -0.876), REAL_RESULTS[i])
         });
 
-        COMPLEX_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, -0.876), complex_results[i]));
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(
+                qcd__gluon__dressing_crossed_inv_landau(s, -0.876),
+                REAL_RESULTS[i],
+            )
+        });
+
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(dressing_crossed_inv_landau(s, -0.876), complex_results[i])
+        });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                qcd__gluon__dressing_inv_landau__complex(s, -0.876),
+                qcd__gluon__dressing_crossed_inv_landau__complex(s, -0.876),
                 complex_results[i],
             )
         });
     }
 
-    fn test_dressing_inv(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
-        use gluon::dressing_inv;
-        use gluon::ffi::{qcd__gluon__dressing_inv, qcd__gluon__dressing_inv__complex};
+    fn test_dressing_crossed_inv(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
+        use gluon::dressing_crossed_inv;
+        use gluon::ffi::{
+            qcd__gluon__dressing_crossed_inv, qcd__gluon__dressing_crossed_inv__complex,
+        };
 
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_inv(s, -0.876, xi), real_results[i]));
+            .for_each(|(i, &s)| assert_equal(dressing_crossed_inv(s, -0.876, xi), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing_inv(s, -0.876, xi), real_results[i])
+            assert_equal(
+                qcd__gluon__dressing_crossed_inv(s, -0.876, xi),
+                real_results[i],
+            )
         });
 
-        COMPLEX_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_inv(s, -0.876, xi), complex_results[i]));
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(dressing_crossed_inv(s, -0.876, xi), complex_results[i])
+        });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                qcd__gluon__dressing_inv__complex(s, -0.876, xi),
+                qcd__gluon__dressing_crossed_inv__complex(s, -0.876, xi),
                 complex_results[i],
             )
         });
     }
 
     #[test]
-    fn test_dressing_inv_landau() {
+    fn test_dressing_crossed_inv_landau() {
         const REAL_RESULTS: [R; 4] = [
             1.1452200013339067,
             1.0278169334356733,
@@ -373,11 +622,11 @@ mod tests {
             1.0412407008118778 + 0.0464390633718008 * I,
             1.4593613027930297 + 0.31457224197479217 * I,
         ];
-        test_dressing_inv(0., REAL_RESULTS, complex_results)
+        test_dressing_crossed_inv(0., REAL_RESULTS, complex_results)
     }
 
     #[test]
-    fn test_dressing_inv_feynman() {
+    fn test_dressing_crossed_inv_feynman() {
         const REAL_RESULTS: [R; 4] = [
             1.22855333466724,
             0.9368302219977984,
@@ -391,13 +640,15 @@ mod tests {
             0.8594571869742331 - 0.016158378863181694 * I,
             1.0312441726135864 + 0.19952307926338256 * I,
         ];
-        test_dressing_inv(1., REAL_RESULTS, complex_results)
+        test_dressing_crossed_inv(1., REAL_RESULTS, complex_results)
     }
 
     #[test]
-    fn test_dressing_landau_0() {
-        use gluon::dressing_landau;
-        use gluon::ffi::{qcd__gluon__dressing_landau, qcd__gluon__dressing_landau__complex};
+    fn test_dressing_crossed_landau_0() {
+        use gluon::dressing_crossed_landau;
+        use gluon::ffi::{
+            qcd__gluon__dressing_crossed_landau, qcd__gluon__dressing_crossed_landau__complex,
+        };
 
         let mut real_results: [R; 4] = [
             1.1452200013339067,
@@ -422,54 +673,55 @@ mod tests {
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_landau(s, -0.876), real_results[i]));
+            .for_each(|(i, &s)| assert_equal(dressing_crossed_landau(s, -0.876), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing_landau(s, -0.876), real_results[i])
+            assert_equal(
+                qcd__gluon__dressing_crossed_landau(s, -0.876),
+                real_results[i],
+            )
         });
 
-        COMPLEX_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing_landau(s, -0.876), complex_results[i]));
+        COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(dressing_crossed_landau(s, -0.876), complex_results[i])
+        });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                qcd__gluon__dressing_landau__complex(s, -0.876),
+                qcd__gluon__dressing_crossed_landau__complex(s, -0.876),
                 complex_results[i],
             )
         });
     }
 
-    fn test_dressing(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
-        use gluon::dressing;
-        use gluon::ffi::{qcd__gluon__dressing, qcd__gluon__dressing__complex};
+    fn test_dressing_crossed(xi: R, real_results: [R; 4], complex_results: [C; 5]) {
+        use gluon::dressing_crossed;
+        use gluon::ffi::{qcd__gluon__dressing_crossed, qcd__gluon__dressing_crossed__complex};
 
         REAL_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing(s, -0.876, xi), real_results[i]));
+            .for_each(|(i, &s)| assert_equal(dressing_crossed(s, -0.876, xi), real_results[i]));
 
-        REAL_TEST_VAL
-            .iter()
-            .enumerate()
-            .for_each(|(i, &s)| assert_equal(qcd__gluon__dressing(s, -0.876, xi), real_results[i]));
+        REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
+            assert_equal(qcd__gluon__dressing_crossed(s, -0.876, xi), real_results[i])
+        });
 
         COMPLEX_TEST_VAL
             .iter()
             .enumerate()
-            .for_each(|(i, &s)| assert_equal(dressing(s, -0.876, xi), complex_results[i]));
+            .for_each(|(i, &s)| assert_equal(dressing_crossed(s, -0.876, xi), complex_results[i]));
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
-                qcd__gluon__dressing__complex(s, -0.876, xi),
+                qcd__gluon__dressing_crossed__complex(s, -0.876, xi),
                 complex_results[i],
             )
         });
     }
 
     #[test]
-    fn test_dressing_landau() {
+    fn test_dressing_crossed_landau() {
         let mut real_results: [R; 4] = [
             1.1452200013339067,
             1.0278169334356733,
@@ -489,11 +741,11 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(0., real_results, complex_results)
+        test_dressing_crossed(0., real_results, complex_results)
     }
 
     #[test]
-    fn test_dressing_feynman() {
+    fn test_dressing_crossed_feynman() {
         let mut real_results = [
             1.22855333466724,
             0.9368302219977984,
@@ -513,6 +765,6 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(1., real_results, complex_results)
+        test_dressing_crossed(1., real_results, complex_results)
     }
 }
