@@ -1,8 +1,8 @@
 use peroxide::fuga::*;
 use qcd_sme::{
     consts::{
-        get_number_of_colors, get_number_of_fermions, set_default_tol_integral,
-        set_number_of_colors, set_number_of_fermions,
+        get_default_quark_mass, get_number_of_colors, get_number_of_fermions,
+        set_default_tol_integral, set_number_of_colors, set_number_of_fermions,
     },
     qcd::thermal::gluon::propagator_l_landau,
     R,
@@ -20,11 +20,12 @@ fn asymptotics_known(t: R, mu: R, nc: u32, nf: u32, rem: R) -> R {
 // For the love of god, do not use this function while multithreading
 fn asymptotics_test(t: R, mu: R, nc: u32, nf: u32) -> R {
     let (nc_old, nf_old) = (get_number_of_colors(), get_number_of_fermions());
+    let mq = get_default_quark_mass();
     set_number_of_colors(nc);
     set_number_of_fermions(nf);
     let (om, p, m, beta, f0) = (0.001, 0.001, 0.3, 1. / t, 1.5);
     // Our normalization is nc-dependent: remove this dependence by dividing by nc.
-    let res = -(propagator_l_landau(om, p, m, beta, mu, f0).re / nc as R).ln();
+    let res = -(propagator_l_landau(om, p, m, mq, beta, mu, f0).re / nc as R).ln();
     set_number_of_colors(nc_old);
     set_number_of_fermions(nf_old);
     res

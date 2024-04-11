@@ -1,7 +1,7 @@
 // Peroxide is used to plot the propagators (and internally for the thermal
 // integrals)
 use peroxide::fuga::*;
-use qcd_sme::consts::get_matsubara_reg;
+use qcd_sme::consts::{get_default_quark_mass, get_matsubara_reg};
 use qcd_sme::qcd::thermal::gluon::{
     propagator_l_landau, propagator_l_zero_temp_landau, propagator_t_landau,
     propagator_t_zero_temp_landau,
@@ -24,6 +24,7 @@ fn main() {
     let m = 0.656;
     let f0 = -0.876;
     let om = get_matsubara_reg();
+    let mq = get_default_quark_mass();
 
     let temperatures = [0.100, 0.075, 0.050, 0.025, 0.010, 0.005];
 
@@ -39,7 +40,7 @@ fn main() {
             .par_iter()
             .map(|&p| {
                 eprint!("Computing {p}... ");
-                let res = propagator_t_landau(om, p, m, beta, mu, f0).re;
+                let res = propagator_t_landau(om, p, m, mq, beta, mu, f0).re;
                 eprintln!("Computed {res}.");
                 res
             })
@@ -52,7 +53,7 @@ fn main() {
         .par_iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_t_zero_temp_landau(om, p, m, mu, f0).re;
+            let res = propagator_t_zero_temp_landau(om, p, m, mq, mu, f0).re;
             eprintln!("Computed {res}.");
             res
         })
@@ -76,7 +77,7 @@ fn main() {
             .par_iter()
             .map(|&p| {
                 eprint!("Computing {p}... ");
-                let res = propagator_l_landau(om, p, m, beta, mu, f0).re;
+                let res = propagator_l_landau(om, p, m, mq, beta, mu, f0).re;
                 eprintln!("Computed {res}.");
                 res
             })
@@ -89,7 +90,7 @@ fn main() {
         .par_iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_l_zero_temp_landau(om, p, m, mu, f0).re;
+            let res = propagator_l_zero_temp_landau(om, p, m, mq, mu, f0).re;
             eprintln!("Computed {res}.");
             res
         })
