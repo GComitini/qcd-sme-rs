@@ -2,15 +2,24 @@
 name = "qcd-sme"
 version = "0.1.0"
 edition = "2021"
+authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
+description = "numerical library for the screened massive expansion of QCD"
+repository = "https://github.com/GComitini/qcd-sme-rs"
+license = "GPL-3.0-or-later"
+keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
+            "physics", "quantum", "field theory"]
+categories = ["science", "mathematics"]
 
 [dependencies]
 num = "0.4"
 peroxide = { git = "https://github.com/GComitini/peroxide", rev = "ae65c9d2", features = ["plot"] }
-rayon = "1.10"
 
 [build-dependencies]
 cbindgen = "0.26"
 regex = "1.10"
+
+[dev-dependencies]
+rayon = "1.10"
 
 [lib]
 crate-type = ["lib", "cdylib", "staticlib"]
