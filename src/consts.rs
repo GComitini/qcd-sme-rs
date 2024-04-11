@@ -1,6 +1,6 @@
 //! Constants, static variables and their getter/setter functions.
 //!
-//! Note: the static variables defined in this module are not multithread-safe.
+//! Note: the static variables defined in this module are not thread-safe.
 //! Do not change them while multithreading!
 
 use crate::{
