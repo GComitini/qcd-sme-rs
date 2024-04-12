@@ -9,8 +9,10 @@ pub use native::*;
 //   the crate for more specialized use.
 mod native {
     use super::inlines;
+    use crate::common::thermal::inlines::fermi_momentum;
+    use crate::consts::get_default_integration_method;
     use crate::{Num, C, R};
-    use peroxide::numerical::integral::Integral;
+    use peroxide::numerical::integral::{complex_integrate, Integral};
 
     pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(
         q: R,
@@ -81,7 +83,14 @@ mod native {
         beta: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_glue_l_thermal_part_landau_w_method(om, p, m, beta, integral)
+        complex_integrate(
+            |t| {
+                inlines::polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta)
+                    / (t * t)
+            },
+            (0., 1.),
+            integral,
+        )
     }
 
     pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
@@ -91,7 +100,14 @@ mod native {
         beta: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_glue_t_thermal_part_landau_w_method(om, p, m, beta, integral)
+        complex_integrate(
+            |t| {
+                inlines::polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta)
+                    / (t * t)
+            },
+            (0., 1.),
+            integral,
+        )
     }
 
     pub fn polarization_quark_l_thermal_part_landau_w_method<T: Num>(
@@ -102,7 +118,20 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_quark_l_thermal_part_landau_w_method(om, p, mq, beta, mu, integral)
+        complex_integrate(
+            |t| {
+                inlines::polarization_quark_l_thermal_part_landau_i(
+                    (1. - t) / t,
+                    om,
+                    p,
+                    mq,
+                    beta,
+                    mu,
+                ) / (t * t)
+            },
+            (0., 1.),
+            integral,
+        )
     }
 
     pub fn polarization_quark_t_thermal_part_landau_w_method<T: Num>(
@@ -113,7 +142,20 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_quark_t_thermal_part_landau_w_method(om, p, mq, beta, mu, integral)
+        complex_integrate(
+            |t| {
+                inlines::polarization_quark_t_thermal_part_landau_i(
+                    (1. - t) / t,
+                    om,
+                    p,
+                    mq,
+                    beta,
+                    mu,
+                ) / (t * t)
+            },
+            (0., 1.),
+            integral,
+        )
     }
 
     pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T: Num>(
@@ -123,8 +165,13 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-            om, p, mq, mu, integral,
+        if mu.abs() < mq.abs() {
+            return C::new(0., 0.);
+        };
+        complex_integrate(
+            |q| inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
+            (0., fermi_momentum(mq, mu)),
+            integral,
         )
     }
 
@@ -135,17 +182,34 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        inlines::polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-            om, p, mq, mu, integral,
+        if mu.abs() < mq.abs() {
+            return C::new(0., 0.);
+        };
+        complex_integrate(
+            |q| inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
+            (0., fermi_momentum(mq, mu)),
+            integral,
         )
     }
 
     pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_glue_l_thermal_part_landau(om, p, m, beta)
+        polarization_glue_l_thermal_part_landau_w_method(
+            om,
+            p,
+            m,
+            beta,
+            get_default_integration_method(),
+        )
     }
 
     pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        inlines::polarization_glue_t_thermal_part_landau(om, p, m, beta)
+        polarization_glue_t_thermal_part_landau_w_method(
+            om,
+            p,
+            m,
+            beta,
+            get_default_integration_method(),
+        )
     }
 
     pub fn polarization_quark_l_thermal_part_landau<T: Num>(
@@ -155,7 +219,14 @@ mod native {
         beta: R,
         mu: R,
     ) -> C {
-        inlines::polarization_quark_l_thermal_part_landau(om, p, mq, beta, mu)
+        polarization_quark_l_thermal_part_landau_w_method(
+            om,
+            p,
+            mq,
+            beta,
+            mu,
+            get_default_integration_method(),
+        )
     }
 
     pub fn polarization_quark_t_thermal_part_landau<T: Num>(
@@ -165,7 +236,14 @@ mod native {
         beta: R,
         mu: R,
     ) -> C {
-        inlines::polarization_quark_t_thermal_part_landau(om, p, mq, beta, mu)
+        polarization_quark_t_thermal_part_landau_w_method(
+            om,
+            p,
+            mq,
+            beta,
+            mu,
+            get_default_integration_method(),
+        )
     }
 
     pub fn polarization_quark_l_thermal_part_zero_temp_landau<T: Num>(
@@ -174,7 +252,13 @@ mod native {
         mq: R,
         mu: R,
     ) -> C {
-        inlines::polarization_quark_l_thermal_part_zero_temp_landau(om, p, mq, mu)
+        polarization_quark_l_thermal_part_zero_temp_landau_w_method(
+            om,
+            p,
+            mq,
+            mu,
+            get_default_integration_method(),
+        )
     }
 
     pub fn polarization_quark_t_thermal_part_zero_temp_landau<T: Num>(
@@ -183,7 +267,13 @@ mod native {
         mq: R,
         mu: R,
     ) -> C {
-        inlines::polarization_quark_t_thermal_part_zero_temp_landau(om, p, mq, mu)
+        polarization_quark_t_thermal_part_zero_temp_landau_w_method(
+            om,
+            p,
+            mq,
+            mu,
+            get_default_integration_method(),
+        )
     }
 }
 
@@ -280,12 +370,11 @@ pub(crate) mod ffi {
 pub(crate) mod inlines {
     use crate::common::inlines::energy;
     use crate::common::thermal::inlines::{
-        fermi_distribution_double, fermi_distribution_double_zero_temp, fermi_momentum,
+        fermi_distribution_double, fermi_distribution_double_zero_temp,
     };
-    use crate::consts::{get_default_integration_method, nc};
+    use crate::consts::nc;
     use crate::low_level::oneloop::thermal::*;
     use crate::{Num, C, I, R};
-    use peroxide::numerical::integral::{complex_integrate, Integral};
     use std::f64::consts::PI;
 
     const PI2: R = PI * PI;
@@ -459,200 +548,6 @@ pub(crate) mod inlines {
         -fermi_distribution_double_zero_temp(en, mu) * q2 / (p2 * en * (nc() as R) * 4. * PI2)
             * (a - (t1 + t1_opp) / (8. * q * p))
     }
-
-    #[inline(always)]
-    pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        m: R,
-        beta: R,
-        integral: Integral,
-    ) -> C {
-        complex_integrate(
-            |t| polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
-            (0., 1.),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        m: R,
-        beta: R,
-        integral: Integral,
-    ) -> C {
-        complex_integrate(
-            |t| polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
-            (0., 1.),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        beta: R,
-        mu: R,
-        integral: Integral,
-    ) -> C {
-        complex_integrate(
-            |t| {
-                polarization_quark_l_thermal_part_landau_i((1. - t) / t, om, p, mq, beta, mu)
-                    / (t * t)
-            },
-            (0., 1.),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_t_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        beta: R,
-        mu: R,
-        integral: Integral,
-    ) -> C {
-        complex_integrate(
-            |t| {
-                polarization_quark_t_thermal_part_landau_i((1. - t) / t, om, p, mq, beta, mu)
-                    / (t * t)
-            },
-            (0., 1.),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        mu: R,
-        integral: Integral,
-    ) -> C {
-        if mu.abs() < mq.abs() {
-            return C::new(0., 0.);
-        };
-        complex_integrate(
-            |q| polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
-            (0., fermi_momentum(mq, mu)),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_t_thermal_part_zero_temp_landau_w_method<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        mu: R,
-        integral: Integral,
-    ) -> C {
-        if mu.abs() < mq.abs() {
-            return C::new(0., 0.);
-        };
-        complex_integrate(
-            |q| polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
-            (0., fermi_momentum(mq, mu)),
-            integral,
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        polarization_glue_l_thermal_part_landau_w_method(
-            om,
-            p,
-            m,
-            beta,
-            get_default_integration_method(),
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
-        polarization_glue_t_thermal_part_landau_w_method(
-            om,
-            p,
-            m,
-            beta,
-            get_default_integration_method(),
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_landau<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        beta: R,
-        mu: R,
-    ) -> C {
-        polarization_quark_l_thermal_part_landau_w_method(
-            om,
-            p,
-            mq,
-            beta,
-            mu,
-            get_default_integration_method(),
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_t_thermal_part_landau<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        beta: R,
-        mu: R,
-    ) -> C {
-        polarization_quark_t_thermal_part_landau_w_method(
-            om,
-            p,
-            mq,
-            beta,
-            mu,
-            get_default_integration_method(),
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_zero_temp_landau<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        mu: R,
-    ) -> C {
-        polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-            om,
-            p,
-            mq,
-            mu,
-            get_default_integration_method(),
-        )
-    }
-
-    #[inline(always)]
-    pub fn polarization_quark_t_thermal_part_zero_temp_landau<T: Num>(
-        om: T,
-        p: R,
-        mq: R,
-        mu: R,
-    ) -> C {
-        polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-            om,
-            p,
-            mq,
-            mu,
-            get_default_integration_method(),
-        )
-    }
 }
 
 pub mod zero_matsubara {
@@ -660,8 +555,14 @@ pub mod zero_matsubara {
 
     mod native {
         use super::inlines;
-        use crate::Integral;
+        use crate::common::thermal::inlines::fermi_momentum;
+        use crate::consts::{
+            get_default_integration_method, matsubara_reg, max_iter_integral, tol_integral,
+        };
         use crate::{C, R};
+        use peroxide::numerical::integral::{integrate, Integral};
+
+        const DEFAULT_TOL_INT_REPL: R = 1E-8;
 
         pub fn polarization_glue_l_thermal_part_landau_i(q: R, p: R, m: R, beta: R) -> C {
             inlines::polarization_glue_l_thermal_part_landau_i(q, p, m, beta)
@@ -693,7 +594,28 @@ pub mod zero_matsubara {
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_glue_l_thermal_part_landau_w_method(p, m, beta, integral)
+            // You may be thinking: did you spend countless ours of your life
+            // computing and coding the Matsubara limits to then end up using
+            // the ordinary thermal functions with omega=epsilon?! The answer
+            // is... yeah, 'cos apparently there's a perfectly-well-behaved
+            // logarithmic singularity in the integrands in the Matsubara limit
+            // which however fucks around with numerical integration and yields
+            // plots which look very much like the ECG of my grandma with
+            // arrythmia.
+            integrate(
+                |t| {
+                    super::super::inlines::polarization_glue_l_thermal_part_landau_i(
+                        (1. - t) / t,
+                        matsubara_reg(),
+                        p,
+                        m,
+                        beta,
+                    )
+                    .re / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_glue_t_thermal_part_landau_w_method(
@@ -702,7 +624,20 @@ pub mod zero_matsubara {
             beta: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_glue_t_thermal_part_landau_w_method(p, m, beta, integral)
+            integrate(
+                |t| {
+                    super::super::inlines::polarization_glue_t_thermal_part_landau_i(
+                        (1. - t) / t,
+                        matsubara_reg(),
+                        p,
+                        m,
+                        beta,
+                    )
+                    .re / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_landau_w_method(
@@ -712,7 +647,21 @@ pub mod zero_matsubara {
             mu: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_quark_l_thermal_part_landau_w_method(p, mq, beta, mu, integral)
+            integrate(
+                |t| {
+                    super::super::inlines::polarization_quark_l_thermal_part_landau_i(
+                        (1. - t) / t,
+                        matsubara_reg(),
+                        p,
+                        mq,
+                        beta,
+                        mu,
+                    )
+                    .re / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_t_thermal_part_landau_w_method(
@@ -722,7 +671,21 @@ pub mod zero_matsubara {
             mu: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_quark_t_thermal_part_landau_w_method(p, mq, beta, mu, integral)
+            integrate(
+                |t| {
+                    super::super::inlines::polarization_quark_t_thermal_part_landau_i(
+                        (1. - t) / t,
+                        matsubara_reg(),
+                        p,
+                        mq,
+                        beta,
+                        mu,
+                    )
+                    .re / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method(
@@ -731,8 +694,22 @@ pub mod zero_matsubara {
             mu: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-                p, mq, mu, integral,
+            if mu.abs() < mq.abs() {
+                return 0.;
+            };
+            integrate(
+                |q| {
+                    super::super::inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(
+                        q,
+                        matsubara_reg(),
+                        p,
+                        mq,
+                        mu,
+                    )
+                    .re
+                },
+                (0., fermi_momentum(mq, mu)),
+                integral,
             )
         }
 
@@ -742,33 +719,95 @@ pub mod zero_matsubara {
             mu: R,
             integral: Integral,
         ) -> R {
-            inlines::polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-                p, mq, mu, integral,
+            if mu.abs() < mq.abs() {
+                return 0.;
+            };
+            integrate(
+                |q| {
+                    super::super::inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(
+                        q,
+                        matsubara_reg(),
+                        p,
+                        mq,
+                        mu,
+                    )
+                    .re
+                },
+                (0., fermi_momentum(mq, mu)),
+                integral,
             )
         }
 
+        // To make things worse, if EPS (the regulator for the matsubara frequency)
+        // is too small, the integral's convergence becomes very slow. So, unless the
+        // user customized the integration method, we increase the tolerance of the
+        // default integration method to DEFAULT_TOL_INT_REPL. This does not increase
+        // the error meaningfully, since the error due to EPS being non zero is larger
+        // by at least two orders of magnitude (given the defaults at the time of writing).
         pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            inlines::polarization_glue_l_thermal_part_landau(p, m, beta)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_glue_l_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
         pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            inlines::polarization_glue_t_thermal_part_landau(p, m, beta)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_glue_t_thermal_part_landau_w_method(p, m, beta, integral)
         }
 
         pub fn polarization_quark_l_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            inlines::polarization_quark_l_thermal_part_landau(p, mq, beta, mu)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_quark_l_thermal_part_landau_w_method(p, mq, beta, mu, integral)
         }
 
         pub fn polarization_quark_t_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            inlines::polarization_quark_t_thermal_part_landau(p, mq, beta, mu)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_quark_t_thermal_part_landau_w_method(p, mq, beta, mu, integral)
         }
 
         pub fn polarization_quark_l_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            inlines::polarization_quark_l_thermal_part_zero_temp_landau(p, mq, mu)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_quark_l_thermal_part_zero_temp_landau_w_method(p, mq, mu, integral)
         }
 
         pub fn polarization_quark_t_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            inlines::polarization_quark_t_thermal_part_zero_temp_landau(p, mq, mu)
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
+            if let crate::Integral::G7K15(ti, mi) = integral {
+                #[allow(clippy::float_cmp)]
+                if ti == dti && mi == max_iter_integral() {
+                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
+                }
+            }
+            polarization_quark_t_thermal_part_zero_temp_landau_w_method(p, mq, mu, integral)
         }
     }
 
@@ -842,21 +881,17 @@ pub mod zero_matsubara {
     mod inlines {
         use crate::common::inlines::energy;
         use crate::common::thermal::inlines::{
-            fermi_distribution_double, fermi_distribution_double_zero_temp, fermi_momentum,
+            fermi_distribution_double, fermi_distribution_double_zero_temp,
         };
-        use crate::consts::{
-            get_default_integration_method, matsubara_reg, max_iter_integral, nc, tol_integral,
-        };
+        use crate::consts::nc;
         use crate::low_level::oneloop::thermal::zero_matsubara::*;
         use crate::low_level::oneloop::thermal::{
             d2_j_m_i, d2_j_m_l_i, d2_j_m_t_i, d_j_m_i, d_j_m_l_i, d_j_m_t_i, j_0_i, j_0_l_i,
             j_0_t_i, j_m_i, j_m_l_i, j_m_t_i,
         };
         use crate::{C, R};
-        use peroxide::numerical::integral::{integrate, Integral};
         use std::f64::consts::PI;
 
-        const DEFAULT_TOL_INT_REPL: R = 1E-8;
         const PI2: R = PI * PI;
 
         #[inline(always)]
@@ -961,240 +996,6 @@ pub mod zero_matsubara {
             -fermi_distribution_double_zero_temp(en, mu) * q2 / (en * (nc() as R) * 4. * PI2)
                 * (1. - t1 / (4. * q * p))
         }
-
-        #[inline(always)]
-        pub fn polarization_glue_l_thermal_part_landau_w_method(
-            p: R,
-            m: R,
-            beta: R,
-            integral: Integral,
-        ) -> R {
-            // You may be thinking: did you spend countless ours of your life
-            // computing and coding the Matsubara limits to then end up using
-            // the ordinary thermal functions with omega=epsilon?! The answer
-            // is... yeah, 'cos apparently there's a perfectly-well-behaved
-            // logarithmic singularity in the integrands in the Matsubara limit
-            // which however fucks around with numerical integration and yields
-            // plots which look very much like the ECG of my grandma with
-            // arrythmia.
-            integrate(
-                |t| {
-                    super::super::polarization_glue_l_thermal_part_landau_i(
-                        (1. - t) / t,
-                        matsubara_reg(),
-                        p,
-                        m,
-                        beta,
-                    )
-                    .re / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_t_thermal_part_landau_w_method(
-            p: R,
-            m: R,
-            beta: R,
-            integral: Integral,
-        ) -> R {
-            integrate(
-                |t| {
-                    super::super::polarization_glue_t_thermal_part_landau_i(
-                        (1. - t) / t,
-                        matsubara_reg(),
-                        p,
-                        m,
-                        beta,
-                    )
-                    .re / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_landau_w_method(
-            p: R,
-            mq: R,
-            beta: R,
-            mu: R,
-            integral: Integral,
-        ) -> R {
-            integrate(
-                |t| {
-                    super::super::polarization_quark_l_thermal_part_landau_i(
-                        (1. - t) / t,
-                        matsubara_reg(),
-                        p,
-                        mq,
-                        beta,
-                        mu,
-                    )
-                    .re / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_landau_w_method(
-            p: R,
-            mq: R,
-            beta: R,
-            mu: R,
-            integral: Integral,
-        ) -> R {
-            integrate(
-                |t| {
-                    super::super::polarization_quark_t_thermal_part_landau_i(
-                        (1. - t) / t,
-                        matsubara_reg(),
-                        p,
-                        mq,
-                        beta,
-                        mu,
-                    )
-                    .re / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-            p: R,
-            mq: R,
-            mu: R,
-            integral: Integral,
-        ) -> R {
-            if mu.abs() < mq.abs() {
-                return 0.;
-            };
-            integrate(
-                |q| {
-                    super::super::polarization_quark_l_thermal_part_zero_temp_landau_i(
-                        q,
-                        matsubara_reg(),
-                        p,
-                        mq,
-                        mu,
-                    )
-                    .re
-                },
-                (0., fermi_momentum(mq, mu)),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-            p: R,
-            mq: R,
-            mu: R,
-            integral: Integral,
-        ) -> R {
-            if mu.abs() < mq.abs() {
-                return 0.;
-            };
-            integrate(
-                |q| {
-                    super::super::polarization_quark_t_thermal_part_zero_temp_landau_i(
-                        q,
-                        matsubara_reg(),
-                        p,
-                        mq,
-                        mu,
-                    )
-                    .re
-                },
-                (0., fermi_momentum(mq, mu)),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        // To make things worse, if EPS (the regulator for the matsubara frequency)
-        // is too small, the integral's convergence becomes very slow. So, unless the
-        // user customized the integration method, we increase the tolerance of the
-        // default integration method to DEFAULT_TOL_INT_REPL. This does not increase
-        // the error meaningfully, since the error due to EPS being non zero is larger
-        // by at least two orders of magnitude (given the defaults at the time of writing).
-        pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_glue_l_thermal_part_landau_w_method(p, m, beta, integral)
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_glue_t_thermal_part_landau_w_method(p, m, beta, integral)
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_quark_l_thermal_part_landau_w_method(p, mq, beta, mu, integral)
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_quark_t_thermal_part_landau_w_method(p, mq, beta, mu, integral)
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_quark_l_thermal_part_zero_temp_landau_w_method(p, mq, mu, integral)
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
-            if let crate::Integral::G7K15(ti, mi) = integral {
-                #[allow(clippy::float_cmp)]
-                if ti == dti && mi == max_iter_integral() {
-                    integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
-                }
-            }
-            polarization_quark_t_thermal_part_zero_temp_landau_w_method(p, mq, mu, integral)
-        }
     }
 }
 
@@ -1203,8 +1004,9 @@ pub mod zero_momentum {
 
     mod native {
         use super::inlines;
-        use crate::Integral;
+        use crate::consts::get_default_integration_method;
         use crate::{Num, C, R};
+        use peroxide::numerical::integral::{complex_integrate, Integral};
 
         pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
             inlines::polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
@@ -1258,7 +1060,14 @@ pub mod zero_momentum {
             beta: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_glue_l_thermal_part_landau_w_method(om, m, beta, integral)
+            complex_integrate(
+                |t| {
+                    inlines::polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, m, beta)
+                        / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
@@ -1267,7 +1076,14 @@ pub mod zero_momentum {
             beta: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_glue_t_thermal_part_landau_w_method(om, m, beta, integral)
+            complex_integrate(
+                |t| {
+                    inlines::polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, m, beta)
+                        / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_landau_w_method<T: Num>(
@@ -1277,7 +1093,21 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_quark_l_thermal_part_landau_w_method(om, mq, beta, mu, integral)
+            complex_integrate(
+                |t| {
+                    inlines::polarization_quark_l_thermal_part_landau_i(
+                        (1. - t) / t,
+                        om,
+                        mq,
+                        beta,
+                        mu,
+                    )
+                    .into()
+                        / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_t_thermal_part_landau_w_method<T: Num>(
@@ -1287,7 +1117,21 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_quark_t_thermal_part_landau_w_method(om, mq, beta, mu, integral)
+            complex_integrate(
+                |t| {
+                    inlines::polarization_quark_t_thermal_part_landau_i(
+                        (1. - t) / t,
+                        om,
+                        mq,
+                        beta,
+                        mu,
+                    )
+                    .into()
+                        / (t * t)
+                },
+                (0., 1.),
+                integral,
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T: Num>(
@@ -1296,8 +1140,16 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-                om, mq, mu, integral,
+            if mu.abs() < mq.abs() {
+                return C::new(0., 0.);
+            };
+            complex_integrate(
+                |q| {
+                    inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu)
+                        .into()
+                },
+                (0., 1.),
+                integral,
             )
         }
 
@@ -1307,25 +1159,55 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            inlines::polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-                om, mq, mu, integral,
+            if mu.abs() < mq.abs() {
+                return C::new(0., 0.);
+            };
+            complex_integrate(
+                |q| {
+                    inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, mq, mu)
+                        .into()
+                },
+                (0., 1.),
+                integral,
             )
         }
 
         pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            inlines::polarization_glue_l_thermal_part_landau(om, m, beta)
+            polarization_glue_l_thermal_part_landau_w_method(
+                om,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
 
         pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            inlines::polarization_glue_t_thermal_part_landau(om, m, beta)
+            polarization_glue_t_thermal_part_landau_w_method(
+                om,
+                m,
+                beta,
+                get_default_integration_method(),
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_landau<T: Num>(om: T, mq: R, beta: R, mu: R) -> C {
-            inlines::polarization_quark_l_thermal_part_landau(om, mq, beta, mu)
+            polarization_quark_l_thermal_part_landau_w_method(
+                om,
+                mq,
+                beta,
+                mu,
+                get_default_integration_method(),
+            )
         }
 
         pub fn polarization_quark_t_thermal_part_landau<T: Num>(om: T, mq: R, beta: R, mu: R) -> C {
-            inlines::polarization_quark_t_thermal_part_landau(om, mq, beta, mu)
+            polarization_quark_t_thermal_part_landau_w_method(
+                om,
+                mq,
+                beta,
+                mu,
+                get_default_integration_method(),
+            )
         }
 
         pub fn polarization_quark_l_thermal_part_zero_temp_landau<T: Num>(
@@ -1333,7 +1215,12 @@ pub mod zero_momentum {
             mq: R,
             mu: R,
         ) -> C {
-            inlines::polarization_quark_l_thermal_part_zero_temp_landau(om, mq, mu)
+            polarization_quark_l_thermal_part_zero_temp_landau_w_method(
+                om,
+                mq,
+                mu,
+                get_default_integration_method(),
+            )
         }
 
         pub fn polarization_quark_t_thermal_part_zero_temp_landau<T: Num>(
@@ -1341,7 +1228,12 @@ pub mod zero_momentum {
             mq: R,
             mu: R,
         ) -> C {
-            inlines::polarization_quark_t_thermal_part_zero_temp_landau(om, mq, mu)
+            polarization_quark_t_thermal_part_zero_temp_landau_w_method(
+                om,
+                mq,
+                mu,
+                get_default_integration_method(),
+            )
         }
     }
 
@@ -1417,13 +1309,12 @@ pub mod zero_momentum {
         use crate::common::thermal::inlines::{
             fermi_distribution_double, fermi_distribution_double_zero_temp,
         };
-        use crate::consts::{get_default_integration_method, nc};
+        use crate::consts::nc;
         use crate::low_level::oneloop::thermal::zero_momentum::*;
         use crate::low_level::oneloop::thermal::{
             d2_j_m_i, d2_j_m_t_i, d_j_m_i, d_j_m_t_i, j_0_i, j_0_t_i, j_m_i, j_m_t_i,
         };
         use crate::{Num, C, R};
-        use peroxide::numerical::integral::{complex_integrate, Integral};
         use std::f64::consts::PI;
 
         const PI2: R = PI * PI;
@@ -1524,176 +1415,6 @@ pub mod zero_momentum {
             mu: R,
         ) -> T {
             polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu)
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
-            om: T,
-            m: R,
-            beta: R,
-            integral: Integral,
-        ) -> C {
-            complex_integrate(
-                |t| polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_t_thermal_part_landau_w_method<T: Num>(
-            om: T,
-            m: R,
-            beta: R,
-            integral: Integral,
-        ) -> C {
-            complex_integrate(
-                |t| polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_landau_w_method<T: Num>(
-            om: T,
-            mq: R,
-            beta: R,
-            mu: R,
-            integral: Integral,
-        ) -> C {
-            complex_integrate(
-                |t| {
-                    polarization_quark_l_thermal_part_landau_i((1. - t) / t, om, mq, beta, mu)
-                        .into()
-                        / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_landau_w_method<T: Num>(
-            om: T,
-            mq: R,
-            beta: R,
-            mu: R,
-            integral: Integral,
-        ) -> C {
-            complex_integrate(
-                |t| {
-                    polarization_quark_t_thermal_part_landau_i((1. - t) / t, om, mq, beta, mu)
-                        .into()
-                        / (t * t)
-                },
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T: Num>(
-            om: T,
-            mq: R,
-            mu: R,
-            integral: Integral,
-        ) -> C {
-            if mu.abs() < mq.abs() {
-                return C::new(0., 0.);
-            };
-            complex_integrate(
-                |q| polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu).into(),
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_zero_temp_landau_w_method<T: Num>(
-            om: T,
-            mq: R,
-            mu: R,
-            integral: Integral,
-        ) -> C {
-            if mu.abs() < mq.abs() {
-                return C::new(0., 0.);
-            };
-            complex_integrate(
-                |q| polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, mq, mu).into(),
-                (0., 1.),
-                integral,
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            polarization_glue_l_thermal_part_landau_w_method(
-                om,
-                m,
-                beta,
-                get_default_integration_method(),
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_glue_t_thermal_part_landau<T: Num>(om: T, m: R, beta: R) -> C {
-            polarization_glue_t_thermal_part_landau_w_method(
-                om,
-                m,
-                beta,
-                get_default_integration_method(),
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_landau<T: Num>(om: T, mq: R, beta: R, mu: R) -> C {
-            polarization_quark_l_thermal_part_landau_w_method(
-                om,
-                mq,
-                beta,
-                mu,
-                get_default_integration_method(),
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_landau<T: Num>(om: T, mq: R, beta: R, mu: R) -> C {
-            polarization_quark_t_thermal_part_landau_w_method(
-                om,
-                mq,
-                beta,
-                mu,
-                get_default_integration_method(),
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_l_thermal_part_zero_temp_landau<T: Num>(
-            om: T,
-            mq: R,
-            mu: R,
-        ) -> C {
-            polarization_quark_l_thermal_part_zero_temp_landau_w_method(
-                om,
-                mq,
-                mu,
-                get_default_integration_method(),
-            )
-        }
-
-        #[inline(always)]
-        pub fn polarization_quark_t_thermal_part_zero_temp_landau<T: Num>(
-            om: T,
-            mq: R,
-            mu: R,
-        ) -> C {
-            polarization_quark_t_thermal_part_zero_temp_landau_w_method(
-                om,
-                mq,
-                mu,
-                get_default_integration_method(),
-            )
         }
     }
 }
