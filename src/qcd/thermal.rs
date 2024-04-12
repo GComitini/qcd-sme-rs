@@ -178,7 +178,7 @@ pub mod gluon {
 
 pub mod quark {
     use crate::common::thermal::inlines::fermi_momentum;
-    use crate::consts::{get_default_integration_method, get_number_of_colors};
+    use crate::consts::{get_default_integration_method, nc};
     use crate::utils::find_root;
     use crate::{types::Integral, R};
     use peroxide::numerical::integral::integrate;
@@ -202,10 +202,9 @@ pub mod quark {
         if mu.abs() <= m.abs() {
             return 0.;
         }
-        let nc = get_number_of_colors() as R;
         let s = if mu > m { 1. } else { -1. };
         let fm = fermi_momentum(m, mu);
-        return nc * s * (fm * fm * fm) / (3. * PI2);
+        return (nc() as R) * s * (fm * fm * fm) / (3. * PI2);
     }
 
     pub fn chemical_potential_with_method(m: R, beta: R, n: R, integral: Integral) -> R {
@@ -230,15 +229,14 @@ pub mod quark {
         if n == 0. {
             return 0.;
         }
-        let nc = get_number_of_colors() as R;
-        let a = (3. * PI2 * n.abs() / nc).powf(2. / 3.);
+        let a = (3. * PI2 * n.abs() / (nc() as R)).powf(2. / 3.);
         let s = if n > 0. { 1. } else { -1. };
         return s * (m * m + a).sqrt();
     }
 
     pub(crate) mod inlines {
         use crate::common::{inlines::energy, thermal::inlines::fermi_distribution};
-        use crate::consts::get_number_of_colors;
+        use crate::consts::nc;
         use crate::R;
         use std::f64::consts::PI;
 
@@ -246,9 +244,8 @@ pub mod quark {
 
         #[inline(always)]
         pub fn charge_density_i(q: R, m: R, beta: R, mu: R) -> R {
-            let nc = get_number_of_colors() as R;
             let en = energy(q, m);
-            return nc
+            return (nc() as R)
                 * q
                 * q
                 * (fermi_distribution(en, beta, mu) - fermi_distribution(en, beta, -mu))

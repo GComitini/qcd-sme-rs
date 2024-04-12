@@ -282,7 +282,7 @@ pub(crate) mod inlines {
     use crate::common::thermal::inlines::{
         fermi_distribution_double, fermi_distribution_double_zero_temp, fermi_momentum,
     };
-    use crate::consts::{get_default_integration_method, get_number_of_colors};
+    use crate::consts::{get_default_integration_method, nc};
     use crate::low_level::oneloop::thermal::*;
     use crate::{Num, C, I, R};
     use peroxide::numerical::integral::{complex_integrate, Integral};
@@ -380,7 +380,6 @@ pub(crate) mod inlines {
         beta: R,
         mu: R,
     ) -> C {
-        let nc = get_number_of_colors();
         let p2 = p * p;
         let s = om * om + p2;
         let en = energy(q, mq);
@@ -388,7 +387,7 @@ pub(crate) mod inlines {
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (s - en * en * 4. + om * 4. * I * en) * tl;
         let t1_opp = (s - en * en * 4. - om * 4. * I * en) * tl_opp;
-        -s * fermi_distribution_double(en, beta, mu) * q * q / (p2 * en * nc as R * 2. * PI2)
+        -s * fermi_distribution_double(en, beta, mu) * q * q / (p2 * en * (nc() as R) * 2. * PI2)
             * (1. - (t1 + t1_opp) / (8. * q * p))
     }
 
@@ -401,7 +400,6 @@ pub(crate) mod inlines {
         beta: R,
         mu: R,
     ) -> C {
-        let nc = get_number_of_colors();
         let p2 = p * p;
         let om2 = om * om;
         let s = om2 + p2;
@@ -414,7 +412,7 @@ pub(crate) mod inlines {
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (b - c) * tl;
         let t1_opp = (b + c) * tl_opp;
-        -fermi_distribution_double(en, beta, mu) * q2 / (p2 * en * nc as R * 4. * PI2)
+        -fermi_distribution_double(en, beta, mu) * q2 / (p2 * en * (nc() as R) * 4. * PI2)
             * (a - (t1 + t1_opp) / (8. * q * p))
     }
 
@@ -426,7 +424,6 @@ pub(crate) mod inlines {
         mq: R,
         mu: R,
     ) -> C {
-        let nc = get_number_of_colors();
         let p2 = p * p;
         let s = om * om + p2;
         let en = energy(q, mq);
@@ -434,7 +431,8 @@ pub(crate) mod inlines {
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (s - en * en * 4. + om * 4. * I * en) * tl;
         let t1_opp = (s - en * en * 4. - om * 4. * I * en) * tl_opp;
-        -s * fermi_distribution_double_zero_temp(en, mu) * q * q / (p2 * en * nc as R * 2. * PI2)
+        -s * fermi_distribution_double_zero_temp(en, mu) * q * q
+            / (p2 * en * (nc() as R) * 2. * PI2)
             * (1. - (t1 + t1_opp) / (8. * q * p))
     }
 
@@ -446,7 +444,6 @@ pub(crate) mod inlines {
         mq: R,
         mu: R,
     ) -> C {
-        let nc = get_number_of_colors();
         let p2 = p * p;
         let om2 = om * om;
         let s = om2 + p2;
@@ -459,7 +456,7 @@ pub(crate) mod inlines {
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (b - c) * tl;
         let t1_opp = (b + c) * tl_opp;
-        -fermi_distribution_double_zero_temp(en, mu) * q2 / (p2 * en * nc as R * 4. * PI2)
+        -fermi_distribution_double_zero_temp(en, mu) * q2 / (p2 * en * (nc() as R) * 4. * PI2)
             * (a - (t1 + t1_opp) / (8. * q * p))
     }
 
@@ -848,8 +845,7 @@ pub mod zero_matsubara {
             fermi_distribution_double, fermi_distribution_double_zero_temp, fermi_momentum,
         };
         use crate::consts::{
-            get_default_integration_method, get_default_max_iter_integral,
-            get_default_tol_integral, get_matsubara_reg, get_number_of_colors,
+            get_default_integration_method, matsubara_reg, max_iter_integral, nc, tol_integral,
         };
         use crate::low_level::oneloop::thermal::zero_matsubara::*;
         use crate::low_level::oneloop::thermal::{
@@ -930,42 +926,39 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_quark_l_thermal_part_landau_i(q: R, p: R, mq: R, beta: R, mu: R) -> R {
-            let nc = get_number_of_colors();
             let s = p * p;
             let en = energy(q, mq);
             let t1 = (en * en).mul_add(-4., s) / (4. * q * p) * tlog_same_mass(q, p);
-            -fermi_distribution_double(en, beta, mu) * q * q / (en * nc as R * 2. * PI2) * (1. - t1)
+            -fermi_distribution_double(en, beta, mu) * q * q / (en * (nc() as R) * 2. * PI2)
+                * (1. - t1)
         }
 
         #[inline(always)]
         pub fn polarization_quark_t_thermal_part_landau_i(q: R, p: R, mq: R, beta: R, mu: R) -> R {
-            let nc = get_number_of_colors();
             let p2 = p * p;
             let q2 = q * q;
             let en = energy(q, mq);
             let t1 = 4.0f64.mul_add(q2, p2) * tlog_same_mass(q, p);
-            -fermi_distribution_double(en, beta, mu) * q2 / (en * nc as R * 4. * PI2)
+            -fermi_distribution_double(en, beta, mu) * q2 / (en * (nc() as R) * 4. * PI2)
                 * (1. - t1 / (4. * q * p))
         }
 
         #[inline(always)]
         pub fn polarization_quark_l_thermal_part_zero_temp_landau_i(q: R, p: R, mq: R, mu: R) -> R {
-            let nc = get_number_of_colors();
             let s = p * p;
             let en = energy(q, mq);
             let t1 = (en * en).mul_add(-4., s) / (4. * q * p) * tlog_same_mass(q, p);
-            -fermi_distribution_double_zero_temp(en, mu) * q * q / (en * nc as R * 2. * PI2)
+            -fermi_distribution_double_zero_temp(en, mu) * q * q / (en * (nc() as R) * 2. * PI2)
                 * (1. - t1)
         }
 
         #[inline(always)]
         pub fn polarization_quark_t_thermal_part_zero_temp_landau_i(q: R, p: R, mq: R, mu: R) -> R {
-            let nc = get_number_of_colors();
             let p2 = p * p;
             let q2 = q * q;
             let en = energy(q, mq);
             let t1 = 4.0f64.mul_add(q2, p2) * tlog_same_mass(q, p);
-            -fermi_distribution_double_zero_temp(en, mu) * q2 / (en * nc as R * 4. * PI2)
+            -fermi_distribution_double_zero_temp(en, mu) * q2 / (en * (nc() as R) * 4. * PI2)
                 * (1. - t1 / (4. * q * p))
         }
 
@@ -988,7 +981,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_glue_l_thermal_part_landau_i(
                         (1. - t) / t,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         m,
                         beta,
@@ -1011,7 +1004,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_glue_t_thermal_part_landau_i(
                         (1. - t) / t,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         m,
                         beta,
@@ -1035,7 +1028,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_quark_l_thermal_part_landau_i(
                         (1. - t) / t,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         mq,
                         beta,
@@ -1060,7 +1053,7 @@ pub mod zero_matsubara {
                 |t| {
                     super::super::polarization_quark_t_thermal_part_landau_i(
                         (1. - t) / t,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         mq,
                         beta,
@@ -1087,7 +1080,7 @@ pub mod zero_matsubara {
                 |q| {
                     super::super::polarization_quark_l_thermal_part_zero_temp_landau_i(
                         q,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         mq,
                         mu,
@@ -1113,7 +1106,7 @@ pub mod zero_matsubara {
                 |q| {
                     super::super::polarization_quark_t_thermal_part_zero_temp_landau_i(
                         q,
-                        get_matsubara_reg(),
+                        matsubara_reg(),
                         p,
                         mq,
                         mu,
@@ -1133,11 +1126,10 @@ pub mod zero_matsubara {
         // the error meaningfully, since the error due to EPS being non zero is larger
         // by at least two orders of magnitude (given the defaults at the time of writing).
         pub fn polarization_glue_l_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1146,11 +1138,10 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_glue_t_thermal_part_landau(p: R, m: R, beta: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1159,11 +1150,10 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_quark_l_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1172,11 +1162,10 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_quark_t_thermal_part_landau(p: R, mq: R, beta: R, mu: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1185,11 +1174,10 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_quark_l_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1198,11 +1186,10 @@ pub mod zero_matsubara {
 
         #[inline(always)]
         pub fn polarization_quark_t_thermal_part_zero_temp_landau(p: R, mq: R, mu: R) -> R {
-            let (mut integral, dti) =
-                (get_default_integration_method(), get_default_tol_integral());
+            let (mut integral, dti) = (get_default_integration_method(), tol_integral());
             if let crate::Integral::G7K15(ti, mi) = integral {
                 #[allow(clippy::float_cmp)]
-                if ti == dti && mi == get_default_max_iter_integral() {
+                if ti == dti && mi == max_iter_integral() {
                     integral = crate::Integral::G7K15(DEFAULT_TOL_INT_REPL, mi);
                 }
             }
@@ -1430,7 +1417,7 @@ pub mod zero_momentum {
         use crate::common::thermal::inlines::{
             fermi_distribution_double, fermi_distribution_double_zero_temp,
         };
-        use crate::consts::{get_default_integration_method, get_number_of_colors};
+        use crate::consts::{get_default_integration_method, nc};
         use crate::low_level::oneloop::thermal::zero_momentum::*;
         use crate::low_level::oneloop::thermal::{
             d2_j_m_i, d2_j_m_t_i, d_j_m_i, d_j_m_t_i, j_0_i, j_0_t_i, j_m_i, j_m_t_i,
@@ -1489,12 +1476,11 @@ pub mod zero_momentum {
             beta: R,
             mu: R,
         ) -> T {
-            let nc = get_number_of_colors() as R;
             let en = energy(q, mq);
             let en2 = en * en;
             let q2 = q * q;
 
-            ((om * om + 4. * en2) * en * 3. * PI2 * nc).inv()
+            ((om * om + 4. * en2) * en * 3. * PI2 * (nc() as R)).inv()
                 * 2.
                 * fermi_distribution_double(en, beta, mu)
                 * q2
@@ -1519,12 +1505,11 @@ pub mod zero_momentum {
             mq: R,
             mu: R,
         ) -> T {
-            let nc = get_number_of_colors() as R;
             let en = energy(q, mq);
             let en2 = en * en;
             let q2 = q * q;
 
-            ((om * om + 4. * en2) * en * 3. * PI2 * nc).inv()
+            ((om * om + 4. * en2) * en * 3. * PI2 * (nc() as R)).inv()
                 * 2.
                 * fermi_distribution_double_zero_temp(en, mu)
                 * q2
@@ -1832,7 +1817,7 @@ mod tests {
             polarization_quark_l_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R, R); 7] = [
             (0.62, 0.21, 2.16, 1.2, 3.2, 0.8),
@@ -1882,7 +1867,7 @@ mod tests {
             polarization_quark_t_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R, R); 7] = [
             (0.62, 0.21, 2.16, 1.2, 3.2, 0.8),
@@ -2012,7 +1997,7 @@ mod tests {
             polarization_quark_l_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R); 6] = [
             (0.62, 2.16, 1.2, 3.2, 0.8),
@@ -2060,7 +2045,7 @@ mod tests {
             polarization_quark_t_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R); 6] = [
             (0.62, 2.16, 1.2, 3.2, 0.8),
@@ -2188,7 +2173,7 @@ mod tests {
             polarization_quark_l_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R); 6] = [
             (0.62, 0.21, 1.2, 3.2, 0.8),
@@ -2236,7 +2221,7 @@ mod tests {
             polarization_quark_t_thermal_part_landau_i,
         };
 
-        assert_eq!(crate::consts::get_number_of_colors(), 3);
+        assert_eq!(crate::consts::nc(), 3);
 
         let args: [(R, R, R, R, R); 6] = [
             (0.62, 0.21, 1.2, 3.2, 0.8),
