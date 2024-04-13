@@ -4,7 +4,7 @@
 ## Generic
 
 - Low-level functions (logarithmic and rational vacuum functions, thermal integrands, etc.)
-  - [x] Numerical tests using independent Python code (module-level `tests` submodules)
+  - [x] Numerical tests using independent Python code (module-level `tests` submodules and [`tests/numerics.py`](tests/numerics.py))
 
 ## Pure Yang-Mills theory
 
