@@ -9,7 +9,7 @@ pub use native::*;
 //   the crate for more specialized use.
 mod native {
     use super::inlines;
-    use crate::Num;
+    use crate::{Num, R};
 
     pub fn g_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
         inlines::g_sep(s, ln_s, ln_s_pl_1)
@@ -25,6 +25,14 @@ mod native {
 
     pub fn g_xi<T: Num>(s: T) -> T {
         inlines::g_xi(s)
+    }
+
+    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 }
 
@@ -80,6 +88,48 @@ pub(crate) mod ffi {
     pub extern "C" fn oneloop__ghost__g_xi__complex(s: C) -> C {
         inlines::g_xi(s)
     }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__ghost__dressing_inv_landau_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        g0: R,
+    ) -> R {
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__ghost__dressing_inv_landau_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        g0: R,
+    ) -> C {
+        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__ghost__dressing_inv_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        g0: R,
+        xi: R,
+    ) -> R {
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__ghost__dressing_inv_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        g0: R,
+        xi: R,
+    ) -> C {
+        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
+    }
 }
 
 // For internal use only
@@ -88,7 +138,7 @@ pub(crate) mod ffi {
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
-    use crate::Num;
+    use crate::{Num, R};
 
     #[inline(always)]
     pub fn l_g<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
@@ -125,6 +175,16 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn g_xi<T: Num>(s: T) -> T {
         -s.ln() / 12.
+    }
+
+    #[inline(always)]
+    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
+        g_sep(s, ln_s, ln_s_pl_1) + g0
+    }
+
+    #[inline(always)]
+    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
+        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0) + g_xi_sep(ln_s) * xi
     }
 }
 

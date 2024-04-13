@@ -13,48 +13,24 @@ pub(crate) mod native {
     use super::inlines;
     use crate::{Num, R};
 
-    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
     pub fn dressing_inv_landau<T: Num>(s: T, g0: R) -> T {
         inlines::dressing_inv_landau(s, g0)
-    }
-
-    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     pub fn dressing_inv<T: Num>(s: T, g0: R, xi: R) -> T {
         inlines::dressing_inv(s, g0, xi)
     }
 
-    pub fn dressing_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
     pub fn dressing_landau<T: Num>(s: T, g0: R) -> T {
         inlines::dressing_landau(s, g0)
-    }
-
-    pub fn dressing_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        inlines::dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     pub fn dressing<T: Num>(s: T, g0: R, xi: R) -> T {
         inlines::dressing(s, g0, xi)
     }
 
-    pub fn propagator_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
     pub fn propagator_landau<T: Num>(s: T, g0: R) -> T {
         inlines::propagator_landau(s, g0)
-    }
-
-    pub fn propagator_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     pub fn propagator<T: Num>(s: T, g0: R, xi: R) -> T {
@@ -76,23 +52,8 @@ pub(crate) mod ffi {
     use crate::{C, R};
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_inv_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
-        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__dressing_inv_landau(s: R, g0: R) -> R {
         inlines::dressing_inv_landau(s, g0)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_inv_landau_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-    ) -> C {
-        inlines::dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -101,24 +62,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_inv_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
-        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__dressing_inv(s: R, g0: R, xi: R) -> R {
         inlines::dressing_inv(s, g0, xi)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_inv_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-        xi: R,
-    ) -> C {
-        inlines::dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -127,23 +72,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
-        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__dressing_landau(s: R, g0: R) -> R {
         inlines::dressing_landau(s, g0)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_landau_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-    ) -> C {
-        inlines::dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -152,24 +82,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
-        inlines::dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__dressing(s: R, g0: R, xi: R) -> R {
         inlines::dressing(s, g0, xi)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__dressing_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-        xi: R,
-    ) -> C {
-        inlines::dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -178,23 +92,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__propagator_landau_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R) -> R {
-        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__propagator_landau(s: R, g0: R) -> R {
         inlines::propagator_landau(s, g0)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__propagator_landau_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-    ) -> C {
-        inlines::propagator_landau_sep(s, ln_s, ln_s_pl_1, g0)
     }
 
     #[no_mangle]
@@ -203,24 +102,8 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn ym__ghost__propagator_sep(s: R, ln_s: R, ln_s_pl_1: R, g0: R, xi: R) -> R {
-        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
-    }
-
-    #[no_mangle]
     pub extern "C" fn ym__ghost__propagator(s: R, g0: R, xi: R) -> R {
         inlines::propagator(s, g0, xi)
-    }
-
-    #[no_mangle]
-    pub extern "C" fn ym__ghost__propagator_sep__complex(
-        s: C,
-        ln_s: C,
-        ln_s_pl_1: C,
-        g0: R,
-        xi: R,
-    ) -> C {
-        inlines::propagator_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[no_mangle]
@@ -239,21 +122,11 @@ pub(crate) mod inlines {
     use crate::{Num, R};
 
     #[inline(always)]
-    pub fn dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        g_sep(s, ln_s, ln_s_pl_1) + g0
-    }
-
-    #[inline(always)]
     pub fn dressing_inv_landau<T: Num>(s: T, g0: R) -> T {
         let s_pl_1 = s + 1.;
         let ln_s = s.ln();
         let ln_s_pl_1 = s_pl_1.ln();
         dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
-    #[inline(always)]
-    pub fn dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0) + g_xi_sep(ln_s) * xi
     }
 
     #[inline(always)]
@@ -265,18 +138,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn dressing_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, g0).inv()
-    }
-
-    #[inline(always)]
     pub fn dressing_landau<T: Num>(s: T, g0: R) -> T {
         dressing_inv_landau(s, g0).inv()
-    }
-
-    #[inline(always)]
-    pub fn dressing_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        dressing_inv_sep(s, ln_s, ln_s_pl_1, g0, xi).inv()
     }
 
     #[inline(always)]
@@ -285,18 +148,8 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn propagator_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R) -> T {
-        s.inv() * dressing_landau_sep(s, ln_s, ln_s_pl_1, g0)
-    }
-
-    #[inline(always)]
     pub fn propagator_landau<T: Num>(s: T, g0: R) -> T {
         s.inv() * dressing_landau(s, g0)
-    }
-
-    #[inline(always)]
-    pub fn propagator_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, g0: R, xi: R) -> T {
-        s.inv() * dressing_sep(s, ln_s, ln_s_pl_1, g0, xi)
     }
 
     #[inline(always)]

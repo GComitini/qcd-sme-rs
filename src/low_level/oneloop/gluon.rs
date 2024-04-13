@@ -9,7 +9,7 @@ pub use native::*;
 //   the crate for more specialized use.
 mod native {
     use super::inlines;
-    use crate::Num;
+    use crate::{Num, R};
 
     pub fn f_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T) -> T {
         inlines::f_sep(s, ln_s, ln_s_pl_1)
@@ -33,6 +33,14 @@ mod native {
 
     pub fn f_q_crossed<T: Num>(s: T) -> T {
         inlines::f_q_crossed(s)
+    }
+
+    pub fn ym_dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, f0: R) -> T {
+        inlines::ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0)
+    }
+
+    pub fn ym_dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, f0: R, xi: R) -> T {
+        inlines::ym_dressing_inv_sep(s, ln_s, ln_s_pl_1, f0, xi)
     }
 }
 
@@ -108,6 +116,48 @@ pub(crate) mod ffi {
     pub extern "C" fn oneloop__gluon__f_q_crossed__complex(s: C) -> C {
         inlines::f_q_crossed(s)
     }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__gluon__dressing_inv_landau_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        f0: R,
+    ) -> R {
+        inlines::ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__gluon__dressing_inv_landau_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        f0: R,
+    ) -> C {
+        inlines::ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__gluon__dressing_inv_sep(
+        s: R,
+        ln_s: R,
+        ln_s_pl_1: R,
+        f0: R,
+        xi: R,
+    ) -> R {
+        inlines::ym_dressing_inv_sep(s, ln_s, ln_s_pl_1, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn ym__oneloop__gluon__dressing_inv_sep__complex(
+        s: C,
+        ln_s: C,
+        ln_s_pl_1: C,
+        f0: R,
+        xi: R,
+    ) -> C {
+        inlines::ym_dressing_inv_sep(s, ln_s, ln_s_pl_1, f0, xi)
+    }
 }
 
 // For internal use only
@@ -116,7 +166,7 @@ pub(crate) mod ffi {
 //   serves two purposes: to hold inlined functions and to provide a single
 //   source of truth for the actual mathematical expressions
 pub(crate) mod inlines {
-    use crate::Num;
+    use crate::{Num, R};
 
     #[inline(always)]
     pub fn l_a<T: Num>(s: T, ln_s: T) -> T {
@@ -222,6 +272,16 @@ pub(crate) mod inlines {
         let a2 = sinv * 4. + 1.;
         let a = a2.sqrt();
         (sinv * 4. - 1. / 6. + (sinv + 0.5 + sinv2 * 8.) / a * ((a - 1.) / (a + 1.)).ln()) * 4. / 9.
+    }
+
+    #[inline(always)]
+    pub fn ym_dressing_inv_landau_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, f0: R) -> T {
+        f_sep(s, ln_s, ln_s_pl_1) + f0
+    }
+
+    #[inline(always)]
+    pub fn ym_dressing_inv_sep<T: Num>(s: T, ln_s: T, ln_s_pl_1: T, f0: R, xi: R) -> T {
+        ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0) + f_xi_sep(s, ln_s, ln_s_pl_1) * xi
     }
 }
 
