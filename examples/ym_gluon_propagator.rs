@@ -1,10 +1,7 @@
 // Peroxide is used to plot the propagators (and internally for the thermal
 // integrals)
 use peroxide::fuga::*;
-use qcd_sme::ym::thermal::zero_matsubara::gluon::{propagator_l_landau, propagator_t_landau};
-// Rayon is used to parallelize the computation of the values of the propagator
-// using par_iter
-use rayon::prelude::*;
+use qcd_sme::ym::thermal::gluon::{propagator_l_landau, propagator_t_landau};
 
 fn main() {
     /* DEFINITIONS: MOMENTA, TEMPERATURE, ETC. */
@@ -20,34 +17,37 @@ fn main() {
     let t = 0.260;
     let beta = 1. / t;
     let renpoint = 4.;
+    let om = 0.001;
 
     /* 3DIMENSIONALLY-TRANSVERSE PROPAGATOR  */
+    println!("*** TRANSVERSE PROJECTION ***");
     let m = 0.450;
     let f0 = -0.42;
 
-    let norm = propagator_t_landau(renpoint, m, beta, f0) * (renpoint * renpoint);
+    let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
 
     let glplt = momenta
-        .par_iter()
+        .iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_t_landau(p, m, beta, f0) / norm;
+            let res = propagator_t_landau(om, p, m, beta, f0).re / norm;
             eprintln!("Computed {res}.");
             res
         })
         .collect();
 
     /* 3DIMENSIONALLY-LONGITUDINAL PROPAGATOR  */
+    println!("\n*** LONGITUDINAL PROJECTION ***");
     let m = 0.425;
     let f0 = -1.42;
 
-    let norm = propagator_l_landau(renpoint, m, beta, f0) * (renpoint * renpoint);
+    let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
 
     let glpll = momenta
-        .par_iter()
+        .iter()
         .map(|&p| {
             eprint!("Computing {p}... ");
-            let res = propagator_l_landau(p, m, beta, f0) / norm;
+            let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
             eprintln!("Computed {res}.");
             res
         })
