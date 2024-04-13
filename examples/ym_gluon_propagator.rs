@@ -5,7 +5,7 @@ use qcd_sme::ym::thermal::gluon::{propagator_l_landau, propagator_t_landau};
 
 fn main() {
     /* DEFINITIONS: MOMENTA, TEMPERATURE, ETC. */
-    let (pmin, pmax) = (0.1, 4.);
+    let (pmin, pmax) = (0.2, 3.);
     let prange = pmax - pmin;
     let dp = 0.01;
     let n = (prange / dp) as usize;
@@ -16,7 +16,7 @@ fn main() {
 
     let t = 0.260;
     let beta = 1. / t;
-    let renpoint = 4.;
+    let renpoint = 2.;
     let om = 0.001;
 
     /* 3DIMENSIONALLY-TRANSVERSE PROPAGATOR  */

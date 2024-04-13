@@ -20,7 +20,7 @@
 - Ghost propagator
 - Gluon propagator
   - [x] Temperature-dependent poles ([`examples/ym_gluon_poles.rs`](examples/ym_gluon_poles.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
-  - [ ] Values ([`examples/ym_gluon_propagator.rs`](examples/ym_gluon_poles.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
+  - [x] Values ([`examples/ym_gluon_propagator.rs`](examples/ym_gluon_propagator.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
 
 ## Full QCD
 
