@@ -134,7 +134,7 @@ pub mod quark {
             return 0.;
         }
         find_root(
-            |mu| n - charge_density_with_method(m, beta, mu, integral),
+            &|mu| n - charge_density_with_method(m, beta, mu, integral),
             (0.5 * n, n),
             integral.get_tol(),
             1000,

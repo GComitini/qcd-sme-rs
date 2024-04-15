@@ -7,11 +7,11 @@ const MAX_ITER: usize = 1000000;
 const Z0: C = C::new(-1., -1.);
 const Z1: C = C::new(-0.5, -0.5);
 
-fn find_root<F: Fn(C) -> C>(f: F) -> Option<(C, C)> {
+fn find_root<F: Fn(C) -> C>(f: &F) -> Option<(C, C)> {
     qcd_sme::utils::find_root(f, (Z0, Z1), TOL, MAX_ITER)
 }
 
-fn find_pole<F: Fn(C) -> C>(header: &str, f: F) {
+fn find_pole<F: Fn(C) -> C>(header: &str, f: &F) {
     println!("{header}\n");
     let root = find_root(f);
     let root = match root {
@@ -32,7 +32,7 @@ fn find_pole<F: Fn(C) -> C>(header: &str, f: F) {
     println!();
 }
 
-fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: F) {
+fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: &F) {
     println!("{header}\n");
     let root = find_root(f);
     let root = match root {
@@ -54,23 +54,25 @@ fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: F) {
 }
 
 fn main() {
-    find_pole("*** VACUUM POLE ***", |z: C| dressing_inv_landau(z, -0.876));
-    find_thermal_pole("*** T = 121 MeV POLE ***", |z: C| {
+    find_pole("*** VACUUM POLE ***", &|z: C| {
+        dressing_inv_landau(z, -0.876)
+    });
+    find_thermal_pole("*** T = 121 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.656, 1. / 0.121, -0.836)
     });
-    find_thermal_pole("*** T = 194 MeV POLE ***", |z: C| {
+    find_thermal_pole("*** T = 194 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.550, 1. / 0.194, -0.696)
     });
-    find_thermal_pole("*** T = 260 MeV POLE ***", |z: C| {
+    find_thermal_pole("*** T = 260 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.450, 1. / 0.260, -0.416)
     });
-    find_thermal_pole("*** T = 290 MeV POLE ***", |z: C| {
+    find_thermal_pole("*** T = 290 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.450, 1. / 0.290, -0.476)
     });
-    find_thermal_pole("*** T = 366 MeV POLE ***", |z: C| {
+    find_thermal_pole("*** T = 366 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.450, 1. / 0.366, -0.196)
     });
-    find_thermal_pole("*** T = 458 MeV POLE ***", |z: C| {
+    find_thermal_pole("*** T = 458 MeV POLE ***", &|z: C| {
         dressing_t_inv_landau(z, 0.450, 1. / 0.458, 0.214)
     });
 }

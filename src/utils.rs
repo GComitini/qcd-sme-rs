@@ -19,7 +19,7 @@ use crate::{Num, R};
 ///
 /// This function panics if `guesses.0 == guesses.1` or if `tol <= 0.`.
 pub fn find_root<T: Num, F: Fn(T) -> T>(
-    f: F,
+    f: &F,
     guesses: (T, T),
     tol: R,
     max_iter: usize,
