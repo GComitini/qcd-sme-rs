@@ -41,3 +41,15 @@ pub fn find_root<T: Num, F: Fn(T) -> T>(
     }
     None
 }
+
+/// Computes the residue of a function `f` at point `z` numerically with
+/// an epsilon `eps`.
+pub fn compute_residue_with_eps<T: Num, F: Fn(T) -> T>(f: &F, z: T, eps: R) -> T {
+    (f(z + eps).inv() - f(z - eps).inv()).inv() * 2. * eps
+}
+
+/// Computes the residue of a function `f` at point `z` numerically with
+/// an epsilon of `1E-12`.
+pub fn compute_residue<T: Num, F: Fn(T) -> T>(f: &F, z: T) -> T {
+    compute_residue_with_eps(f, z, 1E-12)
+}
