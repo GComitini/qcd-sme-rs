@@ -21,8 +21,7 @@ fn find_pole<F: Fn(C) -> C>(header: &str, f: &F, res: &mut Vec<(C, R)>) {
             root
         }
         None => {
-            println!("Found no root");
-            return;
+            panic!("Found no root");
         }
     };
     let residue = qcd_sme::utils::compute_residue(&|z| 1. / f(z), root) / root;
@@ -47,8 +46,7 @@ fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: &F, res: &mut Vec<(C, R)>) 
             root
         }
         None => {
-            println!("Found no root");
-            return;
+            panic!("Found no root");
         }
     };
     // 2*root is the conversion factor from a pole in p^2 to a pole in p
