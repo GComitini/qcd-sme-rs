@@ -1004,6 +1004,7 @@ pub mod zero_momentum {
 
     mod native {
         use super::inlines;
+        use crate::common::thermal::inlines::fermi_momentum;
         use crate::consts::get_default_integration_method;
         use crate::{Num, C, R};
         use peroxide::numerical::integral::{complex_integrate, Integral};
@@ -1148,7 +1149,7 @@ pub mod zero_momentum {
                     inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu)
                         .into()
                 },
-                (0., 1.),
+                (0., fermi_momentum(mq, mu)),
                 integral,
             )
         }
@@ -1167,7 +1168,7 @@ pub mod zero_momentum {
                     inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, mq, mu)
                         .into()
                 },
-                (0., 1.),
+                (0., fermi_momentum(mq, mu)),
                 integral,
             )
         }
