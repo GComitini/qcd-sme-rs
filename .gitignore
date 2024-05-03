@@ -178,6 +178,7 @@ cython_debug/
 .vscode/
 out/
 playground/
+results/
 TODO*
 
 # Pyenv
