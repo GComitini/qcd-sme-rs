@@ -1,6 +1,7 @@
 //! Utility functions.
 
-use crate::{Num, R};
+use crate::{Num, C, I, R};
+use std::f64::consts::PI;
 
 /// Finds (at most) one zero of a real or complex function using the
 /// [secant method](https://en.wikipedia.org/wiki/Secant_method).
@@ -52,4 +53,17 @@ pub fn compute_residue_with_eps<T: Num, F: Fn(T) -> T>(f: &F, z: T, eps: R) -> T
 /// an epsilon of `1E-12`.
 pub fn compute_residue<T: Num, F: Fn(T) -> T>(f: &F, z: T) -> T {
     compute_residue_with_eps(f, z, 1E-12)
+}
+
+/// Computes the spectral function of `f` at point `z` numerically with an
+/// epsilon `eps`. The spectral function is defined as
+/// `i[f(z+i eps)-f(z-i eps)]/2pi`.
+pub fn spectral_function_with_eps<F: Fn(C) -> C>(f: F, z: C, eps: R) -> C {
+    I * (f(z + I * eps) - f(z - I * eps)) / (2. * PI)
+}
+
+/// Computes the spectral function of `f` at point `z` numerically with an
+/// epsilon of `1E-12`.
+pub fn spectral_function<F: Fn(C) -> C>(f: F, z: C) -> C {
+    spectral_function_with_eps(f, z, 1E-12)
 }
