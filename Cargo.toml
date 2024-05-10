@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["qcd-sme"]
+members = ["qcd-sme", "tc_long_prop"]
 
 [workspace.dependencies]
 env_logger = "0.11"

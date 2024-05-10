@@ -1,0 +1,16 @@
+[package]
+name = "tc_long_prop"
+version = "0.1.0"
+edition = "2021"
+authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
+description = "critical temperature of QCD from the longitudinal gluon propagator"
+repository = "https://github.com/GComitini/qcd-sme-rs"
+license = "GPL-3.0-or-later"
+keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
+            "physics", "quantum", "field theory"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+qcd-sme = { path = "../qcd-sme" }
+peroxide = { workspace = true }
+rayon = "1.10"

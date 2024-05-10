@@ -4,7 +4,7 @@ CC = gcc
 CYTHON = cython
 PYTHON_CFLAGS = `pkg-config --cflags --libs python3`
 TARGETS = debug release
-WORKSPACE_MEMBERS = qcd-sme
+WORKSPACE_MEMBERS = qcd-sme tc_long_prop
 
 override BINARIES =
 override CARGO_CLIPPY_CMDS =
