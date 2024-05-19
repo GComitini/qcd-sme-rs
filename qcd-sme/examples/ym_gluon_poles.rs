@@ -67,9 +67,10 @@ fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: &F, res: &mut Vec<(C, R)>) 
 
 fn main() {
     let mut res = Vec::new();
+
     let temperatures = [0., 0.121, 0.194, 0.260, 0.290, 0.366, 0.458];
-    let masses = [0.656, 0.550, 0.450, 0.450, 0.450, 0.450];
-    let f0s = [-0.836, -0.696, -0.416, -0.476, -0.196, 0.214];
+    let masses = [0.675, 0.725, 0.775, 0.725, 0.800, 0.900];
+    let f0s = [0.05, 0.10, 0.30, 0.40, 0.50, 0.60];
 
     find_pole(
         "*** VACUUM POLE ***",
@@ -84,7 +85,7 @@ fn main() {
     {
         find_thermal_pole(
             &format!("*** T = {} MeV POLE ***", (t * 1000.) as u32),
-            &|z: C| dressing_t_inv_landau(z, m, 1. / t, f0),
+            &|z: C| dressing_t_inv_landau(z, m, 1. / t, f0 - 0.876),
             &mut res,
         );
     }
