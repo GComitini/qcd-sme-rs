@@ -34,7 +34,7 @@ fn main() {
     let vacuum_vals: Vec<R> = momenta
         .iter()
         .map(|&p| {
-            eprint!("Computing {p}... ");
+            eprint!("Computing (T, C, p) = (0, V, {p})... ");
             let res = propagator_landau((p * p) / (0.656 * 0.656), -0.876) / norm;
             eprintln!("Computed {res}.");
             res
@@ -64,7 +64,7 @@ fn main() {
         let vals = momenta
             .iter()
             .map(|&p| {
-                eprint!("Computing {p}... ");
+                eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
                 let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
                 eprintln!("Computed {res}.");
                 res
@@ -96,7 +96,7 @@ fn main() {
         let vals = momenta
             .iter()
             .map(|&p| {
-                eprint!("Computing {p}... ");
+                eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
                 let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
                 eprintln!("Computed {res}.");
                 res
@@ -131,7 +131,7 @@ fn main() {
         let vals = momenta
             .iter()
             .map(|&p| {
-                eprint!("Computing {p}... ");
+                eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
                 let res = propagator_t_landau(om, p, m, beta, f0).re / norm;
                 eprintln!("Computed {res}.");
                 res
@@ -163,7 +163,7 @@ fn main() {
         let vals = momenta
             .iter()
             .map(|&p| {
-                eprint!("Computing {p}... ");
+                eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
                 let res = propagator_t_landau(om, p, m, beta, f0).re / norm;
                 eprintln!("Computed {res}.");
                 res
