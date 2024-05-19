@@ -4,6 +4,7 @@ use peroxide::fuga::*;
 use qcd_sme::ym::gluon::propagator_landau;
 use qcd_sme::ym::thermal::gluon::{propagator_l_landau, propagator_t_landau};
 use qcd_sme::R;
+use rayon::prelude::*;
 use std::fs;
 
 fn main() {
@@ -62,7 +63,7 @@ fn main() {
         let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
-            .iter()
+            .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
                 let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
@@ -94,7 +95,7 @@ fn main() {
         let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
-            .iter()
+            .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
                 let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
@@ -129,7 +130,7 @@ fn main() {
         let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
-            .iter()
+            .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
                 let res = propagator_t_landau(om, p, m, beta, f0).re / norm;
@@ -161,7 +162,7 @@ fn main() {
         let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
-            .iter()
+            .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
                 let res = propagator_t_landau(om, p, m, beta, f0).re / norm;
