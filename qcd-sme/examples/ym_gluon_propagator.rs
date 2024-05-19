@@ -17,10 +17,10 @@ fn main() {
     let om = 0.001;
 
     let temperatures = [0.121, 0.194, 0.260, 0.290, 0.366, 0.458];
-    let ms_l = [0.550, 0.425, 0.425, 0.275, 0.150];
-    let f0s_l = [-0.886, -1.099, -1.421, -0.966, -0.596];
-    let ms_t = [0.656, 0.550, 0.450, 0.450, 0.450, 0.450];
-    let f0s_t = [-0.836, -0.696, -0.416, -0.476, -0.196, 0.214];
+    let ms_l = [0.525, 0.175, 0.025, 0.100, 0.350, 0.650]; // Suboptimal @ T = 260 MeV, m = 10 MeV is too low
+    let f0s_l = [-0.05, -1.3, -4.4, -1.0, 1.2, 1.8]; // Suboptimal @ T = 260 MeV, see above
+    let ms_t = [0.675, 0.725, 0.775, 0.725, 0.800, 0.900];
+    let f0s_t = [0.05, 0.10, 0.30, 0.40, 0.50, 0.60];
 
     let targetdir = std::path::Path::new("target/ym_gluon_propagator");
     fs::create_dir_all(targetdir).expect(&format!(
@@ -55,11 +55,11 @@ fn main() {
     plot.insert_image(vacuum_vals.clone());
     let mut legends = vec![String::from("$T=0$ MeV")];
 
-    for i in 0..=2 {
+    for i in 0..=1 {
         let t = temperatures[i];
         let beta = 1. / t;
         let m = ms_l[i];
-        let f0 = f0s_l[i];
+        let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
             .iter()
@@ -87,11 +87,11 @@ fn main() {
     );
     plot.set_domain(momenta.clone());
     let mut legends = vec![];
-    for i in 3..=4 {
+    for i in 3..=5 {
         let t = temperatures[i];
         let beta = 1. / t;
         let m = ms_l[i];
-        let f0 = f0s_l[i];
+        let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
             .iter()
@@ -126,7 +126,7 @@ fn main() {
         let t = temperatures[i];
         let beta = 1. / t;
         let m = ms_t[i];
-        let f0 = f0s_t[i];
+        let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
             .iter()
@@ -158,7 +158,7 @@ fn main() {
         let t = temperatures[i];
         let beta = 1. / t;
         let m = ms_t[i];
-        let f0 = f0s_t[i];
+        let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
         let vals = momenta
             .iter()
