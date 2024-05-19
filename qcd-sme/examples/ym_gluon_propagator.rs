@@ -6,6 +6,7 @@ use qcd_sme::ym::thermal::gluon::{propagator_l_landau, propagator_t_landau};
 use qcd_sme::R;
 use rayon::prelude::*;
 use std::fs;
+use std::io::{BufWriter, Write};
 
 fn main() {
     /* DEFINITIONS: MOMENTA, TEMPERATURE, ETC. */
@@ -62,7 +63,7 @@ fn main() {
         let m = ms_l[i];
         let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
-        let vals = momenta
+        let vals: Vec<R> = momenta
             .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
@@ -71,6 +72,14 @@ fn main() {
                 res
             })
             .collect();
+        let filename = format!("T{}L.txt", (t * 1000.) as u32);
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        vals.iter().enumerate().for_each(|(i, d)| {
+            writeln!(file, "{}\t{d}", momenta[i]).ok();
+        });
         plot.insert_image(vals);
         legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
     }
@@ -94,7 +103,7 @@ fn main() {
         let m = ms_l[i];
         let f0 = f0s_l[i] - 0.876;
         let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
-        let vals = momenta
+        let vals: Vec<R> = momenta
             .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
@@ -103,6 +112,14 @@ fn main() {
                 res
             })
             .collect();
+        let filename = format!("T{}L.txt", (t * 1000.) as u32);
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        vals.iter().enumerate().for_each(|(i, d)| {
+            writeln!(file, "{}\t{d}", momenta[i]).ok();
+        });
         plot.insert_image(vals);
         legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
     }
@@ -129,7 +146,7 @@ fn main() {
         let m = ms_t[i];
         let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
-        let vals = momenta
+        let vals: Vec<R> = momenta
             .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
@@ -138,6 +155,14 @@ fn main() {
                 res
             })
             .collect();
+        let filename = format!("T{}T.txt", (t * 1000.) as u32);
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        vals.iter().enumerate().for_each(|(i, d)| {
+            writeln!(file, "{}\t{d}", momenta[i]).ok();
+        });
         plot.insert_image(vals);
         legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
     }
@@ -161,7 +186,7 @@ fn main() {
         let m = ms_t[i];
         let f0 = f0s_t[i] - 0.876;
         let norm = propagator_t_landau(om, renpoint, m, beta, f0).re * (renpoint * renpoint);
-        let vals = momenta
+        let vals: Vec<R> = momenta
             .par_iter()
             .map(|&p| {
                 eprint!("Computing (T, C, p) = ({t}, T, {p})... ");
@@ -170,6 +195,14 @@ fn main() {
                 res
             })
             .collect();
+        let filename = format!("T{}T.txt", (t * 1000.) as u32);
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        vals.iter().enumerate().for_each(|(i, d)| {
+            writeln!(file, "{}\t{d}", momenta[i]).ok();
+        });
         plot.insert_image(vals);
         legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
     }
