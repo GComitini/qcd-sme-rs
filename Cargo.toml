@@ -12,7 +12,7 @@ categories = ["science", "mathematics"]
 
 [dependencies]
 num = "0.4"
-peroxide = { git = "https://github.com/GComitini/peroxide", rev = "79c1ec4e", features = ["plot", "complex"] }
+peroxide = { git = "https://github.com/GComitini/peroxide", rev = "f982dbee", features = ["plot", "complex"] }
 
 [build-dependencies]
 cbindgen = "0.26"
