@@ -12,15 +12,15 @@
 
 - Ghost propagator
 - Gluon propagator
-  - [x] Values, Landau gauge ([`examples/qcd_gluon_propagator_compare.rs`](examples/qcd_gluon_propagator_compare.rs), [arXiv:1605.07357](https://arxiv.org/pdf/1605.07357.pdf))
-  - [x] Poles, Landau gauge ([`examples/ym_gluon_poles.rs`](examples/ym_gluon_poles.rs), [arXiv:1806.08397](https://arxiv.org/abs/1806.08397))
+  - [x] Values, Landau gauge ([`qcd-sme/examples/qcd_gluon_propagator_compare.rs`](qcd-sme/examples/qcd_gluon_propagator_compare.rs), [arXiv:1605.07357](https://arxiv.org/pdf/1605.07357.pdf))
+  - [x] Poles, Landau gauge ([`qcd-sme/examples/ym_gluon_poles.rs`](qcd-sme/examples/ym_gluon_poles.rs), [arXiv:1806.08397](https://arxiv.org/abs/1806.08397))
 
 ### Finite temperature
 
 - Ghost propagator
 - Gluon propagator
-  - [x] Temperature-dependent poles ([`examples/ym_gluon_poles.rs`](examples/ym_gluon_poles.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
-  - [x] Values ([`examples/ym_gluon_propagator.rs`](examples/ym_gluon_propagator.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
+  - [x] Temperature-dependent poles ([`qcd-sme/examples/ym_gluon_poles.rs`](qcd-sme/examples/ym_gluon_poles.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
+  - [x] Values ([`qcd-sme/examples/ym_gluon_propagator.rs`](qcd-sme/examples/ym_gluon_propagator.rs), [arXiv:2101.08341](https://arxiv.org/abs/2101.08341))
 
 ## Full QCD
 
@@ -28,12 +28,12 @@
 
 - Ghost propagator
 - Gluon propagator
-  - [x] Values, Landau gauge ([`examples/qcd_gluon_propagator_compare.rs`](examples/qcd_gluon_propagator_compare.rs), [arXiv:1605.07357](https://arxiv.org/pdf/1605.07357.pdf))
+  - [x] Values, Landau gauge ([`qcd-sme/examples/qcd_gluon_propagator_compare.rs`](qcd-sme/examples/qcd_gluon_propagator_compare.rs), [arXiv:1605.07357](https://arxiv.org/pdf/1605.07357.pdf))
 
 ### Finite temperature/chemical potential
 
 - Ghost propagator
 - Gluon propagator
-  - [x] Relative coefficients of gluon and quark thermal contribution: asymptotic (high temperature/large chemical potential) HTL-like scaling ([`examples/qcd_gluon_propagator_asymptotics.rs`](examples/qcd_gluon_propagator_asymptotics.rs))
-  - [x] Full HTL limit of quark(/electron) contribution to gluon(/photon) polarization ([`examples/qed_htl_limit.rs`](examples/qed_htl_limit.rs), Kapusta & Gale - *Finite-Temperature Field Theory Principles and Applications* - CUP - 2006)
-  - [x] Zero-momentum limit equalness of polarization projections ([`examples/qcd_gluon_polarization.rs`](examples/qcd_gluon_polarization.rs))
+  - [x] Relative coefficients of gluon and quark thermal contribution: asymptotic (high temperature/large chemical potential) HTL-like scaling ([`qcd-sme/examples/qcd_gluon_propagator_asymptotics.rs`](qcd-sme/examples/qcd_gluon_propagator_asymptotics.rs))
+  - [x] Full HTL limit of quark(/electron) contribution to gluon(/photon) polarization ([`qcd-sme/examples/qed_htl_limit.rs`](qcd-sme/examples/qed_htl_limit.rs), Kapusta & Gale - *Finite-Temperature Field Theory Principles and Applications* - CUP - 2006)
+  - [x] Zero-momentum limit equalness of polarization projections ([`qcd-sme/examples/qcd_gluon_polarization.rs`](qcd-sme/examples/qcd_gluon_polarization.rs))
