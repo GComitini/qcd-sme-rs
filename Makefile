@@ -4,6 +4,7 @@ CC = gcc
 CYTHON = cython
 PYTHON_CFLAGS = `pkg-config --cflags --libs python3`
 TARGETS = debug release
+WORKSPACE_MEMBERS = qcd-sme
 
 override BINARIES =
 override CARGO_CLIPPY_CMDS =
@@ -56,7 +57,7 @@ cargo-clippy-release:
 	$(CARGO) clippy --release
 
 cargo-doc: $(RUST_FILES)
-	$(CARGO_DOC)
+	for crate in $(WORKSPACE_MEMBERS); do pushd "$$crate" &>/dev/null ; $(CARGO_DOC); popd &>/dev/null ; done
 
 cargo-test-debug:
 	$(CARGO) test
