@@ -35,4 +35,5 @@
 - Ghost propagator
 - Gluon propagator
   - [x] Relative coefficients of gluon and quark thermal contribution: asymptotic (high temperature/large chemical potential) HTL-like scaling ([`examples/qcd_gluon_propagator_asymptotics.rs`](examples/qcd_gluon_propagator_asymptotics.rs))
+  - [x] Full HTL limit of quark(/electron) contribution to gluon(/photon) polarization ([`examples/qed_htl_limit.rs`](examples/qed_htl_limit.rs), Kapusta & Gale - *Finite-Temperature Field Theory Principles and Applications* - CUP - 2006)
   - [x] Zero-momentum limit equalness of polarization projections ([`examples/qcd_gluon_polarization.rs`](examples/qcd_gluon_polarization.rs))
