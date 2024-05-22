@@ -18,7 +18,7 @@ pub mod ghost {
     }
 
     pub fn propagator_landau(om: R, p: R, m: R, beta: R, g0: R) -> C {
-        (om * om + p * p).inv() * dressing_landau(om, p, m, beta, g0)
+        om.mul_add(om, p * p).inv() * dressing_landau(om, p, m, beta, g0)
     }
 
     pub(crate) mod ffi {}

@@ -165,7 +165,7 @@ pub(crate) mod inlines {
 
     #[inline(always)]
     pub fn fermi_momentum(m: R, mu: R) -> R {
-        (mu * mu - m * m).sqrt()
+        mu.mul_add(mu, -(m * m)).sqrt()
     }
 
     #[inline(always)]

@@ -126,7 +126,7 @@ pub mod quark {
         }
         let s = if mu > m { 1. } else { -1. };
         let fm = fermi_momentum(m, mu);
-        return (nc() as R) * s * (fm * fm * fm) / (3. * PI2);
+        (nc() as R) * s * (fm * fm * fm) / (3. * PI2)
     }
 
     pub fn chemical_potential_with_method(m: R, beta: R, n: R, integral: Integral) -> R {
@@ -153,7 +153,7 @@ pub mod quark {
         }
         let a = (3. * PI2 * n.abs() / (nc() as R)).powf(2. / 3.);
         let s = if n > 0. { 1. } else { -1. };
-        return s * (m * m + a).sqrt();
+        s * m.mul_add(m, a).sqrt()
     }
 
     pub(crate) mod inlines {
@@ -166,11 +166,11 @@ pub mod quark {
 
         pub fn charge_density_i(q: R, m: R, beta: R, mu: R) -> R {
             let en = energy(q, m);
-            return (nc() as R)
+            (nc() as R)
                 * q
                 * q
                 * (fermi_distribution(en, beta, mu) - fermi_distribution(en, beta, -mu))
-                / (PI2);
+                / (PI2)
         }
     }
 }
@@ -194,11 +194,9 @@ pub mod zero_matsubara {
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, mq / m, f0)
                 - PREFACTOR
-                    * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta)
-                        + (nf() as R)
-                            * gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                    * (nf() as R).mul_add(gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
                                 p, mq, beta, mu,
-                            ))
+                            ), gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta))
                     / sdim
         }
 
@@ -207,11 +205,9 @@ pub mod zero_matsubara {
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, mq / m, f0)
                 - PREFACTOR
-                    * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta)
-                        + (nf() as R)
-                            * gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                    * (nf() as R).mul_add(gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
                                 p, mq, beta, mu,
-                            ))
+                            ), gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta))
                     / sdim
         }
 
