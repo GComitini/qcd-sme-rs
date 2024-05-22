@@ -16,7 +16,7 @@ override CYTHON_DYLIBS =
 override DEBUG_DIR = target/debug
 override RELEASE_DIR = target/release
 override CYTHON_PYX_SRC = python/pyqcd_sme_so.pyx
-override RUST_FILES = $(shell find src/ -type f -name '*.rs')
+override RUST_FILES = $(shell find qcd-sme/src/ -type f -name '*.rs')
 
 override OS = $(shell uname -s)
 override PYTHON_VERSION = $(shell python --version | cut -d" " -f2 | cut -d. -f1-2)

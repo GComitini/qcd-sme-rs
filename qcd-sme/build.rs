@@ -3,9 +3,9 @@ use std::io::Write;
 use std::path;
 
 #[cfg(debug_assertions)]
-const HEADERS_DIR: &str = "target/debug/include";
+const HEADERS_DIR: &str = "debug/include";
 #[cfg(not(debug_assertions))]
-const HEADERS_DIR: &str = "target/release/include";
+const HEADERS_DIR: &str = "release/include";
 const C_HEADER_FILE: &str = "qcd_sme.h";
 const CPP_HEADER_FILE: &str = "qcd_sme.hpp";
 const CYTHON_HEADER_FILE: &str = "qcd_sme.pxd";
@@ -13,16 +13,17 @@ const CYTHON_HEADER_FILE: &str = "qcd_sme.pxd";
 const INCLUDE_GUARD: &str = "__QCD_SME_H__";
 
 fn main() {
-    let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let c_header_path = path::PathBuf::from(&crate_dir)
-        .join(HEADERS_DIR)
-        .join(C_HEADER_FILE);
-    let cpp_header_path = path::PathBuf::from(&crate_dir)
-        .join(HEADERS_DIR)
-        .join(CPP_HEADER_FILE);
-    let cython_header_path = path::PathBuf::from(&crate_dir)
-        .join(HEADERS_DIR)
-        .join(CYTHON_HEADER_FILE);
+    let crate_dir = path::PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let mut target_dir = crate_dir.join("target");
+    // This crate depends on other crates and it will be built last, by which
+    // time hopefully we'll already have a 'target' directory somewhere.
+    // Workaround for a proper CARGO_TARGET_DIR not existing.
+    if !target_dir.is_dir() {
+        target_dir = crate_dir.parent().unwrap().join("target");
+    }
+    let c_header_path = target_dir.join(HEADERS_DIR).join(C_HEADER_FILE);
+    let cpp_header_path = target_dir.join(HEADERS_DIR).join(CPP_HEADER_FILE);
+    let cython_header_path = target_dir.join(HEADERS_DIR).join(CYTHON_HEADER_FILE);
 
     // C header
     cbindgen::Builder::new()
