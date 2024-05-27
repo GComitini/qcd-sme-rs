@@ -4,6 +4,7 @@ members = ["qcd-sme"]
 
 [workspace.dependencies]
 peroxide = { git = "https://github.com/GComitini/peroxide", rev = "f982dbee", features = ["plot", "complex"] }
+serial_test = "3.1"
 
 [profile.release]
 strip = true

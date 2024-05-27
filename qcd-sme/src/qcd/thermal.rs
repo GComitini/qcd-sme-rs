@@ -8,6 +8,7 @@ pub mod gluon {
     use crate::consts::nf;
     use crate::low_level::oneloop::thermal::gluon as gluon_thermal_parts;
     use crate::qcd::gluon as gluon_vac;
+    use crate::qcd::FieldConfig;
     use crate::{Num, C, R};
     use std::f64::consts::PI;
 
@@ -93,6 +94,190 @@ pub mod gluon {
 
     pub fn propagator_t_zero_temp_landau<T: Num>(om: T, p: R, m: R, mq: R, mu: R, f0: R) -> C {
         (om * om + p * p).inv() * dressing_t_zero_temp_landau(om, p, m, mq, mu, f0)
+    }
+
+    pub fn dressing_l_inv_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        let m = config.gluon;
+        let sdim = om * om + p * p;
+        let s = sdim / (m * m);
+        let quark_contribution: C = config
+            .quarks_internal
+            .iter()
+            .map(|qi| {
+                gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                    om, p, qi.mq, beta, mu,
+                ) * (qi.nf as R)
+            })
+            .sum();
+        gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+            - sdim.inv()
+                * PREFACTOR
+                * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(om, p, m, beta)
+                    + quark_contribution)
+    }
+
+    pub fn dressing_t_inv_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        let m = config.gluon;
+        let sdim = om * om + p * p;
+        let s = sdim / (m * m);
+        let quark_contribution: C = config
+            .quarks_internal
+            .iter()
+            .map(|qi| {
+                gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                    om, p, qi.mq, beta, mu,
+                ) * (qi.nf as R)
+            })
+            .sum();
+        gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+            - sdim.inv()
+                * PREFACTOR
+                * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(om, p, m, beta)
+                    + quark_contribution)
+    }
+
+    pub fn dressing_l_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        dressing_l_inv_landau_w_field_config(om, p, beta, mu, f0, config).inv()
+    }
+
+    pub fn dressing_t_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        dressing_t_inv_landau_w_field_config(om, p, beta, mu, f0, config).inv()
+    }
+
+    pub fn propagator_l_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        (om * om + p * p).inv() * dressing_l_landau_w_field_config(om, p, beta, mu, f0, config)
+    }
+
+    pub fn propagator_t_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        beta: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        (om * om + p * p).inv() * dressing_t_landau_w_field_config(om, p, beta, mu, f0, config)
+    }
+
+    pub fn dressing_l_inv_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        let m = config.gluon;
+        let sdim = om * om + p * p;
+        let s = sdim / (m * m);
+        let quark_contribution: C = config
+            .quarks_internal
+            .iter()
+            .map(|qi| {
+                gluon_thermal_parts::polarization_quark_l_thermal_part_zero_temp_landau(
+                    om, p, qi.mq, mu,
+                ) * (qi.nf as R)
+            })
+            .sum();
+        gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+            - sdim.inv() * PREFACTOR * quark_contribution
+    }
+
+    pub fn dressing_t_inv_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        let m = config.gluon;
+        let sdim = om * om + p * p;
+        let s = sdim / (m * m);
+        let quark_contribution: C = config
+            .quarks_internal
+            .iter()
+            .map(|qi| {
+                gluon_thermal_parts::polarization_quark_t_thermal_part_zero_temp_landau(
+                    om, p, qi.mq, mu,
+                ) * (qi.nf as R)
+            })
+            .sum();
+        gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+            - sdim.inv() * PREFACTOR * quark_contribution
+    }
+
+    pub fn dressing_l_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        dressing_l_inv_zero_temp_landau_w_field_config(om, p, mu, f0, config).inv()
+    }
+
+    pub fn dressing_t_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        dressing_t_inv_zero_temp_landau_w_field_config(om, p, mu, f0, config).inv()
+    }
+
+    pub fn propagator_l_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        (om * om + p * p).inv() * dressing_l_zero_temp_landau_w_field_config(om, p, mu, f0, config)
+    }
+
+    pub fn propagator_t_zero_temp_landau_w_field_config<T: Num>(
+        om: T,
+        p: R,
+        mu: R,
+        f0: R,
+        config: &FieldConfig,
+    ) -> C {
+        (om * om + p * p).inv() * dressing_t_zero_temp_landau_w_field_config(om, p, mu, f0, config)
     }
 
     pub(crate) mod ffi {}
@@ -184,6 +369,7 @@ pub mod zero_matsubara {
         use crate::consts::nf;
         use crate::low_level::oneloop::thermal::gluon::zero_matsubara as gluon_thermal_parts;
         use crate::qcd::gluon as gluon_vac;
+        use crate::qcd::FieldConfig;
         use crate::R;
         use std::f64::consts::PI;
 
@@ -194,9 +380,12 @@ pub mod zero_matsubara {
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, mq / m, f0)
                 - PREFACTOR
-                    * (nf() as R).mul_add(gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
-                                p, mq, beta, mu,
-                            ), gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta))
+                    * (nf() as R).mul_add(
+                        gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                            p, mq, beta, mu,
+                        ),
+                        gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta),
+                    )
                     / sdim
         }
 
@@ -205,9 +394,12 @@ pub mod zero_matsubara {
             let s = sdim / (m * m);
             gluon_vac::dressing_inv_landau(s, mq / m, f0)
                 - PREFACTOR
-                    * (nf() as R).mul_add(gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
-                                p, mq, beta, mu,
-                            ), gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta))
+                    * (nf() as R).mul_add(
+                        gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                            p, mq, beta, mu,
+                        ),
+                        gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta),
+                    )
                     / sdim
         }
 
@@ -265,6 +457,176 @@ pub mod zero_matsubara {
             dressing_t_zero_temp_landau(p, m, mq, mu, f0) / (p * p)
         }
 
+        pub fn dressing_l_inv_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            let m = config.gluon;
+            let sdim = p * p;
+            let s = sdim / (m * m);
+            let quark_contribution: R = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                        p, qi.mq, beta, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - PREFACTOR
+                    * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(p, m, beta)
+                        + quark_contribution)
+                    / sdim
+        }
+
+        pub fn dressing_t_inv_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            let m = config.gluon;
+            let sdim = p * p;
+            let s = sdim / (m * m);
+            let quark_contribution: R = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                        p, qi.mq, beta, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - PREFACTOR
+                    * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(p, m, beta)
+                        + quark_contribution)
+                    / sdim
+        }
+
+        pub fn dressing_l_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            1. / dressing_l_inv_landau_w_field_config(p, beta, mu, f0, config)
+        }
+
+        pub fn dressing_t_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            1. / dressing_t_inv_landau_w_field_config(p, beta, mu, f0, config)
+        }
+
+        pub fn propagator_l_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            dressing_l_landau_w_field_config(p, beta, mu, f0, config) / (p * p)
+        }
+
+        pub fn propagator_t_landau_w_field_config(
+            p: R,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            dressing_t_landau_w_field_config(p, beta, mu, f0, config) / (p * p)
+        }
+
+        pub fn dressing_l_inv_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            let m = config.gluon;
+            let s = p * p / (m * m);
+            let quark_contribution: R = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_l_thermal_part_zero_temp_landau(
+                        p, qi.mq, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - PREFACTOR * quark_contribution / (p * p)
+        }
+
+        pub fn dressing_t_inv_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            let m = config.gluon;
+            let s = p * p / (m * m);
+            let quark_contribution: R = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_t_thermal_part_zero_temp_landau(
+                        p, qi.mq, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - PREFACTOR * quark_contribution / (p * p)
+        }
+
+        pub fn dressing_l_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            1. / dressing_l_inv_zero_temp_landau_w_field_config(p, mu, f0, config)
+        }
+
+        pub fn dressing_t_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            1. / dressing_t_inv_zero_temp_landau_w_field_config(p, mu, f0, config)
+        }
+
+        pub fn propagator_l_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            dressing_l_zero_temp_landau_w_field_config(p, mu, f0, config) / (p * p)
+        }
+
+        pub fn propagator_t_zero_temp_landau_w_field_config(
+            p: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> R {
+            dressing_t_zero_temp_landau_w_field_config(p, mu, f0, config) / (p * p)
+        }
+
         pub(crate) mod ffi {}
     }
 }
@@ -278,6 +640,7 @@ pub mod zero_momentum {
         use crate::consts::nf;
         use crate::low_level::oneloop::thermal::gluon::zero_momentum as gluon_thermal_parts;
         use crate::qcd::gluon as gluon_vac;
+        use crate::qcd::FieldConfig;
         use crate::{Num, C, R};
         use std::f64::consts::PI;
 
@@ -363,6 +726,178 @@ pub mod zero_momentum {
 
         pub fn propagator_t_zero_temp_landau<T: Num>(om: T, m: R, mq: R, mu: R, f0: R) -> C {
             (om * om).inv() * dressing_t_zero_temp_landau(om, m, mq, mu, f0)
+        }
+
+        pub fn dressing_l_inv_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            let m = config.gluon;
+            let sdim = om * om;
+            let s = sdim / (m * m);
+            let quark_contribution: C = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_l_thermal_part_landau(
+                        om, qi.mq, beta, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - sdim.inv()
+                    * PREFACTOR
+                    * (gluon_thermal_parts::polarization_glue_l_thermal_part_landau(om, m, beta)
+                        + quark_contribution)
+        }
+
+        pub fn dressing_t_inv_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            let m = config.gluon;
+            let sdim = om * om;
+            let s = sdim / (m * m);
+            let quark_contribution: C = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_t_thermal_part_landau(
+                        om, qi.mq, beta, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - sdim.inv()
+                    * PREFACTOR
+                    * (gluon_thermal_parts::polarization_glue_t_thermal_part_landau(om, m, beta)
+                        + quark_contribution)
+        }
+
+        pub fn dressing_l_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            dressing_l_inv_landau_w_field_config(om, beta, mu, f0, config).inv()
+        }
+
+        pub fn dressing_t_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            dressing_t_inv_landau_w_field_config(om, beta, mu, f0, config).inv()
+        }
+
+        pub fn propagator_l_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            (om * om).inv() * dressing_l_landau_w_field_config(om, beta, mu, f0, config)
+        }
+
+        pub fn propagator_t_landau_w_field_config<T: Num>(
+            om: T,
+            beta: R,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            (om * om).inv() * dressing_t_landau_w_field_config(om, beta, mu, f0, config)
+        }
+
+        pub fn dressing_l_inv_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            let m = config.gluon;
+            let sdim = om * om;
+            let s = sdim / (m * m);
+            let quark_contribution: C = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_l_thermal_part_zero_temp_landau(
+                        om, qi.mq, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - sdim.inv() * PREFACTOR * quark_contribution
+        }
+
+        pub fn dressing_t_inv_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            let m = config.gluon;
+            let sdim = om * om;
+            let s = sdim / (m * m);
+            let quark_contribution: C = config
+                .quarks_internal
+                .iter()
+                .map(|qi| {
+                    gluon_thermal_parts::polarization_quark_t_thermal_part_zero_temp_landau(
+                        om, qi.mq, mu,
+                    ) * (qi.nf as R)
+                })
+                .sum();
+            gluon_vac::dressing_inv_landau_w_field_config(s, f0, config)
+                - sdim.inv() * PREFACTOR * quark_contribution
+        }
+
+        pub fn dressing_l_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            dressing_l_inv_zero_temp_landau_w_field_config(om, mu, f0, config).inv()
+        }
+
+        pub fn dressing_t_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            dressing_t_inv_zero_temp_landau_w_field_config(om, mu, f0, config).inv()
+        }
+
+        pub fn propagator_l_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            (om * om).inv() * dressing_l_zero_temp_landau_w_field_config(om, mu, f0, config)
+        }
+
+        pub fn propagator_t_zero_temp_landau_w_field_config<T: Num>(
+            om: T,
+            mu: R,
+            f0: R,
+            config: &FieldConfig,
+        ) -> C {
+            (om * om).inv() * dressing_t_zero_temp_landau_w_field_config(om, mu, f0, config)
         }
 
         pub(crate) mod ffi {}

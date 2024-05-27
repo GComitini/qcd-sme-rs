@@ -20,6 +20,7 @@ regex = "1.10"
 
 [dev-dependencies]
 rayon = "1.10"
+serial_test = { workspace = true }
 
 [lib]
 crate-type = ["lib", "cdylib", "staticlib"]

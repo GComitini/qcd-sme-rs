@@ -1,7 +1,10 @@
 //! Constants, static variables and their getter/setter functions.
 //!
-//! Note: the static variables defined in this module are not thread-safe.
-//! Do not change them while multithreading!
+//! Warning: the static variables defined in this module are not thread-safe.
+//! Do not change them while multithreading! If you want to do thread-safe
+//! calculations while changing the number of fermions and/or the number of
+//! colors and/or the quark masses, use [`FieldConfig`](crate::qcd::FieldConfig)
+//! and the `*_w_field_config` functions instead.
 
 use crate::{
     types::{NCTYPE, NFTYPE},

@@ -9,6 +9,7 @@ pub use native::*;
 //   the crate for more specialized use.
 mod native {
     use super::inlines;
+    use crate::qcd::FieldConfig;
     use crate::{Num, R};
 
     pub fn dressing_inv_landau<T: Num>(s: T, mq: R, f0: R) -> T {
@@ -27,6 +28,14 @@ mod native {
         inlines::dressing(s, mq, f0, xi)
     }
 
+    pub fn propagator_landau<T: Num>(s: T, mq: R, f0: R) -> T {
+        inlines::propagator_landau(s, mq, f0)
+    }
+
+    pub fn propagator<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
+        inlines::propagator(s, mq, f0, xi)
+    }
+
     pub fn dressing_crossed_inv_landau<T: Num>(s: T, mq: R, f0: R) -> T {
         inlines::dressing_crossed_inv_landau(s, mq, f0)
     }
@@ -41,6 +50,80 @@ mod native {
 
     pub fn dressing_crossed<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
         inlines::dressing_crossed(s, mq, f0, xi)
+    }
+
+    pub fn propagator_crossed_landau<T: Num>(s: T, mq: R, f0: R) -> T {
+        inlines::propagator_crossed_landau(s, mq, f0)
+    }
+
+    pub fn propagator_crossed<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
+        inlines::propagator_crossed(s, mq, f0, xi)
+    }
+
+    pub fn dressing_inv_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        inlines::dressing_inv_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn dressing_inv_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        inlines::dressing_inv_w_field_config(s, f0, xi, config)
+    }
+
+    pub fn dressing_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        inlines::dressing_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn dressing_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        inlines::dressing_w_field_config(s, f0, xi, config)
+    }
+
+    pub fn propagator_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        inlines::propagator_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn propagator_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        inlines::propagator_w_field_config(s, f0, xi, config)
+    }
+
+    pub fn dressing_crossed_inv_landau_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        config: &FieldConfig,
+    ) -> T {
+        inlines::dressing_crossed_inv_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn dressing_crossed_inv_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        xi: R,
+        config: &FieldConfig,
+    ) -> T {
+        inlines::dressing_crossed_inv_w_field_config(s, f0, xi, config)
+    }
+
+    pub fn dressing_crossed_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        inlines::dressing_crossed_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn dressing_crossed_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        inlines::dressing_crossed_w_field_config(s, f0, xi, config)
+    }
+
+    pub fn propagator_crossed_landau_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        config: &FieldConfig,
+    ) -> T {
+        inlines::propagator_crossed_landau_w_field_config(s, f0, config)
+    }
+
+    pub fn propagator_crossed_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        xi: R,
+        config: &FieldConfig,
+    ) -> T {
+        inlines::propagator_crossed_w_field_config(s, f0, xi, config)
     }
 }
 
@@ -97,6 +180,25 @@ pub(crate) mod ffi {
     }
 
     #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_landau(s: R, mq: R, f0: R) -> R {
+        inlines::propagator_landau(s, mq, f0)
+    }
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_landau__complex(s: C, mq: R, f0: R) -> C {
+        inlines::propagator_landau(s, mq, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator(s: R, mq: R, f0: R, xi: R) -> R {
+        inlines::propagator(s, mq, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator__complex(s: C, mq: R, f0: R, xi: R) -> C {
+        inlines::propagator(s, mq, f0, xi)
+    }
+
+    #[no_mangle]
     pub extern "C" fn qcd__gluon__dressing_crossed_inv_landau(s: R, mq: R, f0: R) -> R {
         inlines::dressing_crossed_inv_landau(s, mq, f0)
     }
@@ -135,6 +237,26 @@ pub(crate) mod ffi {
     pub extern "C" fn qcd__gluon__dressing_crossed__complex(s: C, mq: R, f0: R, xi: R) -> C {
         inlines::dressing_crossed(s, mq, f0, xi)
     }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_crossed_landau(s: R, mq: R, f0: R) -> R {
+        inlines::propagator_crossed_landau(s, mq, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_crossed_landau__complex(s: C, mq: R, f0: R) -> C {
+        inlines::propagator_crossed_landau(s, mq, f0)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_crossed(s: R, mq: R, f0: R, xi: R) -> R {
+        inlines::propagator_crossed(s, mq, f0, xi)
+    }
+
+    #[no_mangle]
+    pub extern "C" fn qcd__gluon__propagator_crossed__complex(s: C, mq: R, f0: R, xi: R) -> C {
+        inlines::propagator_crossed(s, mq, f0, xi)
+    }
 }
 
 // For internal use only
@@ -145,8 +267,10 @@ pub(crate) mod ffi {
 pub(crate) mod inlines {
     use crate::consts::nf_div_nc;
     use crate::low_level::oneloop::gluon::inlines::*;
+    use crate::qcd::FieldConfig;
     use crate::{Num, R};
 
+    // s and mq are adimensional, here and everywhere in this module.
     #[inline(always)]
     pub fn dressing_inv_landau<T: Num>(s: T, mq: R, f0: R) -> T {
         let s_pl_1 = s + 1.;
@@ -178,6 +302,16 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
+    pub fn propagator_landau<T: Num>(s: T, mq: R, f0: R) -> T {
+        dressing_landau(s, mq, f0) / s
+    }
+
+    #[inline(always)]
+    pub fn propagator<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
+        dressing(s, mq, f0, xi) / s
+    }
+
+    #[inline(always)]
     pub fn dressing_crossed_inv_landau<T: Num>(s: T, mq: R, f0: R) -> T {
         let s_pl_1 = s + 1.;
         let ln_s = s.ln();
@@ -205,6 +339,126 @@ pub(crate) mod inlines {
     #[inline(always)]
     pub fn dressing_crossed<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
         dressing_crossed_inv(s, mq, f0, xi).inv()
+    }
+
+    #[inline(always)]
+    pub fn propagator_crossed_landau<T: Num>(s: T, mq: R, f0: R) -> T {
+        dressing_crossed_landau(s, mq, f0) / s
+    }
+
+    #[inline(always)]
+    pub fn propagator_crossed<T: Num>(s: T, mq: R, f0: R, xi: R) -> T {
+        dressing_crossed(s, mq, f0, xi) / s
+    }
+
+    #[inline(always)]
+    pub fn dressing_inv_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let mut res = ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0);
+        for qi in &config.quarks_internal {
+            let s_q = s / qi.mq_div_m_2;
+            res += f_q(s_q) * qi.nf_div_nc;
+        }
+        res
+    }
+
+    #[inline(always)]
+    pub fn dressing_inv_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let mut res = ym_dressing_inv_sep(s, ln_s, ln_s_pl_1, f0, xi);
+        for qi in &config.quarks_internal {
+            let s_q = s / qi.mq_div_m_2;
+            res += f_q(s_q) * qi.nf_div_nc;
+        }
+        res
+    }
+
+    #[inline(always)]
+    pub fn dressing_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        dressing_inv_landau_w_field_config(s, f0, config).inv()
+    }
+
+    #[inline(always)]
+    pub fn dressing_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        dressing_inv_w_field_config(s, f0, xi, config).inv()
+    }
+
+    #[inline(always)]
+    pub fn propagator_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        dressing_landau_w_field_config(s, f0, config) / s
+    }
+
+    #[inline(always)]
+    pub fn propagator_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        dressing_w_field_config(s, f0, xi, config) / s
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv_landau_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        config: &FieldConfig,
+    ) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let mut res = ym_dressing_inv_landau_sep(s, ln_s, ln_s_pl_1, f0);
+        for qi in &config.quarks_internal {
+            let s_q = s / qi.mq_div_m_2;
+            res += f_q_crossed(s_q) * qi.nf_div_nc;
+        }
+        res
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_inv_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        xi: R,
+        config: &FieldConfig,
+    ) -> T {
+        let s_pl_1 = s + 1.;
+        let ln_s = s.ln();
+        let ln_s_pl_1 = s_pl_1.ln();
+        let mut res = ym_dressing_inv_sep(s, ln_s, ln_s_pl_1, f0, xi);
+        for qi in &config.quarks_internal {
+            let s_q = s / qi.mq_div_m_2;
+            res += f_q_crossed(s_q) * qi.nf_div_nc;
+        }
+        res
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_landau_w_field_config<T: Num>(s: T, f0: R, config: &FieldConfig) -> T {
+        dressing_crossed_inv_landau_w_field_config(s, f0, config).inv()
+    }
+
+    #[inline(always)]
+    pub fn dressing_crossed_w_field_config<T: Num>(s: T, f0: R, xi: R, config: &FieldConfig) -> T {
+        dressing_crossed_inv_w_field_config(s, f0, xi, config).inv()
+    }
+
+    #[inline(always)]
+    pub fn propagator_crossed_landau_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        config: &FieldConfig,
+    ) -> T {
+        dressing_crossed_landau_w_field_config(s, f0, config) / s
+    }
+
+    #[inline(always)]
+    pub fn propagator_crossed_w_field_config<T: Num>(
+        s: T,
+        f0: R,
+        xi: R,
+        config: &FieldConfig,
+    ) -> T {
+        dressing_crossed_w_field_config(s, f0, xi, config) / s
     }
 }
 
