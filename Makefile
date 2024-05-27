@@ -57,7 +57,7 @@ cargo-clippy-release:
 	$(CARGO) clippy --release
 
 cargo-doc: $(RUST_FILES)
-	for crate in $(WORKSPACE_MEMBERS); do pushd "$$crate" &>/dev/null ; $(CARGO_DOC); popd &>/dev/null ; done
+	for crate in $(WORKSPACE_MEMBERS); do cd "$$crate"; $(CARGO_DOC); cd ..; done
 
 cargo-test-debug:
 	$(CARGO) test
