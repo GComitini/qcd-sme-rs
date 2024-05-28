@@ -11,6 +11,7 @@ keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
 categories = ["science", "mathematics"]
 
 [dependencies]
+lazy_static = { workspace = true }
 qcd-sme = { path = "../qcd-sme" }
 peroxide = { workspace = true }
 rayon = "1.10"
