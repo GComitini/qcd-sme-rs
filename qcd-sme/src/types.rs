@@ -25,12 +25,20 @@ pub type NFTYPE = u32;
 pub trait Num:
     Copy
     + num::Num
+    + ops::AddAssign
+    + ops::SubAssign
+    + ops::MulAssign
+    + ops::DivAssign
     + fmt::Debug
     + fmt::Display
     + ops::Add<R, Output = Self>
     + ops::Mul<R, Output = Self>
     + ops::Div<R, Output = Self>
     + ops::Sub<R, Output = Self>
+    + ops::AddAssign<R>
+    + ops::SubAssign<R>
+    + ops::MulAssign<R>
+    + ops::DivAssign<R>
     + ops::Neg<Output = Self>
     + ops::Add<C, Output = C>
     + ops::Sub<C, Output = C>
