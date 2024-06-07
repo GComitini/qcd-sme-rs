@@ -1,6 +1,7 @@
 use crate::types::{NCTYPE, NFTYPE};
 use crate::R;
 
+#[derive(Clone, Debug)]
 /// Field configuration for gluons and quarks.
 pub struct FieldConfig {
     /// Number of colors.
@@ -29,6 +30,7 @@ impl FieldConfig {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 pub struct QuarkInternal {
     pub nf: NFTYPE,
     pub mq: R,
