@@ -1,8 +1,9 @@
+use peroxide::fuga::{LineStyle, Plot, Plot2D, PlotType, AD};
 use qcd_sme::R;
 
 pub mod prelude {
-    pub use super::find_critical_temperature;
     pub use super::BASEDIR;
+    pub use super::{find_critical_temperature, parametrize_phase_diagram};
     pub use peroxide::util::plot::*;
     pub use qcd_sme::qcd::FieldConfig;
     pub use qcd_sme::{Num, C, R};
@@ -40,4 +41,72 @@ pub fn find_critical_temperature(ts: &[R], ds: &[R]) -> R {
         }
     }
     tc
+}
+
+pub trait ROrAD:
+    std::ops::Add<Self, Output = Self> + std::ops::Mul<Self, Output = Self> + Sized + Copy
+{
+    const ZERO: Self;
+}
+
+impl ROrAD for R {
+    const ZERO: R = 0.;
+}
+
+impl ROrAD for AD {
+    const ZERO: AD = AD::AD0(0.);
+}
+
+fn parametric_phase_diagram<T: ROrAD>(mu: T, params: &[T]) -> T {
+    let mut res = T::ZERO;
+    for p in params[1..].iter().rev() {
+        res = res + *p;
+        res = res * mu;
+    }
+    res + params[0]
+}
+
+pub fn parametrize_phase_diagram(data: &[(R, R)], n: usize, plotpath: Option<&str>) -> Vec<R> {
+    use peroxide::fuga::{matrix, Col, LevenbergMarquardt, Markers, Optimizer, AD1};
+
+    let data_red = data.split(|(_, tc)| *tc == 0.).next().unwrap();
+    let domain: Vec<R> = data_red.iter().map(|(mu, _)| *mu).collect();
+    let values: Vec<R> = data_red.iter().map(|(_, tc)| *tc).collect();
+
+    let params = Optimizer::new(
+        peroxide::hstack!(domain.clone(), values.clone()),
+        |mus, p| {
+            Some(
+                mus.iter()
+                    .map(|mu| AD1(*mu, 0.))
+                    .map(|mu| parametric_phase_diagram(mu, &p))
+                    .collect(),
+            )
+        },
+    )
+    .set_init_param(vec![1.; n + 1])
+    .set_max_iter(50)
+    .set_method(LevenbergMarquardt)
+    .set_lambda_init(1e-3)
+    .set_lambda_max(1e+3)
+    .optimize();
+
+    if let Some(plotpath) = plotpath {
+        let mut plot = Plot2D::new();
+        plot.set_path(plotpath);
+        plot.set_domain(domain.clone());
+        plot.insert_image(values);
+        plot.insert_image(
+            domain
+                .iter()
+                .map(|mu| parametric_phase_diagram(*mu, &params))
+                .collect(),
+        );
+        plot.set_plot_type(vec![(0, PlotType::Scatter)])
+            .set_marker(vec![(0, Markers::Point)])
+            .set_line_style(vec![(1, LineStyle::Solid)]);
+        plot.savefig().expect("Could not save figure");
+    }
+
+    params
 }

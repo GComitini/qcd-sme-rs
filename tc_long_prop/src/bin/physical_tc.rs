@@ -234,7 +234,7 @@ fn compute_ir_limit(config: &Config) {
     plot.savefig().expect("Could not save figure");
 }
 
-fn compute_phase_diagram(config: &Config) {
+fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     let mut config = config.clone();
 
     let m = config.fieldconfig.gluon;
@@ -336,6 +336,13 @@ fn compute_phase_diagram(config: &Config) {
         THIS_BASEDIR.to_string_lossy()
     ));
     plot.savefig().expect("Could not save figure");
+
+    config
+        .chempots
+        .iter()
+        .zip(tcs.iter())
+        .map(|(&mu, &tc)| (mu, tc))
+        .collect()
 }
 
 fn main() {
@@ -406,7 +413,15 @@ fn main() {
     eprintln!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
     config.reset_correctedfieldconfig(Some(&correctedfieldconfig));
     config.filename = "nf_2+1_corrected";
-    compute_phase_diagram(&config);
+    let cpd = compute_phase_diagram(&config);
+    let pdf = parametrize_phase_diagram(
+        &cpd,
+        8,
+        THIS_BASEDIR
+            .join(format!("tc_{}_fit.png", config.filename))
+            .to_str(),
+    );
+    println!("{pdf:?}"); //DEBUG
 
     /* NF = 2 + 1 + 1 */
     let fieldconfig = FieldConfig::new(3, m, vec![(2, mq1), (1, mq2), (1, mq3)]);
