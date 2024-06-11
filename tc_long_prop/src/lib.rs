@@ -3,7 +3,7 @@ use qcd_sme::R;
 
 pub mod prelude {
     pub use super::BASEDIR;
-    pub use super::{find_critical_temperature, parametrize_phase_diagram};
+    pub use super::{find_critical_temperature, is_deconfined_phase, parametrize_phase_diagram};
     pub use peroxide::util::plot::*;
     pub use qcd_sme::qcd::FieldConfig;
     pub use qcd_sme::{Num, C, R};
@@ -109,4 +109,35 @@ pub fn parametrize_phase_diagram(data: &[(R, R)], n: usize, plotpath: Option<&st
     }
 
     params
+}
+
+pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
+    let phase_boundary = phase_boundary.split(|(_, t)| *t == 0.).next().unwrap();
+
+    if t == 0. {
+        return mu > phase_boundary.last().unwrap().0;
+    }
+    if mu == 0. {
+        return t > phase_boundary.first().unwrap().1;
+    }
+
+    for (i, (mmu, tt)) in phase_boundary.iter().enumerate() {
+        if *mmu == mu {
+            return t > *tt;
+        }
+        if *tt == t {
+            return mu > *mmu;
+        }
+        if *mmu > mu {
+            // mmu is the smallest chemical potential in our set greater than mu,
+            // therefore mu0 must be the largest chemical potential in our set less
+            // than mu: mu0 < mu < mmu with no other chemical potentials in between.
+            // Between these chemical potentials we interpolate the critical temperature
+            // linearly.
+            let (mu0, t0) = phase_boundary[i - 1];
+            let tc = t0 + (tt - t0) / (mmu - mu0) * (mu - mu0);
+            return t > tc;
+        }
+    }
+    true
 }
