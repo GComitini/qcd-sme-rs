@@ -1,13 +1,15 @@
-use config::{maybe_corrected_fieldconfig_f0, Config};
+use config::Config;
 use lazy_static::lazy_static;
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::PathBuf;
 use tc_long_prop::more_masses::*;
 
+// Width (in points) for numerical second derivative
 const D2W: usize = 2;
 
 lazy_static! {
+    // Base directory for saving output of this binary
     static ref THIS_BASEDIR: PathBuf = PathBuf::from(BASEDIR).join("physical_tc");
 }
 
@@ -15,21 +17,24 @@ mod config {
     use crate::is_deconfined_phase;
     use qcd_sme::{qcd::FieldConfig, R};
 
+    // Public fields can be modified independent of other fields so
+    // they do not require special setter methods. We don't currently
+    // reset self.momenta so we don't need to make pbase private
     #[derive(Clone)]
     pub struct Config<'a> {
         // In units of m
         pub pbase: R,
         // In GeV
         pub om: R,
-        // In GeV
-        renpoint: R,
-        // Adimensional
-        f0: R,
         pub fieldconfig: &'a FieldConfig,
         pub correctedfieldconfig: Option<&'a FieldConfig>,
         pub label: &'a str,
         pub filename: &'a str,
         pub title: &'a str,
+        // In GeV
+        renpoint: R,
+        // Adimensional
+        f0: R,
         temps: Vec<R>,
         chempots: Vec<R>,
         momenta: Vec<R>,
@@ -40,6 +45,7 @@ mod config {
 
     impl<'a> Config<'a> {
         pub fn new(
+            // (min, max, delta)
             temps: (R, R, R),
             chempots: (R, R, R),
             momenta: (R, R, R),
@@ -47,7 +53,6 @@ mod config {
             renpoint: R,
             f0: R,
             fieldconfig: &'a FieldConfig,
-            correctedfieldconfig: Option<&'a FieldConfig>,
             label: &'a str,
             filename: &'a str,
             title: &'a str,
@@ -60,23 +65,21 @@ mod config {
 
             let renpoint2 = renpoint * renpoint;
 
-            let correctedf0 = Self::compute_correctedf0(fieldconfig, correctedfieldconfig, f0);
-
             Self {
                 pbase,
                 om,
-                renpoint,
-                f0,
                 fieldconfig,
-                correctedfieldconfig,
+                correctedfieldconfig: None,
                 label,
                 filename,
                 title,
+                renpoint,
+                f0,
                 temps,
                 chempots,
                 momenta,
                 renpoint2,
-                correctedf0,
+                correctedf0: None,
                 phase_boundary: None,
             }
         }
@@ -87,10 +90,6 @@ mod config {
 
         pub fn renpoint2(&self) -> R {
             self.renpoint2
-        }
-
-        pub fn f0(&self) -> R {
-            self.f0
         }
 
         pub fn temps(&self) -> &Vec<R> {
@@ -113,8 +112,8 @@ mod config {
             self.temps = Self::compute_vec(temps);
         }
 
-        pub fn reset_chemicalpotentials(&mut self, chpots: (R, R, R)) {
-            self.chempots = Self::compute_vec(chpots);
+        pub fn reset_chemicalpotentials(&mut self, chempots: (R, R, R)) {
+            self.chempots = Self::compute_vec(chempots);
         }
 
         pub fn reset_correctedfieldconfig(
@@ -122,13 +121,54 @@ mod config {
             correctedfieldconfig: Option<&'a FieldConfig>,
         ) {
             self.correctedfieldconfig = correctedfieldconfig;
-            self.correctedf0 =
-                Self::compute_correctedf0(self.fieldconfig, correctedfieldconfig, self.f0);
+            self.set_correctedf0();
         }
 
         pub fn reset_phase_boundary(&mut self, phase_boundary: Option<&'a [(R, R)]>) {
+            // This selects the "physical" portion of the phase_boundary data (neglects
+            // data for mu > mu_c, after the critical temperature has vanished). It works
+            // only if phase_boundary is fine enough to contain the (T, mu) = (0, mu_c)
+            // point. We assume we made it fine enough (i.e. we MUST make it fine enough)
             self.phase_boundary =
                 phase_boundary.map(|pb| pb.split(|(_, tc)| *tc == 0.).next().unwrap());
+        }
+
+        pub fn maybe_corrected_data(&self, mu: R, t: R) -> (&'a FieldConfig, R) {
+            match (
+                self.correctedfieldconfig,
+                self.correctedf0,
+                self.phase_boundary,
+            ) {
+                (Some(cfc), Some(cf0), Some(pb)) => {
+                    if is_deconfined_phase(mu, t, pb) {
+                        (cfc, cf0)
+                    } else {
+                        (self.fieldconfig, self.f0)
+                    }
+                }
+                (None, None, None) => (self.fieldconfig, self.f0),
+                _ => panic!("Inconsistent 'corrected' configuration"),
+            }
+        }
+
+        fn set_correctedf0(&mut self) {
+            // Corrects f0: adds it appropriate ln(mq/mqc) terms so that the vacuum
+            // quark loop does not diverge in the mq -> 0 limit due to a bad choice
+            // of renormalization constants.
+            self.correctedf0 = self.correctedfieldconfig.map(|cfc| {
+                self.f0
+                    + cfc
+                        .quarks
+                        .iter()
+                        .enumerate()
+                        .map(|(i, (nf, mqc))| {
+                            let mq = self.fieldconfig.quarks[i].1;
+                            (*nf as R) * (mq / mqc).ln()
+                        })
+                        .sum::<R>()
+                        * 4.
+                        / (9. * (self.fieldconfig.nc as R))
+            });
         }
 
         fn compute_vec(v: (R, R, R)) -> Vec<R> {
@@ -136,45 +176,6 @@ mod config {
             let vrange = vmax - vmin;
             let n = (vrange / dv) as usize;
             (0..=n).map(|k| vmin + dv * (k as R)).collect()
-        }
-
-        fn compute_correctedf0<'b>(
-            fieldconfig: &'b FieldConfig,
-            correctedfieldconfig: Option<&'b FieldConfig>,
-            f0: R,
-        ) -> Option<R> {
-            correctedfieldconfig.map(|cfc| {
-                f0 + cfc
-                    .quarks
-                    .iter()
-                    .enumerate()
-                    .map(|(i, (nf, mqc))| (*nf as R) * (fieldconfig.quarks[i].1 / mqc).ln())
-                    .sum::<R>()
-                    * 4.
-                    / (9. * (fieldconfig.nc as R))
-            })
-        }
-    }
-
-    pub fn maybe_corrected_fieldconfig_f0<'a>(
-        mu: R,
-        t: R,
-        config: &Config<'a>,
-    ) -> (&'a FieldConfig, R) {
-        match (
-            config.correctedfieldconfig,
-            config.correctedf0,
-            config.phase_boundary,
-        ) {
-            (Some(cfc), Some(cf0), Some(pb)) => {
-                if is_deconfined_phase(mu, t, pb) {
-                    (cfc, cf0)
-                } else {
-                    (config.fieldconfig, config.f0)
-                }
-            }
-            (None, None, None) => (config.fieldconfig, config.f0),
-            _ => panic!("Inconsistent 'corrected' configuration"),
         }
     }
 }
@@ -202,7 +203,12 @@ fn compute_propagators(config: &Config) {
         plot.set_domain(config.momenta().clone());
         plot.set_legend(legends.iter().map(|l| l.as_str()).collect());
 
-        let (fieldconfig, f0) = maybe_corrected_fieldconfig_f0(mu, 0., config);
+        // If we want the corrected propagator (i.e. a propagator with different
+        // quark masses, to mimick chiral symmetry restoration) we reset the field
+        // configuration and f0 depending on the chemical potential and temperature.
+        // We must (potentially) reset it for each (mu, T) pair before computing the
+        // renormalization factors z
+        let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         plot.insert_image(
             config
@@ -222,7 +228,7 @@ fn compute_propagators(config: &Config) {
             .skip(1)
             .map(|t| {
                 let beta = 1. / (t * m);
-                let (fieldconfig, f0) = maybe_corrected_fieldconfig_f0(mu, *t, config);
+                let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                 config
                     .momenta()
@@ -240,23 +246,20 @@ fn compute_propagators(config: &Config) {
                 plot.insert_image(vals);
             });
         plot.set_path(&format!(
-            "{}/{}_mu_{mu:.4}.png",
-            THIS_BASEDIR.to_string_lossy(),
-            filename
+            "{}_mu_{mu:.4}.png",
+            THIS_BASEDIR.join(filename).to_string_lossy()
         ));
         plot.savefig().expect("Could not save figure");
     }
 }
 
 fn compute_ir_limit(config: &Config) {
-    let fieldconfig = config.fieldconfig;
-
-    let m = fieldconfig.gluon;
+    let m = config.fieldconfig.gluon;
     let (pbase, om) = (config.pbase, config.om);
     let (renpoint, renpoint2) = (config.renpoint(), config.renpoint2());
-    let f0 = config.f0();
-
     let (label, filename, title) = (config.label, config.filename, config.title);
+
+    let renfac = renpoint2 / (m * m);
 
     fs::create_dir_all(THIS_BASEDIR.as_path()).expect("Could not create base directory");
 
@@ -267,10 +270,12 @@ fn compute_ir_limit(config: &Config) {
     plot.set_title(title);
 
     for &mu in config.chempots() {
-        let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renpoint2;
+        let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
+        let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
             vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
         eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}.");
+
         vals.extend::<Vec<R>>(
             config
                 .temps()
@@ -278,8 +283,9 @@ fn compute_ir_limit(config: &Config) {
                 .skip(1)
                 .map(|t| {
                     let beta = 1. / (t * m);
+                    let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
                     let z =
-                        propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renpoint2;
+                        propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
                     eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}.");
                     val
@@ -302,14 +308,17 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     let (renpoint, renpoint2) = (config.renpoint(), config.renpoint2());
     let (label, filename, title) = (config.label, config.filename, config.title);
 
+    let renfac = renpoint2 / (m * m);
+
     let mut tcs = vec![];
 
     for &mu in config.chempots() {
-        let (fieldconfig, f0) = maybe_corrected_fieldconfig_f0(mu, 0., config);
-        let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, &fieldconfig).re * renpoint2;
+        let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
+        let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
-            vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, &fieldconfig).re / z];
+            vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
         eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}.");
+
         vals.extend::<Vec<R>>(
             config
                 .temps()
@@ -317,10 +326,10 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
                 .skip(1)
                 .map(|t| {
                     let beta = 1. / (t * m);
-                    let (fieldconfig, f0) = maybe_corrected_fieldconfig_f0(mu, 0., config);
-                    let z = propagator_l_landau(om, renpoint, beta, mu, f0, &fieldconfig).re
-                        * renpoint2;
-                    let val = propagator_l_landau(om, pbase * m, beta, mu, f0, &fieldconfig).re / z;
+                    let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
+                    let z =
+                        propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
+                    let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
                     eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}.");
                     val
                 })
@@ -333,8 +342,9 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     let (cpl, d2w) = (config.chempots().len(), D2W);
     let dmu = config.chempots()[1] - config.chempots()[0];
     let mut tcsd2 = Vec::with_capacity(cpl - 2 * d2w);
+    let dmu2r = ((d2w * d2w) as R) * dmu * dmu;
     for i in d2w..cpl - d2w {
-        let d2 = (tcs[i + d2w] + tcs[i - d2w] - 2. * tcs[i]) / (((d2w * d2w) as R) * dmu * dmu);
+        let d2 = (tcs[i + d2w] + tcs[i - d2w] - 2. * tcs[i]) / dmu2r;
         tcsd2.push((config.chempots()[i], d2));
     }
 
@@ -374,7 +384,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     plot.set_ylabel("$\\partial^{2}(T_{c}/m)/\\partial \\mu^{2}$ [GeV$^{-2}$]");
     plot.set_ylim((-10., 10.));
     plot.set_title(title);
-    plot.insert_image(tcsd2.iter().map(|(_, t)| *t).collect());
+    plot.insert_image(tcsd2.iter().map(|(_, d2t)| *d2t).collect());
     plot.set_path(&format!(
         "{}/tcd2_{filename}.png",
         THIS_BASEDIR.to_string_lossy()
@@ -428,7 +438,6 @@ fn main() {
         renpoint,
         f0,
         &fieldconfig,
-        None,
         "nf = 2+1",
         "nf_2+1",
         "$n_{{F}}=2+1$",
@@ -493,7 +502,6 @@ fn main() {
         renpoint,
         f0,
         &fieldconfig,
-        None,
         "nf = 2+1+1",
         "nf_2+1+1",
         "$n_{{F}}=2+1+1$",
