@@ -3,7 +3,10 @@ use qcd_sme::R;
 
 pub mod prelude {
     pub use super::BASEDIR;
-    pub use super::{find_critical_temperature, is_deconfined_phase, parametrize_phase_diagram};
+    pub use super::{
+        find_critical_temperature, is_deconfined_phase, parametrize_phase_boundary,
+        reduce_phase_boundary,
+    };
     pub use peroxide::util::plot::*;
     pub use qcd_sme::qcd::FieldConfig;
     pub use qcd_sme::{Num, C, R};
@@ -30,19 +33,18 @@ pub mod more_masses {
 
 pub const BASEDIR: &str = "target/tc_long_prop";
 
-// Assumes the first pair to be computed at T=0
+// Finds the first local maximum (first argument) of its second argument
 pub fn find_critical_temperature(ts: &[R], ds: &[R]) -> R {
-    let first_d = *ds.first().unwrap();
-    let (mut tc, mut dc) = (0., first_d);
-    for (i, &d) in ds.iter().skip(1).enumerate() {
+    let (mut tc, mut dc) = (*ts.first().unwrap(), *ds.first().unwrap());
+    for (&t, &d) in ts.iter().zip(ds.iter()).skip(1) {
         if d > dc {
-            tc = ts[i + 1];
-            dc = d;
+            (tc, dc) = (t, d);
         }
     }
     tc
 }
 
+// Needed so we can define parametric_phase_diagram only once
 pub trait ROrAD:
     std::ops::Add<Self, Output = Self> + std::ops::Mul<Self, Output = Self> + Sized + Copy
 {
@@ -66,13 +68,28 @@ fn parametric_phase_diagram<T: ROrAD>(mu: T, params: &[T]) -> T {
     res + params[0]
 }
 
-pub fn parametrize_phase_diagram(data: &[(R, R)], n: usize, plotpath: Option<&str>) -> Vec<R> {
+// This selects the "physical" portion of the phase_boundary data (neglects
+// data for mu > mu_c, after the critical temperature has vanished). The
+// current implementation only works if phase_boundary is fine enough to
+// contain the (T, mu) = (0, mu_c) point. We assume we made it fine enough
+// (i.e. we MUST make it fine enough). At the very minimum, the implementation
+// MUST be idempotent (this function is applied multiple times all throughout
+// this crate)
+pub fn reduce_phase_boundary(phase_boundary: &[(R, R)]) -> &[(R, R)] {
+    phase_boundary.split(|(_, t)| *t == 0.).next().unwrap()
+}
+
+pub fn parametrize_phase_boundary(pb: &[(R, R)], n: usize, plotpath: Option<&str>) -> Vec<R> {
     use peroxide::fuga::{matrix, Col, LevenbergMarquardt, Markers, Optimizer, AD1};
 
-    let data_red = data.split(|(_, tc)| *tc == 0.).next().unwrap();
-    let domain: Vec<R> = data_red.iter().map(|(mu, _)| *mu).collect();
-    let values: Vec<R> = data_red.iter().map(|(_, tc)| *tc).collect();
+    // Data should already be reduced (i.e. points above mu = mu_c should have been removed)
+    // at this point, but we do it again in case we want to reuse this function in code that
+    // does not reduce them
+    let pb_red = reduce_phase_boundary(pb);
+    let domain: Vec<R> = pb_red.iter().map(|(mu, _)| *mu).collect();
+    let values: Vec<R> = pb_red.iter().map(|(_, tc)| *tc).collect();
 
+    // Fit the phase diagram to a polynomial of order n
     let params = Optimizer::new(
         peroxide::hstack!(domain.clone(), values.clone()),
         |mus, p| {
@@ -111,13 +128,18 @@ pub fn parametrize_phase_diagram(data: &[(R, R)], n: usize, plotpath: Option<&st
     params
 }
 
+// Determines whether the pair (mu, t) belongs to the deconfined phase given
+// a phase boundary
 pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
-    let phase_boundary = phase_boundary.split(|(_, t)| *t == 0.).next().unwrap();
+    // Again, we reduce the phase boundary even if it should not be needed
+    let phase_boundary = reduce_phase_boundary(phase_boundary);
 
     if t == 0. {
+        // This assumes the last chemical potential in phase_boundary is mu_c
         return mu > phase_boundary.last().unwrap().0;
     }
     if mu == 0. {
+        // This assumes the first temperature in phase_boundary is t_c
         return t > phase_boundary.first().unwrap().1;
     }
 

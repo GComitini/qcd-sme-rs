@@ -14,8 +14,7 @@ lazy_static! {
 }
 
 mod config {
-    use crate::is_deconfined_phase;
-    use qcd_sme::{qcd::FieldConfig, R};
+    use crate::*;
 
     // Public fields can be modified independent of other fields so
     // they do not require special setter methods. We don't currently
@@ -125,12 +124,8 @@ mod config {
         }
 
         pub fn reset_phase_boundary(&mut self, phase_boundary: Option<&'a [(R, R)]>) {
-            // This selects the "physical" portion of the phase_boundary data (neglects
-            // data for mu > mu_c, after the critical temperature has vanished). It works
-            // only if phase_boundary is fine enough to contain the (T, mu) = (0, mu_c)
-            // point. We assume we made it fine enough (i.e. we MUST make it fine enough)
-            self.phase_boundary =
-                phase_boundary.map(|pb| pb.split(|(_, tc)| *tc == 0.).next().unwrap());
+            // If any, reduce the phase boundary before storing it
+            self.phase_boundary = phase_boundary.map(reduce_phase_boundary);
         }
 
         pub fn maybe_corrected_data(&self, mu: R, t: R) -> (&'a FieldConfig, R) {
@@ -478,7 +473,7 @@ fn main() {
     compute_phase_diagram(&config);
 
     eprintln!("*** FITTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
-    parametrize_phase_diagram(
+    parametrize_phase_boundary(
         config.phase_boundary().unwrap(),
         8,
         THIS_BASEDIR
