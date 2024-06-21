@@ -102,4 +102,6 @@ fn main() {
             .expect("Unable to modify bindings");
     };
     drop(cython_header);
+
+    println!("cargo::warning=There's a known bug in the *_w_field_config functions: you still have to call qcd_sme::consts::set_number_of_colors(nc) for nc != 3 and nf != 0. This bug also makes the functions not thread-safe with respect to a change of nc. I will eventually fix this but I'm too busy right now.");
 }
