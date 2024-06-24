@@ -21,7 +21,7 @@ mod native {
         inlines::tlog(q, om, p, en, delta)
     }
 
-    pub fn tlog_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, en: T2) -> C {
+    pub fn tlog_same_mass<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, en: T3) -> C {
         inlines::tlog_same_mass(q, om, p, en)
     }
 
@@ -93,11 +93,11 @@ mod native {
         inlines::i_m_m_i(q, om, p, m1, m2, beta)
     }
 
-    pub fn i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_m_i_same_mass<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         inlines::i_m_m_i_same_mass(q, om, p, m, beta)
     }
 
-    pub fn i_m_0_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_0_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         inlines::i_m_0_i(q, om, p, m, beta)
     }
 
@@ -109,15 +109,21 @@ mod native {
         inlines::i_m_m_l_i(q, om, p, m1, m2, beta)
     }
 
-    pub fn i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_m_l_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
         inlines::i_m_m_l_i_same_mass(q, om, p, m, beta)
     }
 
-    pub fn i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_0_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         inlines::i_m_0_l_i(q, om, p, m, beta)
     }
 
-    pub fn i_0_0_l_i<T: Num>(q: R, om: T, p: R, beta: R) -> C {
+    pub fn i_0_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: T2, beta: R) -> C {
         inlines::i_0_0_l_i(q, om, p, beta)
     }
 
@@ -189,11 +195,17 @@ mod native {
         inlines::d_i_m_m_i(q, om, p, m1, m2, beta)
     }
 
-    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
         inlines::d_i_m_m_i_same_mass(q, om, p, m, beta)
     }
 
-    pub fn d_i_m_0_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_0_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         inlines::d_i_m_0_i(q, om, p, m, beta)
     }
 
@@ -212,11 +224,17 @@ mod native {
         inlines::d_i_m_m_l_i(q, om, p, m1, m2, beta)
     }
 
-    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
         inlines::d_i_m_m_l_i_same_mass(q, om, p, m, beta)
     }
 
-    pub fn d_i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_0_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         inlines::d_i_m_0_l_i(q, om, p, m, beta)
     }
 
@@ -541,43 +559,54 @@ pub(crate) mod inlines {
     const PI2: R = PI * PI;
 
     #[inline(always)]
-    pub fn r_0<T1: Num, T2: Num, T3: Copy + Into<C>>(om: T1, p: R, en: T2, delta: T3) -> C {
-        om * om + om * (en * 2. * I) + p * p + Into::<C>::into(delta)
+    pub fn r_0<T1: Num, T2: Num, T3: Num, T4: Copy + Into<C>>(
+        om: T1,
+        p: T2,
+        en: T3,
+        delta: T4,
+    ) -> C {
+        om * om + om * (en * 2. * I) + (p * p + Into::<C>::into(delta))
     }
 
     #[inline(always)]
-    pub fn r_0_same_mass<T1: Num, T2: Num>(om: T1, p: R, en: T2) -> C {
-        om * om + om * (en * 2. * I) + p * p
+    pub fn r_0_same_mass<T1: Num, T2: Num, T3: Num>(om: T1, p: T2, en: T3) -> C {
+        p * p + (om * om + om * (en * 2. * I))
     }
 
     #[inline(always)]
-    pub fn tlog<T1: Num, T2: Num, T3: Copy + Into<C>>(q: R, om: T1, p: R, en: T2, delta: T3) -> C {
-        let r_0 = r_0(om, p, en, delta);
-        let q2p = q * 2. * p;
-        ((r_0 + q2p) / (r_0 - q2p)).ln()
-    }
-
-    #[inline(always)]
-    pub fn tlog_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, en: T2) -> C {
-        let r_0 = r_0_same_mass(om, p, en);
-        let q2p = q * 2. * p;
-        ((r_0 + q2p) / (r_0 - q2p)).ln()
-    }
-
-    #[inline(always)]
-    pub fn tlog_zero_mass<T: Num>(q: R, om: T, p: R) -> C {
-        let r_0 = r_0_same_mass(om, p, q);
-        let q2p = q * 2. * p;
-        ((r_0 + q2p) / (r_0 - q2p)).ln()
-    }
-
-    #[inline(always)]
-    pub fn tlog_l<T1: Num, T2: Num, T3: Copy + Into<C>>(
+    pub fn tlog<T1: Num, T2: Num, T3: Num, T4: Copy + Into<C>>(
         q: R,
         om: T1,
-        p: R,
-        en: T2,
-        delta: T3,
+        p: T2,
+        en: T3,
+        delta: T4,
+    ) -> C {
+        let r_0 = r_0(om, p, en, delta);
+        let q2p = p * q * 2.;
+        ((q2p + r_0) / (-q2p + r_0)).ln()
+    }
+
+    #[inline(always)]
+    pub fn tlog_same_mass<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, en: T3) -> C {
+        let r_0 = r_0_same_mass(om, p, en);
+        let q2p = p * q * 2.;
+        ((q2p + r_0) / (-q2p + r_0)).ln()
+    }
+
+    #[inline(always)]
+    pub fn tlog_zero_mass<T1: Num, T2: Num>(q: R, om: T1, p: T2) -> C {
+        let r_0 = r_0_same_mass(om, p, q);
+        let q2p = p * q * 2.;
+        ((q2p + r_0) / (-q2p + r_0)).ln()
+    }
+
+    #[inline(always)]
+    pub fn tlog_l<T1: Num, T2: Num, T3: Num, T4: Copy + Into<C>>(
+        q: R,
+        om: T1,
+        p: T2,
+        en: T3,
+        delta: T4,
     ) -> C {
         let ei2 = en * 2. * I;
         let pf = om * om + om * ei2 + Into::<C>::into(delta) + p * p * (om.inv() * ei2 + 1.);
@@ -585,14 +614,14 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn tlog_l_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, en: T2) -> C {
+    pub fn tlog_l_same_mass<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, en: T3) -> C {
         let ei2 = en * 2. * I;
         let pf = om * om + om * ei2 + p * p * (om.inv() * ei2 + 1.);
         tlog_same_mass(q, om, p, en) * pf * pf
     }
 
     #[inline(always)]
-    pub fn tlog_l_zero_mass<T: Num>(q: R, om: T, p: R) -> C {
+    pub fn tlog_l_zero_mass<T1: Num, T2: Num>(q: R, om: T1, p: T2) -> C {
         let ei2 = q * 2. * I;
         let pf = om * om + om * ei2 + p * p * (om.inv() * ei2 + 1.);
         tlog_zero_mass(q, om, p) * pf * pf
@@ -679,22 +708,22 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_m_i_same_mass<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         let en = energy(q, m);
         let t = bose_distribution_zero_chempot(en, beta) / en
             * (tlog_same_mass(q, om, p, en) + tlog_same_mass(q, -om, p, en));
-        t * q / (p * 8. * PI2)
+        (p * 8. * PI2).inv() * t * q
     }
 
     #[inline(always)]
-    pub fn i_m_0_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_0_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         let en = energy(q, m);
         let delta = -m * m;
         let t1 = bose_distribution_zero_chempot(en, beta) * q / en
             * (tlog(q, om, p, en, delta) + tlog(q, -om, p, en, delta));
         let t2 = bose_distribution_zero_chempot(q, beta)
             * (tlog(q, om, p, q, -delta) + tlog(q, -om, p, q, -delta));
-        (t1 + t2) / (p * 16. * PI2)
+        (p * 16. * PI2).inv() * (t1 + t2)
     }
 
     #[inline(always)]
@@ -724,48 +753,54 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_m_l_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
         let en = energy(q, m);
-        let qp = q * p;
+        let qp = p * q;
         let p2 = p * p;
         let p3 = p2 * p;
         let om2 = om * om;
-        let om2_plus_p2 = om2 + p2;
+        let om2_plus_p2: C = om2 + p2.into();
         let t = bose_distribution_zero_chempot(en, beta) / en
-            * (-om2_plus_p2 * 8. * qp
+            * (-qp * om2_plus_p2 * 8.
                 + tlog_l_same_mass(q, om, p, en)
                 + tlog_l_same_mass(q, -om, p, en));
-        (om2_plus_p2 * p3 * 32. * PI2).inv() * om2 * q * t
+        om2 * (p3 * om2_plus_p2 * 32. * PI2).inv() * q * t
     }
 
     #[inline(always)]
-    pub fn i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn i_m_0_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         let en = energy(q, m);
         let delta = -Into::<C>::into(m * m);
-        let qp = q * p;
+        let qp = p * q;
         let p2 = p * p;
         let p3 = p2 * p;
         let om2 = om * om;
-        let om2_plus_p2 = om2 + p2;
+        let om2_plus_p2: C = om2 + p2.into();
         let t1 = bose_distribution_zero_chempot(en, beta) * q / en
             * (tlog_l(q, om, p, en, delta) + tlog_l(q, -om, p, en, delta)
-                - 8. * qp * (om2_plus_p2 + delta));
+                - qp * 8. * (om2_plus_p2 + delta));
         let t2 = bose_distribution_zero_chempot(q, beta)
             * (tlog_l(q, om, p, q, -delta) + tlog_l(q, -om, p, q, -delta)
-                - 8. * qp * (om2_plus_p2 - delta));
-        (om2_plus_p2 * p3 * 64. * PI2).inv() * om2 * (t1 + t2)
+                - qp * 8. * (om2_plus_p2 - delta));
+        om2 * (p3 * om2_plus_p2 * 64. * PI2).inv() * (t1 + t2)
     }
 
     #[inline(always)]
-    pub fn i_0_0_l_i<T: Num>(q: R, om: T, p: R, beta: R) -> C {
-        let qp = q * p;
+    pub fn i_0_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: T2, beta: R) -> C {
+        let qp = p * q;
         let p2 = p * p;
         let p3 = p2 * p;
         let om2 = om * om;
-        let om2_plus_p2 = om2 + p2;
+        let om2_plus_p2: C = om2 + p2.into();
         let t = bose_distribution_zero_chempot(q, beta)
-            * (-om2_plus_p2 * 8. * qp + tlog_l_zero_mass(q, om, p) + tlog_l_zero_mass(q, -om, p));
-        (om2_plus_p2 * p3 * 32. * PI2).inv() * om2 * t
+            * (-qp * om2_plus_p2 * 8. + tlog_l_zero_mass(q, om, p) + tlog_l_zero_mass(q, -om, p));
+        om2 * (p3 * om2_plus_p2 * 32. * PI2).inv() * t
     }
 
     #[inline(always)]
@@ -938,43 +973,49 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
-        let q2p = q * p * 2.;
+    pub fn d_i_m_m_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
+        let q2p = p * q * 2.;
         let en = energy(q, m);
         let r0 = r_0_same_mass(om, p, en);
-        let rpinv = (r0 + q2p).inv();
-        let rminv = (r0 - q2p).inv();
+        let rpinv = (q2p + r0).inv();
+        let rminv = (-q2p + r0).inv();
         let r0_opp = r_0_same_mass(-om, p, en);
-        let rpinv_opp = (r0_opp + q2p).inv();
-        let rminv_opp = (r0_opp - q2p).inv();
+        let rpinv_opp = (q2p + r0_opp).inv();
+        let rminv_opp = (-q2p + r0_opp).inv();
         -bose_distribution_zero_chempot(en, beta)
             * (en * 16. * PI2).inv()
             * (rpinv + rminv + rpinv_opp + rminv_opp)
     }
 
     #[inline(always)]
-    pub fn d_i_m_0_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
-        let q2p = q * p * 2.;
+    pub fn d_i_m_0_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
+        let q2p = p * q * 2.;
         let delta = -m * m;
         let en = energy(q, m);
         let r01 = r_0(om, p, en, delta);
         let r02 = r_0(om, p, q, -delta);
-        let r1pinv = (r01 + q2p).inv();
-        let r1minv = (r01 - q2p).inv();
-        let r2pinv = (r02 + q2p).inv();
-        let r2minv = (r02 - q2p).inv();
+        let r1pinv = (q2p + r01).inv();
+        let r1minv = (-q2p + r01).inv();
+        let r2pinv = (q2p + r02).inv();
+        let r2minv = (-q2p + r02).inv();
         let r01_opp = r_0(-om, p, en, delta);
         let r02_opp = r_0(-om, p, q, -delta);
-        let r1pinv_opp = (r01_opp + q2p).inv();
-        let r1minv_opp = (r01_opp - q2p).inv();
-        let r2pinv_opp = (r02_opp + q2p).inv();
-        let r2minv_opp = (r02_opp - q2p).inv();
+        let r1pinv_opp = (q2p + r01_opp).inv();
+        let r1minv_opp = (-q2p + r01_opp).inv();
+        let r2pinv_opp = (q2p + r02_opp).inv();
+        let r2minv_opp = (-q2p + r02_opp).inv();
         let b1 = bose_distribution_zero_chempot(en, beta);
         let b2 = bose_distribution_zero_chempot(q, beta);
         let t10 = b1 / en * (r1pinv + r1minv + r1pinv_opp + r1minv_opp);
         let t1 = b1 / en * (r1pinv - r1minv + r1pinv_opp - r1minv_opp);
         let t2 = b2 / q * (r2pinv - r2minv + r2pinv_opp - r2minv_opp);
-        (-t10 + (t2 - t1) * q / p) / (16. * PI2)
+        (-t10 + p.inv() * (t2 - t1) * q) / (16. * PI2)
     }
 
     #[inline(always)]
@@ -1049,38 +1090,46 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_m_l_i_same_mass<T1: Num, T2: Num, T3: Num>(
+        q: R,
+        om: T1,
+        p: T2,
+        m: T3,
+        beta: R,
+    ) -> C {
         let om2 = om * om;
         let ominv = om.inv();
         let p2 = p * p;
-        let p2q = 2. * p * q;
-        let k = (ominv * 2. * I) * p2;
+        let p2q = p * q * 2.;
+        let s = om2 + p2.into();
+        let k = p2 * (ominv * 2. * I);
         let en = energy(q, m);
         let b = bose_distribution_zero_chempot(en, beta);
         let ben = b / en;
         let r0p = r_0_same_mass(om, p, en);
         let r0m = r_0_same_mass(-om, p, en);
-        let rppinv = (r0p + p2q).inv();
-        let rpminv = (r0p - p2q).inv();
-        let rmpinv = (r0m + p2q).inv();
-        let rmminv = (r0m - p2q).inv();
+        let rppinv = (p2q + r0p).inv();
+        let rpminv = (-p2q + r0p).inv();
+        let rmpinv = (p2q + r0m).inv();
+        let rmminv = (-p2q + r0m).inv();
         let xp = r0p + en * k;
         let xp2 = xp * xp;
         let xm = r0m - en * k;
         let xm2 = xm * xm;
         let t1 = -ben * ((rppinv + rpminv) * xp2 + (rmpinv + rmminv) * xm2);
-        let t2 = ben * Into::<C>::into(om2 + p2) * 4.;
-        om2 * ((om2 + p2) * p2 * 64. * PI2).inv() * (t1 + t2)
+        let t2 = ben * s * 4.;
+        om2 * (p2 * s * 64. * PI2).inv() * (t1 + t2)
     }
 
     #[inline(always)]
-    pub fn d_i_m_0_l_i<T1: Num, T2: Num>(q: R, om: T1, p: R, m: T2, beta: R) -> C {
+    pub fn d_i_m_0_l_i<T1: Num, T2: Num, T3: Num>(q: R, om: T1, p: T2, m: T3, beta: R) -> C {
         let om2 = om * om;
         let ominv = om.inv();
         let p2 = p * p;
-        let p2q = 2. * p * q;
+        let p2q = p * q * 2.;
+        let s = om2 + p2.into();
         let delta = -m * m;
-        let k = (ominv * 2. * I) * p2;
+        let k = p2 * (ominv * 2. * I);
         let en1 = energy(q, m);
         let b1 = bose_distribution_zero_chempot(en1, beta);
         let b1en1 = b1 / en1;
@@ -1088,10 +1137,10 @@ pub(crate) mod inlines {
         let tlog1m = tlog(q, -om, p, en1, delta);
         let r01p = r_0(om, p, en1, delta);
         let r01m = r_0(-om, p, en1, delta);
-        let r1ppinv = (r01p + p2q).inv();
-        let r1pminv = (r01p - p2q).inv();
-        let r1mpinv = (r01m + p2q).inv();
-        let r1mminv = (r01m - p2q).inv();
+        let r1ppinv = (p2q + r01p).inv();
+        let r1pminv = (-p2q + r01p).inv();
+        let r1mpinv = (p2q + r01m).inv();
+        let r1mminv = (-p2q + r01m).inv();
         let xp1 = r01p + en1 * k;
         let xp12 = xp1 * xp1;
         let xm1 = r01m - en1 * k;
@@ -1101,24 +1150,24 @@ pub(crate) mod inlines {
         let tlog2m = tlog(q, -om, p, q, -delta);
         let r02p = r_0(om, p, q, -delta);
         let r02m = r_0(-om, p, q, -delta);
-        let r2ppinv = (r02p + p2q).inv();
-        let r2pminv = (r02p - p2q).inv();
-        let r2mpinv = (r02m + p2q).inv();
-        let r2mminv = (r02m - p2q).inv();
+        let r2ppinv = (p2q + r02p).inv();
+        let r2pminv = (-p2q + r02p).inv();
+        let r2mpinv = (p2q + r02m).inv();
+        let r2mminv = (-p2q + r02m).inv();
         let xp2 = r02p + q * k;
         let xp22 = xp2 * xp2;
         let xm2 = r02m - q * k;
         let xm22 = xm2 * xm2;
         let t1 = -b1en1 * ((r1ppinv + r1pminv) * xp12 + (r1mpinv + r1mminv) * xm12);
-        let t2 = b1en1 * (om2 + p2 + Into::<C>::into(delta)) * 4.;
+        let t2 = b1en1 * (delta + s) * 4.;
         let t3 = (b1en1 * q - Into::<C>::into(b2)) * q * 8.;
-        let t4 = (b2 * (xp2 * tlog2p + xm2 * tlog2m) - b1en1 * q * (xp1 * tlog1p + xm1 * tlog1m))
-            / p
+        let t4 = p.inv()
+            * (b2 * (xp2 * tlog2p + xm2 * tlog2m) - b1en1 * q * (xp1 * tlog1p + xm1 * tlog1m))
             * 2.;
-        let t5 = (b2 * (xp22 * (r2ppinv - r2pminv) + xm22 * (r2mpinv - r2mminv))
-            - b1en1 * q * (xp12 * (r1ppinv - r1pminv) + xm12 * (r1mpinv - r1mminv)))
-            / p;
-        om2 * ((om2 + p2) * p2 * 64. * PI2).inv() * (t1 + t2 + t3 + t4 + t5)
+        let t5 = p.inv()
+            * (b2 * (xp22 * (r2ppinv - r2pminv) + xm22 * (r2mpinv - r2mminv))
+                - b1en1 * q * (xp12 * (r1ppinv - r1pminv) + xm12 * (r1mpinv - r1mminv)));
+        om2 * (p2 * s * 64. * PI2).inv() * (t1 + t2 + t3 + t4 + t5)
     }
 
     #[inline(always)]

@@ -96,16 +96,16 @@ pub mod gluon {
         (om * om + p * p).inv() * dressing_t_zero_temp_landau(om, p, m, mq, mu, f0)
     }
 
-    pub fn dressing_l_inv_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn dressing_l_inv_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         beta: R,
         mu: R,
         f0: R,
         config: &FieldConfig,
     ) -> C {
         let m = config.gluon;
-        let sdim = om * om + p * p;
+        let sdim = om * om + (p * p).into();
         let s = sdim / (m * m);
         let quark_contribution: C = config
             .quarks_internal
@@ -150,9 +150,9 @@ pub mod gluon {
                     + quark_contribution)
     }
 
-    pub fn dressing_l_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn dressing_l_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         beta: R,
         mu: R,
         f0: R,
@@ -172,15 +172,16 @@ pub mod gluon {
         dressing_t_inv_landau_w_field_config(om, p, beta, mu, f0, config).inv()
     }
 
-    pub fn propagator_l_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn propagator_l_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         beta: R,
         mu: R,
         f0: R,
         config: &FieldConfig,
     ) -> C {
-        (om * om + p * p).inv() * dressing_l_landau_w_field_config(om, p, beta, mu, f0, config)
+        (om * om + (p * p).into()).inv()
+            * dressing_l_landau_w_field_config(om, p, beta, mu, f0, config)
     }
 
     pub fn propagator_t_landau_w_field_config<T: Num>(
@@ -194,15 +195,15 @@ pub mod gluon {
         (om * om + p * p).inv() * dressing_t_landau_w_field_config(om, p, beta, mu, f0, config)
     }
 
-    pub fn dressing_l_inv_zero_temp_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn dressing_l_inv_zero_temp_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mu: R,
         f0: R,
         config: &FieldConfig,
     ) -> C {
         let m = config.gluon;
-        let sdim = om * om + p * p;
+        let sdim = om * om + (p * p).into();
         let s = sdim / (m * m);
         let quark_contribution: C = config
             .quarks_internal
@@ -240,9 +241,9 @@ pub mod gluon {
             - sdim.inv() * PREFACTOR * quark_contribution
     }
 
-    pub fn dressing_l_zero_temp_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn dressing_l_zero_temp_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mu: R,
         f0: R,
         config: &FieldConfig,
@@ -260,14 +261,15 @@ pub mod gluon {
         dressing_t_inv_zero_temp_landau_w_field_config(om, p, mu, f0, config).inv()
     }
 
-    pub fn propagator_l_zero_temp_landau_w_field_config<T: Num>(
-        om: T,
-        p: R,
+    pub fn propagator_l_zero_temp_landau_w_field_config<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mu: R,
         f0: R,
         config: &FieldConfig,
     ) -> C {
-        (om * om + p * p).inv() * dressing_l_zero_temp_landau_w_field_config(om, p, mu, f0, config)
+        (om * om + (p * p).into()).inv()
+            * dressing_l_zero_temp_landau_w_field_config(om, p, mu, f0, config)
     }
 
     pub fn propagator_t_zero_temp_landau_w_field_config<T: Num>(

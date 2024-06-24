@@ -76,9 +76,9 @@ mod native {
         inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, p, mq, mu)
     }
 
-    pub fn polarization_glue_l_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
+    pub fn polarization_glue_l_thermal_part_landau_w_method<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         m: R,
         beta: R,
         integral: Integral,
@@ -110,9 +110,9 @@ mod native {
         )
     }
 
-    pub fn polarization_quark_l_thermal_part_landau_w_method<T: Num>(
-        om: T,
-        p: R,
+    pub fn polarization_quark_l_thermal_part_landau_w_method<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mq: R,
         beta: R,
         mu: R,
@@ -158,9 +158,9 @@ mod native {
         )
     }
 
-    pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T: Num>(
-        om: T,
-        p: R,
+    pub fn polarization_quark_l_thermal_part_zero_temp_landau_w_method<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mq: R,
         mu: R,
         integral: Integral,
@@ -192,7 +192,12 @@ mod native {
         )
     }
 
-    pub fn polarization_glue_l_thermal_part_landau<T: Num>(om: T, p: R, m: R, beta: R) -> C {
+    pub fn polarization_glue_l_thermal_part_landau<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
+        m: R,
+        beta: R,
+    ) -> C {
         polarization_glue_l_thermal_part_landau_w_method(
             om,
             p,
@@ -212,9 +217,9 @@ mod native {
         )
     }
 
-    pub fn polarization_quark_l_thermal_part_landau<T: Num>(
-        om: T,
-        p: R,
+    pub fn polarization_quark_l_thermal_part_landau<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mq: R,
         beta: R,
         mu: R,
@@ -246,9 +251,9 @@ mod native {
         )
     }
 
-    pub fn polarization_quark_l_thermal_part_zero_temp_landau<T: Num>(
-        om: T,
-        p: R,
+    pub fn polarization_quark_l_thermal_part_zero_temp_landau<T1: Num, T2: Num>(
+        om: T1,
+        p: T2,
         mq: R,
         mu: R,
     ) -> C {
@@ -380,14 +385,14 @@ pub(crate) mod inlines {
     const PI2: R = PI * PI;
 
     #[inline(always)]
-    pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(
+    pub fn polarization_glue_l_thermal_part_landau_i<T1: Num, T2: Num>(
         q: R,
-        om: T,
-        p: R,
+        om: T1,
+        p: T2,
         m: R,
         beta: R,
     ) -> C {
-        let s = om * om + p * p;
+        let s = om * om + (p * p).into();
         let s2 = s * s;
         let s_inv = s.inv();
         let m2 = m * m;
@@ -396,11 +401,18 @@ pub(crate) mod inlines {
         let b = s + m2;
         let b2 = b * b;
 
-        let j_m_l_p_i = s_inv * (om * om * j_m_t_i(q, m, beta) + p * p * j_m_l_i(q, m, beta));
-        let j_0_l_p_i = s_inv * (om * om * j_0_t_i(q, beta) + p * p * j_0_l_i(q, beta));
-        let d_j_m_l_p_i = s_inv * (om * om * d_j_m_t_i(q, m, beta) + p * p * d_j_m_l_i(q, m, beta));
-        let d2_j_m_l_p_i =
-            s_inv * (om * om * d2_j_m_t_i(q, m, beta) + p * p * d2_j_m_l_i(q, m, beta));
+        let j_m_l_p_i = s_inv
+            * (Into::<C>::into(om * om * j_m_t_i(q, m, beta))
+                + Into::<C>::into(p * p * j_m_l_i(q, m, beta)));
+        let j_0_l_p_i = s_inv
+            * (Into::<C>::into(om * om * j_0_t_i(q, beta))
+                + Into::<C>::into(p * p * j_0_l_i(q, beta)));
+        let d_j_m_l_p_i = s_inv
+            * (Into::<C>::into(om * om * d_j_m_t_i(q, m, beta))
+                + (Into::<C>::into(p * p * d_j_m_l_i(q, m, beta))));
+        let d2_j_m_l_p_i = s_inv
+            * (Into::<C>::into(om * om * d2_j_m_t_i(q, m, beta))
+                + Into::<C>::into(p * p * d2_j_m_l_i(q, m, beta)));
 
         let t1 = (s2 * 3. / (m4 * 2.) - 1.) * i_0_0_l_i(q, om, p, beta);
         let t2 = ((s2 * 3. + s * m2 * 8. + 4. * m4) / (2. * m4) + 4.)
@@ -461,23 +473,27 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_landau_i<T: Num>(
+    pub fn polarization_quark_l_thermal_part_landau_i<T1: Num, T2: Num>(
         q: R,
-        om: T,
-        p: R,
+        om: T1,
+        p: T2,
         mq: R,
         beta: R,
         mu: R,
     ) -> C {
         let p2 = p * p;
-        let s = om * om + p2;
+        let s = om * om + p2.into();
         let en = energy(q, mq);
         let tl = tlog_same_mass(q, om, p, en);
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (s - en * en * 4. + om * 4. * I * en) * tl;
         let t1_opp = (s - en * en * 4. - om * 4. * I * en) * tl_opp;
-        -s * fermi_distribution_double(en, beta, mu) * q * q / (p2 * en * (nc() as R) * 2. * PI2)
-            * (1. - (t1 + t1_opp) / (8. * q * p))
+        -(p2 * en * (nc() as R) * 2. * PI2).inv()
+            * fermi_distribution_double(en, beta, mu)
+            * s
+            * q
+            * q
+            * (1. - (p * q * 8.).inv() * (t1 + t1_opp))
     }
 
     #[inline(always)]
@@ -506,23 +522,26 @@ pub(crate) mod inlines {
     }
 
     #[inline(always)]
-    pub fn polarization_quark_l_thermal_part_zero_temp_landau_i<T: Num>(
+    pub fn polarization_quark_l_thermal_part_zero_temp_landau_i<T1: Num, T2: Num>(
         q: R,
-        om: T,
-        p: R,
+        om: T1,
+        p: T2,
         mq: R,
         mu: R,
     ) -> C {
         let p2 = p * p;
-        let s = om * om + p2;
+        let s = om * om + p2.into();
         let en = energy(q, mq);
         let tl = tlog_same_mass(q, om, p, en);
         let tl_opp = tlog_same_mass(q, -om, p, en);
         let t1 = (s - en * en * 4. + om * 4. * I * en) * tl;
         let t1_opp = (s - en * en * 4. - om * 4. * I * en) * tl_opp;
-        -s * fermi_distribution_double_zero_temp(en, mu) * q * q
-            / (p2 * en * (nc() as R) * 2. * PI2)
-            * (1. - (t1 + t1_opp) / (8. * q * p))
+        -(p2 * en * (nc() as R) * 2. * PI2).inv()
+            * fermi_distribution_double_zero_temp(en, mu)
+            * s
+            * q
+            * q
+            * (1. - (p * q * 8.).inv() * (t1 + t1_opp))
     }
 
     #[inline(always)]
