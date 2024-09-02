@@ -62,7 +62,9 @@ fn main() {
     plot.insert_image(vacuum_vals.clone());
     let mut legends = vec![String::from("$T=0$ MeV")];
 
-    for i in 0..=2 {
+    // T = 260 MeV requires a lot of time to compute with the default parameters.
+    // Factor it out in a separate calculation
+    for i in 0..=1 {
         let t = temperatures[i];
         let beta = 1. / t;
         let m = ms_l[i];
@@ -88,6 +90,37 @@ fn main() {
         plot.insert_image(vals);
         legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
     }
+
+    // T = 260 MeV with modified parameters
+    {
+        let om = 0.002; // Doubled Matsubara cutoff
+
+        let t = temperatures[2];
+        let beta = 1. / t;
+        let m = ms_l[2];
+        let f0 = f0s_l[2] + f0;
+        let norm = propagator_l_landau(om, renpoint, m, beta, f0).re * renpoint2;
+        let vals: Vec<R> = momenta
+            .par_iter()
+            .map(|&p| {
+                eprint!("Computing (T, C, p) = ({t}, L, {p})... ");
+                let res = propagator_l_landau(om, p, m, beta, f0).re / norm;
+                eprintln!("Computed {res}.");
+                res
+            })
+            .collect();
+        let filename = format!("T{}L.txt", (t * 1000.) as u32);
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
+            writeln!(file, "{p}\t{d}").ok();
+        });
+        plot.insert_image(vals);
+        legends.push(format!("$T={}$ MeV", (t * 1000.) as u32));
+    }
+
     plot.set_legend(legends.iter().map(|l| l.as_str()).collect());
     plot.savefig().expect("Could not save figure");
 
