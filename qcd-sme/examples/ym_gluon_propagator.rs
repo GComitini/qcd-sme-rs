@@ -31,10 +31,8 @@ fn main() {
     let f0s_t = [0.05, 0.10, 0.30, 0.40, 0.50, 0.60];
 
     let targetdir = std::path::Path::new("target/ym_gluon_propagator");
-    fs::create_dir_all(targetdir).expect(&format!(
-        "Could not crate directory {}",
-        targetdir.to_string_lossy()
-    ));
+    fs::create_dir_all(targetdir)
+        .unwrap_or_else(|_| panic!("Could not crate directory {}", targetdir.to_string_lossy()));
 
     /* VACUUM PROPAGATOR */
     let norm = propagator_landau(renpoint2 / mg2, f0) * renpoint2;
@@ -51,8 +49,8 @@ fn main() {
     {
         let filename = "T000V.txt";
         let mut file = BufWriter::new(
-            fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+            fs::File::create(targetdir.join(filename))
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vacuum_vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
@@ -93,7 +91,7 @@ fn main() {
         let filename = format!("T{}L.txt", (t * 1000.) as u32);
         let mut file = BufWriter::new(
             fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
@@ -123,7 +121,7 @@ fn main() {
         let filename = format!("T{}L.txt", (t * 1000.) as u32);
         let mut file = BufWriter::new(
             fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
@@ -164,7 +162,7 @@ fn main() {
         let filename = format!("T{}L.txt", (t * 1000.) as u32);
         let mut file = BufWriter::new(
             fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
@@ -207,7 +205,7 @@ fn main() {
         let filename = format!("T{}T.txt", (t * 1000.) as u32);
         let mut file = BufWriter::new(
             fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
@@ -247,7 +245,7 @@ fn main() {
         let filename = format!("T{}T.txt", (t * 1000.) as u32);
         let mut file = BufWriter::new(
             fs::File::create(targetdir.join(&filename))
-                .expect(&format!("Could not create {filename}")),
+                .unwrap_or_else(|_| panic!("Could not create {filename}")),
         );
         momenta.iter().zip(vals.iter()).for_each(|(p, d)| {
             writeln!(file, "{p}\t{d}").ok();
