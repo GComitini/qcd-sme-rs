@@ -48,6 +48,17 @@ fn main() {
         })
         .collect();
 
+    {
+        let filename = "T000V.txt";
+        let mut file = BufWriter::new(
+            fs::File::create(targetdir.join(&filename))
+                .expect(&format!("Could not create {filename}")),
+        );
+        momenta.iter().zip(vacuum_vals.iter()).for_each(|(p, d)| {
+            writeln!(file, "{p}\t{d}").ok();
+        });
+    }
+
     /* SUBCRITICAL TEMPERATURE, LONGITUDINAL PROPAGATOR */
     let mut plot = Plot2D::new();
     plot.set_xlabel("$p$ [GeV]");
