@@ -1,4 +1,4 @@
-use peroxide::fuga::{Plot, Plot2D};
+use peroxide::fuga::{Markers, Plot, Plot2D, PlotType};
 use qcd_sme::ym::gluon::dressing_inv_landau;
 use qcd_sme::ym::thermal::zero_momentum::gluon::dressing_t_inv_landau;
 use qcd_sme::{C, I, R};
@@ -120,15 +120,21 @@ fn main() {
 
     let mut plot = Plot2D::new();
     plot.set_domain(temperatures.to_vec());
+    plot.set_plot_type(vec![(0, PlotType::Scatter), (1, PlotType::Scatter)]);
+    plot.set_marker(vec![(0, Markers::Square), (1, Markers::Square)]);
     plot.insert_image(poles_re);
     plot.insert_image(poles_im);
     plot.set_xlabel("$T$ (GeV)");
-    plot.set_ylabel("Re$\\{z\\}$, Im$\\{z\\}$ (GeV)");
+    plot.set_ylabel("Re$\\{p\\}$, Im$\\{p\\}$ (GeV)");
+    plot.set_legend(vec!["Re$\\{p\\}$", "Im$\\{p\\}$"]);
+    plot.set_ylim((0., 1.));
     plot.set_path(&out_dir.join("poles").to_string_lossy());
     plot.savefig().expect("Could not save figure");
 
     let mut plot = Plot2D::new();
     plot.set_domain(temperatures.to_vec());
+    plot.set_plot_type(vec![(0, PlotType::Scatter)]);
+    plot.set_marker(vec![(0, Markers::Square)]);
     plot.insert_image(residues_ratio);
     plot.set_xlabel("$T$ (GeV)");
     plot.set_ylabel("Im$\\{R\\}$/Re$\\{R\\}$");
@@ -137,6 +143,8 @@ fn main() {
 
     let mut plot = Plot2D::new();
     plot.set_domain(temperatures.to_vec());
+    plot.set_plot_type(vec![(0, PlotType::Scatter)]);
+    plot.set_marker(vec![(0, Markers::Square)]);
     plot.insert_image(residues_phase);
     plot.set_xlabel("$T$ (GeV)");
     plot.set_ylabel("$\\vartheta(T)$");
