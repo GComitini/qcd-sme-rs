@@ -2,6 +2,7 @@ use peroxide::fuga::{Plot, Plot2D};
 use qcd_sme::ym::gluon::dressing_inv_landau;
 use qcd_sme::ym::thermal::zero_momentum::gluon::dressing_t_inv_landau;
 use qcd_sme::{C, I, R};
+use std::io::{BufWriter, Write};
 
 const MG: R = 0.656;
 
@@ -97,12 +98,34 @@ fn main() {
         );
     }
 
+    let poles_re: Vec<R> = res.iter().map(|v: &(C, R)| v.0.re).collect();
+    let poles_im: Vec<R> = res.iter().map(|v: &(C, R)| v.0.im).collect();
     let residues_ratio: Vec<R> = res.iter().map(|v: &(C, R)| v.1).collect();
     let residues_phase: Vec<R> = residues_ratio.iter().map(|rat| rat.atan()).collect();
 
     let out_dir = std::path::Path::new("target/ym_thermal_gluon_poles");
     std::fs::create_dir_all(out_dir)
         .unwrap_or_else(|_| panic!("Could not create {}", out_dir.to_string_lossy()));
+
+    let out_filename = out_dir.join("poles.out");
+    let mut out_file = BufWriter::new(
+        std::fs::File::create(&out_filename)
+            .unwrap_or_else(|_| panic!("Could not create {}", out_filename.to_string_lossy())),
+    );
+
+    temperatures.iter().zip(res.iter()).for_each(|(t, val)| {
+        writeln!(out_file, "{t:.3}\t{}\t{}", val.0, val.1)
+            .unwrap_or_else(|_| panic!("Could not write to {}", out_filename.to_string_lossy()))
+    });
+
+    let mut plot = Plot2D::new();
+    plot.set_domain(temperatures.to_vec());
+    plot.insert_image(poles_re);
+    plot.insert_image(poles_im);
+    plot.set_xlabel("$T$ (GeV)");
+    plot.set_ylabel("Re$\\{z\\}$, Im$\\{z\\}$ (GeV)");
+    plot.set_path(&out_dir.join("poles").to_string_lossy());
+    plot.savefig().expect("Could not save figure");
 
     let mut plot = Plot2D::new();
     plot.set_domain(temperatures.to_vec());
