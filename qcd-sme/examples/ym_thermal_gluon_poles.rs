@@ -1,7 +1,7 @@
 use peroxide::fuga::{Markers, Plot, Plot2D, PlotType};
 use qcd_sme::ym::gluon::dressing_inv_landau;
 use qcd_sme::ym::thermal::zero_momentum::gluon::dressing_t_inv_landau;
-use qcd_sme::{C, I, R};
+use qcd_sme::{Num, C, I, R};
 use std::io::{BufWriter, Write};
 
 const MG: R = 0.656;
@@ -54,6 +54,12 @@ fn find_thermal_pole<F: Fn(C) -> C>(header: &str, f: &F, res: &mut Vec<(C, R)>) 
             panic!("Found no root");
         }
     };
+
+    // Check that there are four symmetric roots
+    if (f(-root)).abs() > TOL || (f(root.conj())).abs() > TOL || (f(-root.conj())).abs() > TOL {
+        panic!("Roots are not symmetric!");
+    }
+
     // +/- 2*root is the conversion factor from a pole in p to a pole in p^2
     // 1/root^2 gives us the residue of the propagator instead of that of the dressing function
     // -residue.im and conj() select the pole on the first quadrant
