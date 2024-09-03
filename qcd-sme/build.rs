@@ -13,6 +13,8 @@ const CYTHON_HEADER_FILE: &str = "qcd_sme.pxd";
 const INCLUDE_GUARD: &str = "__QCD_SME_H__";
 
 fn main() {
+    println!("cargo::warning=There's a known bug in the *_w_field_config functions: you still have to call qcd_sme::consts::set_number_of_colors(nc) for nc != 3 and nf != 0. This bug also makes the functions not thread-safe with respect to a change of nc. I will eventually fix this but I'm too busy right now.");
+
     let crate_dir = path::PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let mut target_dir = crate_dir.join("target");
     // This crate depends on other crates and it will be built last, by which
@@ -102,6 +104,4 @@ fn main() {
             .expect("Unable to modify bindings");
     };
     drop(cython_header);
-
-    println!("cargo::warning=There's a known bug in the *_w_field_config functions: you still have to call qcd_sme::consts::set_number_of_colors(nc) for nc != 3 and nf != 0. This bug also makes the functions not thread-safe with respect to a change of nc. I will eventually fix this but I'm too busy right now.");
 }
