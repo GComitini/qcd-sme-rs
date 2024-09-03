@@ -100,12 +100,16 @@ fn main() {
     let residues_ratio: Vec<R> = res.iter().map(|v: &(C, R)| v.1).collect();
     let residues_phase: Vec<R> = residues_ratio.iter().map(|rat| rat.atan()).collect();
 
+    let out_dir = std::path::Path::new("target/ym_thermal_gluon_poles");
+    std::fs::create_dir_all(out_dir)
+        .unwrap_or_else(|_| panic!("Could not create {}", out_dir.to_string_lossy()));
+
     let mut plot = Plot2D::new();
     plot.set_domain(temperatures.to_vec());
     plot.insert_image(residues_ratio);
     plot.set_xlabel("$T$ (GeV)");
     plot.set_ylabel("Im$\\{R\\}$/Re$\\{R\\}$");
-    plot.set_path("target/ym_gluon_poles_residue_ratio");
+    plot.set_path(&out_dir.join("residue_ratio").to_string_lossy());
     plot.savefig().expect("Could not save figure");
 
     let mut plot = Plot2D::new();
@@ -113,6 +117,6 @@ fn main() {
     plot.insert_image(residues_phase);
     plot.set_xlabel("$T$ (GeV)");
     plot.set_ylabel("$\\vartheta(T)$");
-    plot.set_path("target/ym_gluon_poles_residue_phase");
+    plot.set_path(&out_dir.join("residue_phase").to_string_lossy());
     plot.savefig().expect("Could not save figure");
 }

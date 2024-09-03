@@ -30,7 +30,7 @@ fn main() {
     let ms_t = [0.675, 0.725, 0.775, 0.725, 0.800, 0.900];
     let f0s_t = [0.05, 0.10, 0.30, 0.40, 0.50, 0.60];
 
-    let targetdir = std::path::Path::new("target/ym_gluon_propagator");
+    let targetdir = std::path::Path::new("target/ym_thermal_gluon_propagator");
     fs::create_dir_all(targetdir)
         .unwrap_or_else(|_| panic!("Could not crate directory {}", targetdir.to_string_lossy()));
 
