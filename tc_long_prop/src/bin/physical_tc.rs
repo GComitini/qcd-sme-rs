@@ -403,8 +403,8 @@ fn main() {
     let m = 0.656;
     let om = 1E-5;
     let renpoint = 4.;
-    let (mq1, mq2, mq3) = (0.350, 0.450, 1.5);
-    let (mq1c, mq2c, mq3c) = (0.003, 0.090, 1.2);
+    let (mq1, mq2, _mq3) = (0.350, 0.450, 1.5);
+    let (mq1c, mq2c, _mq3c) = (0.003, 0.090, 1.2);
 
     // Adimensional
     let f0 = -0.876;
@@ -486,7 +486,7 @@ fn main() {
     config.reset_chemicalpotentials(fewchempots);
     compute_propagators(&config);
 
-    /* NF = 2 + 1 + 1 */
+    /* /* NF = 2 + 1 + 1 */
     let fieldconfig = FieldConfig::new(3, m, vec![(2, mq1), (1, mq2), (1, mq3)]);
     let correctedfieldconfig = FieldConfig::new(3, m, vec![(2, mq1c), (1, mq2c), (1, mq3c)]);
     let mut config = Config::new(
@@ -546,5 +546,5 @@ fn main() {
     config.reset_chemicalpotentials((mq3c - 0.2, mq3c + 1.3, 0.15));
     config.filename = "nf_2+1+1_corrected_m3";
     compute_propagators(&config);
-    config.filename = oldfilename;
+    config.filename = oldfilename; */
 }
