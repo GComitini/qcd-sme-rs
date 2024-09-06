@@ -410,14 +410,14 @@ fn main() {
     let f0 = -0.876;
 
     // In units of m
-    let fewtemps = (0., 0.25, 0.05);
-    let moretemps = (0., 0.25, 0.01);
-    let manytemps = (0., 0.25, 0.0001);
+    let fewtemps = (0., 0.15, 0.025);
+    let moretemps = (0., 0.15, 0.01);
+    let manytemps = (0., 0.15, 0.0001);
 
     // In GeV
-    let fewchempots = (0., 1., 0.1);
-    let morechempots = (0., 1., 0.025);
-    let manychempots = (0., 1., 0.01);
+    let fewchempots = (0., 0.8, 0.1);
+    let morechempots = (0., 0.8, 0.025);
+    let manychempots = (0., 0.8, 0.01);
 
     // In units of m
     let momenta = (0.01, 3., 0.01);
