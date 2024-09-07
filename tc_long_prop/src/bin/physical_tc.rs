@@ -473,13 +473,18 @@ fn main() {
     compute_phase_diagram(&config);
 
     eprintln!("*** FITTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
-    parametrize_phase_boundary(
+    let phase_boundary_params = parametrize_phase_boundary(
         config.phase_boundary().unwrap(),
         8,
         THIS_BASEDIR
             .join(format!("tc_{}_fit.png", config.filename))
             .to_str(),
     );
+    let mut outfile = BufWriter::new(
+        fs::File::create(THIS_BASEDIR.join(format!("tc_{}_fit_parameters.out", config.filename)))
+            .expect("Could not create parameter file"),
+    );
+    writeln!(outfile, "{phase_boundary_params:?}").expect("Could not write to parameter file");
 
     eprintln!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 ***");
     config.reset_temperatures(fewtemps);
