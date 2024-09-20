@@ -3,7 +3,7 @@ resolver = "2"
 members = ["qcd-sme"]
 
 [workspace.dependencies]
-peroxide = { git = "https://github.com/GComitini/peroxide", rev = "c51f322e", features = ["plot", "complex"] }
+peroxide = { git = "https://github.com/Axect/Peroxide", branch = "dev", features = ["plot", "complex"] }
 serial_test = "3.1"
 
 [profile.release]

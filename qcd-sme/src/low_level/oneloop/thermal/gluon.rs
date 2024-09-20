@@ -12,7 +12,7 @@ mod native {
     use crate::common::thermal::inlines::fermi_momentum;
     use crate::consts::get_default_integration_method;
     use crate::{Num, C, R};
-    use peroxide::numerical::integral::{complex_integrate, Integral};
+    use peroxide::numerical::integral::{integrate, Integral};
 
     pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(
         q: R,
@@ -83,7 +83,7 @@ mod native {
         beta: R,
         integral: Integral,
     ) -> C {
-        complex_integrate(
+        integrate(
             |t| {
                 inlines::polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, p, m, beta)
                     / (t * t)
@@ -100,7 +100,7 @@ mod native {
         beta: R,
         integral: Integral,
     ) -> C {
-        complex_integrate(
+        integrate(
             |t| {
                 inlines::polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, p, m, beta)
                     / (t * t)
@@ -118,7 +118,7 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        complex_integrate(
+        integrate(
             |t| {
                 inlines::polarization_quark_l_thermal_part_landau_i(
                     (1. - t) / t,
@@ -142,7 +142,7 @@ mod native {
         mu: R,
         integral: Integral,
     ) -> C {
-        complex_integrate(
+        integrate(
             |t| {
                 inlines::polarization_quark_t_thermal_part_landau_i(
                     (1. - t) / t,
@@ -168,7 +168,7 @@ mod native {
         if mu.abs() < mq.abs() {
             return C::new(0., 0.);
         };
-        complex_integrate(
+        integrate(
             |q| inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
             (0., fermi_momentum(mq, mu)),
             integral,
@@ -185,7 +185,7 @@ mod native {
         if mu.abs() < mq.abs() {
             return C::new(0., 0.);
         };
-        complex_integrate(
+        integrate(
             |q| inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
             (0., fermi_momentum(mq, mu)),
             integral,
@@ -1026,7 +1026,7 @@ pub mod zero_momentum {
         use crate::common::thermal::inlines::fermi_momentum;
         use crate::consts::get_default_integration_method;
         use crate::{Num, C, R};
-        use peroxide::numerical::integral::{complex_integrate, Integral};
+        use peroxide::numerical::integral::{integrate, Integral};
 
         pub fn polarization_glue_l_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
             inlines::polarization_glue_l_thermal_part_landau_i(q, om, m, beta)
@@ -1080,7 +1080,7 @@ pub mod zero_momentum {
             beta: R,
             integral: Integral,
         ) -> C {
-            complex_integrate(
+            integrate(
                 |t| {
                     inlines::polarization_glue_l_thermal_part_landau_i((1. - t) / t, om, m, beta)
                         / (t * t)
@@ -1096,7 +1096,7 @@ pub mod zero_momentum {
             beta: R,
             integral: Integral,
         ) -> C {
-            complex_integrate(
+            integrate(
                 |t| {
                     inlines::polarization_glue_t_thermal_part_landau_i((1. - t) / t, om, m, beta)
                         / (t * t)
@@ -1113,7 +1113,7 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            complex_integrate(
+            integrate(
                 |t| {
                     inlines::polarization_quark_l_thermal_part_landau_i(
                         (1. - t) / t,
@@ -1137,7 +1137,7 @@ pub mod zero_momentum {
             mu: R,
             integral: Integral,
         ) -> C {
-            complex_integrate(
+            integrate(
                 |t| {
                     inlines::polarization_quark_t_thermal_part_landau_i(
                         (1. - t) / t,
@@ -1163,7 +1163,7 @@ pub mod zero_momentum {
             if mu.abs() < mq.abs() {
                 return C::new(0., 0.);
             };
-            complex_integrate(
+            integrate(
                 |q| {
                     inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu)
                         .into()
@@ -1182,7 +1182,7 @@ pub mod zero_momentum {
             if mu.abs() < mq.abs() {
                 return C::new(0., 0.);
             };
-            complex_integrate(
+            integrate(
                 |q| {
                     inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, mq, mu)
                         .into()
