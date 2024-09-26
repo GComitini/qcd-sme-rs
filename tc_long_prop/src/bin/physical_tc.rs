@@ -248,6 +248,79 @@ fn compute_propagators(config: &Config) {
     }
 }
 
+fn compute_transverse_propagators(config: &Config) {
+    let m = config.fieldconfig.gluon;
+    let om = config.om;
+    let (renpoint, renpoint2) = (config.renpoint(), config.renpoint2());
+    let (label, filename, title) = (config.label, config.filename, config.title);
+
+    let renfac = renpoint2 / (m * m);
+    let legends: Vec<String> = config
+        .temps()
+        .iter()
+        .map(|t| format!("$T/m={t:.4}$"))
+        .collect();
+
+    fs::create_dir_all(THIS_BASEDIR.as_path()).expect("Could not create base directory");
+
+    for &mu in config.chempots() {
+        let mut plot = Plot2D::new();
+        plot.set_xlabel("$p/m$");
+        plot.set_ylabel("$m^{2}\\,\\Delta_{T}(p)$");
+        plot.set_title(&format!("{}, $\\mu={mu:.4}$ GeV", title));
+        plot.set_domain(config.momenta().clone());
+        plot.set_legend(legends.iter().map(|l| l.as_str()).collect());
+
+        // If we want the corrected propagator (i.e. a propagator with different
+        // quark masses, to mimick chiral symmetry restoration) we reset the field
+        // configuration and f0 depending on the chemical potential and temperature.
+        // We must (potentially) reset it for each (mu, T) pair before computing the
+        // renormalization factors z
+        let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
+        let z = propagator_t_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
+        plot.insert_image(
+            config
+                .momenta()
+                .iter()
+                .map(|p| {
+                    let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
+                    eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
+                    val
+                })
+                .collect(),
+        );
+
+        config
+            .temps()
+            .iter()
+            .skip(1)
+            .map(|t| {
+                let beta = 1. / (t * m);
+                let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
+                let z = propagator_t_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
+                config
+                    .momenta()
+                    .par_iter()
+                    .map(|p| {
+                        let val = propagator_t_landau(om, p * m, beta, mu, f0, fieldconfig).re / z;
+                        eprintln!(
+                            "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label} (transverse)."
+                        );
+                        val
+                    })
+                    .collect()
+            })
+            .for_each(|vals: Vec<R>| {
+                plot.insert_image(vals);
+            });
+        plot.set_path(&format!(
+            "{}_transverse_mu_{mu:.4}.png",
+            THIS_BASEDIR.join(filename).to_string_lossy()
+        ));
+        plot.savefig().expect("Could not save figure");
+    }
+}
+
 fn compute_ir_limit(config: &Config) {
     let m = config.fieldconfig.gluon;
     let (pbase, om) = (config.pbase, config.om);
@@ -440,6 +513,7 @@ fn main() {
 
     eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 ***");
     compute_propagators(&config);
+    compute_transverse_propagators(&config);
 
     eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename; // save filename for later
@@ -490,6 +564,7 @@ fn main() {
     config.reset_temperatures(fewtemps);
     config.reset_chemicalpotentials(fewchempots);
     compute_propagators(&config);
+    compute_transverse_propagators(&config);
 
     /* /* NF = 2 + 1 + 1 */
     let fieldconfig = FieldConfig::new(3, m, vec![(2, mq1), (1, mq2), (1, mq3)]);

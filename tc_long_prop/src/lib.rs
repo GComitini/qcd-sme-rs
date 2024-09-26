@@ -26,6 +26,8 @@ pub mod more_masses {
     pub use qcd_sme::qcd::thermal::gluon::{
         propagator_l_landau_w_field_config as propagator_l_landau,
         propagator_l_zero_temp_landau_w_field_config as propagator_l_zero_temp_landau,
+        propagator_t_landau_w_field_config as propagator_t_landau,
+        propagator_t_zero_temp_landau_w_field_config as propagator_t_zero_temp_landau,
     };
     pub use qcd_sme::ym::gluon::propagator_landau as ym_propagator_l_zero_temp_landau;
     pub use qcd_sme::ym::thermal::gluon::propagator_l_landau as ym_propagator_l_landau;
