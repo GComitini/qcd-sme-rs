@@ -169,7 +169,7 @@ mod config {
         fn compute_vec(v: (R, R, R)) -> Vec<R> {
             let (vmin, vmax, dv) = v;
             let vrange = vmax - vmin;
-            let n = (vrange / dv) as usize;
+            let n = (vrange / dv).round() as usize;
             (0..=n).map(|k| vmin + dv * (k as R)).collect()
         }
     }
