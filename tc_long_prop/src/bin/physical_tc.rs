@@ -477,7 +477,7 @@ fn main() {
     let om = 1E-5;
     let renpoint = 4.;
     let (mq1, mq2, _mq3) = (0.350, 0.450, 1.5);
-    let (mq1c, mq2c, _mq3c) = (0.003, 0.090, 1.2);
+    let (mq1c, mq2c, _mq3c) = (0.125, 0.225, 1.2);
 
     // Adimensional
     let f0 = -0.876;
