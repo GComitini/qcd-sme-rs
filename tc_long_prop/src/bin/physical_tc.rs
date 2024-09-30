@@ -188,7 +188,7 @@ fn compute_propagators(config: &Config) {
         .map(|t| format!("$T/m={t:.4}$"))
         .collect();
 
-    fs::create_dir_all(THIS_BASEDIR.as_path()).expect("Could not create base directory");
+    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create base directory");
 
     for &mu in config.chempots() {
         let mut plot = Plot2D::new();
@@ -205,17 +205,32 @@ fn compute_propagators(config: &Config) {
         // renormalization factors z
         let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
-        plot.insert_image(
-            config
-                .momenta()
-                .iter()
-                .map(|p| {
-                    let val = propagator_l_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
-                    val
-                })
-                .collect(),
+        let propvals: Vec<f64> = config
+            .momenta()
+            .iter()
+            .map(|p| {
+                let val = propagator_l_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
+                eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
+                val
+            })
+            .collect();
+        let outfilename = format!(
+            "{}_glulongprop_t_0.000_mu_{mu:.4}.out",
+            THIS_BASEDIR.join("data").join(filename).to_string_lossy()
         );
+        let mut outfile = BufWriter::new(
+            fs::File::create(&outfilename)
+                .unwrap_or_else(|_| panic!("could not create {outfilename}")),
+        );
+        config
+            .momenta()
+            .iter()
+            .zip(propvals.iter())
+            .for_each(|(p, d)| {
+                writeln!(outfile, "{p}\t{d}")
+                    .unwrap_or_else(|_| panic!("could not write to {outfilename}"));
+            });
+        plot.insert_image(propvals);
 
         config
             .temps()
@@ -225,7 +240,16 @@ fn compute_propagators(config: &Config) {
                 let beta = 1. / (t * m);
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
-                config
+                let outfilename = format!(
+                    "{}_glulongprop_t_{:.3}_mu_{mu:.4}.out",
+                    THIS_BASEDIR.join("data").join(filename).to_string_lossy(),
+                    t
+                );
+                let mut outfile = BufWriter::new(
+                    fs::File::create(&outfilename)
+                        .unwrap_or_else(|_| panic!("could not create {outfilename}")),
+                );
+                let propvals: Vec<f64> = config
                     .momenta()
                     .par_iter()
                     .map(|p| {
@@ -235,7 +259,16 @@ fn compute_propagators(config: &Config) {
                         );
                         val
                     })
-                    .collect()
+                    .collect();
+                config
+                    .momenta()
+                    .iter()
+                    .zip(propvals.iter())
+                    .for_each(|(p, d)| {
+                        writeln!(outfile, "{p}\t{d}")
+                            .unwrap_or_else(|_| panic!("could not write to {outfilename}"));
+                    });
+                propvals
             })
             .for_each(|vals: Vec<R>| {
                 plot.insert_image(vals);
@@ -261,7 +294,7 @@ fn compute_transverse_propagators(config: &Config) {
         .map(|t| format!("$T/m={t:.4}$"))
         .collect();
 
-    fs::create_dir_all(THIS_BASEDIR.as_path()).expect("Could not create base directory");
+    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create base directory");
 
     for &mu in config.chempots() {
         let mut plot = Plot2D::new();
@@ -278,17 +311,32 @@ fn compute_transverse_propagators(config: &Config) {
         // renormalization factors z
         let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
         let z = propagator_t_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
-        plot.insert_image(
-            config
-                .momenta()
-                .iter()
-                .map(|p| {
-                    let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
-                    val
-                })
-                .collect(),
+        let propvals: Vec<f64> = config
+            .momenta()
+            .iter()
+            .map(|p| {
+                let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
+                eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
+                val
+            })
+            .collect();
+        let outfilename = format!(
+            "{}_glutransprop_t_0.000_mu_{mu:.4}.out",
+            THIS_BASEDIR.join("data").join(filename).to_string_lossy()
         );
+        let mut outfile = BufWriter::new(
+            fs::File::create(&outfilename)
+                .unwrap_or_else(|_| panic!("could not create {outfilename}")),
+        );
+        config
+            .momenta()
+            .iter()
+            .zip(propvals.iter())
+            .for_each(|(p, d)| {
+                writeln!(outfile, "{p}\t{d}")
+                    .unwrap_or_else(|_| panic!("could not write to {outfilename}"));
+            });
+        plot.insert_image(propvals);
 
         config
             .temps()
@@ -298,7 +346,16 @@ fn compute_transverse_propagators(config: &Config) {
                 let beta = 1. / (t * m);
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_t_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
-                config
+                let outfilename = format!(
+                    "{}_glutransprop_t_{:.3}_mu_{mu:.4}.out",
+                    THIS_BASEDIR.join("data").join(filename).to_string_lossy(),
+                    t
+                );
+                let mut outfile = BufWriter::new(
+                    fs::File::create(&outfilename)
+                        .unwrap_or_else(|_| panic!("could not create {outfilename}")),
+                );
+                let propvals: Vec<f64> =config
                     .momenta()
                     .par_iter()
                     .map(|p| {
@@ -308,7 +365,16 @@ fn compute_transverse_propagators(config: &Config) {
                         );
                         val
                     })
-                    .collect()
+                    .collect();
+                config
+                    .momenta()
+                    .iter()
+                    .zip(propvals.iter())
+                    .for_each(|(p, d)| {
+                        writeln!(outfile, "{p}\t{d}")
+                            .unwrap_or_else(|_| panic!("could not write to {outfilename}"));
+                    });
+                propvals
             })
             .for_each(|vals: Vec<R>| {
                 plot.insert_image(vals);
