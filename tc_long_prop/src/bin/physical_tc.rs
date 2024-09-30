@@ -581,7 +581,7 @@ fn main() {
     compute_propagators(&config);
     compute_transverse_propagators(&config);
 
-    eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
+    /* eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename; // save filename for later
     config.reset_temperatures((0., 0.05, 0.01)); // restrict to temperatures of interest
     config.reset_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
@@ -591,7 +591,7 @@ fn main() {
     config.reset_chemicalpotentials((mq2 - 0.05, mq2 + 0.05, 0.01));
     config.filename = "nf_2+1_m2"; // new filename
     compute_propagators(&config);
-    config.filename = oldfilename; // reset filename
+    config.filename = oldfilename; // reset filename */
 
     eprintln!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 ***");
     config.reset_temperatures(moretemps);
