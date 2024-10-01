@@ -549,9 +549,9 @@ fn main() {
     let f0 = -0.876;
 
     // In units of m
-    let fewtemps = (0., 0.15, 0.025);
-    let moretemps = (0., 0.15, 0.01);
-    let manytemps = (0., 0.15, 0.0001);
+    let fewtemps = (0., 0.1758, 0.0293);
+    let moretemps = (0., 0.1758, 0.0117);
+    let manytemps = (0., 0.1758, 0.00012);
 
     // In GeV
     let fewchempots = (0., 0.8, 0.1);
