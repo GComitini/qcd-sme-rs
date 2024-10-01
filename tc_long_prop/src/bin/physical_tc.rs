@@ -215,7 +215,7 @@ fn compute_propagators(config: &Config) {
             })
             .collect();
         let outfilename = format!(
-            "{}_glulongprop_t_0.000_mu_{mu:.4}.out",
+            "{}_glulongprop_t_0.0000_mu_{mu:.4}.out",
             THIS_BASEDIR.join("data").join(filename).to_string_lossy()
         );
         let mut outfile = BufWriter::new(
@@ -241,7 +241,7 @@ fn compute_propagators(config: &Config) {
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                 let outfilename = format!(
-                    "{}_glulongprop_t_{:.3}_mu_{mu:.4}.out",
+                    "{}_glulongprop_t_{:.4}_mu_{mu:.4}.out",
                     THIS_BASEDIR.join("data").join(filename).to_string_lossy(),
                     t
                 );
@@ -321,7 +321,7 @@ fn compute_transverse_propagators(config: &Config) {
             })
             .collect();
         let outfilename = format!(
-            "{}_glutransprop_t_0.000_mu_{mu:.4}.out",
+            "{}_glutransprop_t_0.0000_mu_{mu:.4}.out",
             THIS_BASEDIR.join("data").join(filename).to_string_lossy()
         );
         let mut outfile = BufWriter::new(
@@ -347,7 +347,7 @@ fn compute_transverse_propagators(config: &Config) {
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_t_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                 let outfilename = format!(
-                    "{}_glutransprop_t_{:.3}_mu_{mu:.4}.out",
+                    "{}_glutransprop_t_{:.4}_mu_{mu:.4}.out",
                     THIS_BASEDIR.join("data").join(filename).to_string_lossy(),
                     t
                 );
