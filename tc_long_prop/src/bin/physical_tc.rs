@@ -188,7 +188,7 @@ fn compute_propagators(config: &Config) {
         .map(|t| format!("$T/m={t:.4}$"))
         .collect();
 
-    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create base directory");
+    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create directory structure");
 
     for &mu in config.chempots() {
         let mut plot = Plot2D::new();
@@ -222,6 +222,7 @@ fn compute_propagators(config: &Config) {
             fs::File::create(&outfilename)
                 .unwrap_or_else(|_| panic!("could not create {outfilename}")),
         );
+        // Write pairs (p/m, m^2 Delta_L) to file
         config
             .momenta()
             .iter()
@@ -237,6 +238,7 @@ fn compute_propagators(config: &Config) {
             .iter()
             .skip(1)
             .map(|t| {
+                // beta is dimensionful
                 let beta = 1. / (t * m);
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
@@ -260,6 +262,7 @@ fn compute_propagators(config: &Config) {
                         val
                     })
                     .collect();
+                // Write pairs (p/m, m^2 Delta_L) to file
                 config
                     .momenta()
                     .iter()
@@ -294,7 +297,7 @@ fn compute_transverse_propagators(config: &Config) {
         .map(|t| format!("$T/m={t:.4}$"))
         .collect();
 
-    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create base directory");
+    fs::create_dir_all(THIS_BASEDIR.join("data")).expect("Could not create directory structure");
 
     for &mu in config.chempots() {
         let mut plot = Plot2D::new();
@@ -316,7 +319,9 @@ fn compute_transverse_propagators(config: &Config) {
             .iter()
             .map(|p| {
                 let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
+                eprintln!(
+                    "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label} (transverse)."
+                );
                 val
             })
             .collect();
@@ -328,6 +333,7 @@ fn compute_transverse_propagators(config: &Config) {
             fs::File::create(&outfilename)
                 .unwrap_or_else(|_| panic!("could not create {outfilename}")),
         );
+        // Write pairs (p/m, m^2 Delta_T) to file
         config
             .momenta()
             .iter()
@@ -343,6 +349,7 @@ fn compute_transverse_propagators(config: &Config) {
             .iter()
             .skip(1)
             .map(|t| {
+                // beta is dimensionful
                 let beta = 1. / (t * m);
                 let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                 let z = propagator_t_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
@@ -355,7 +362,7 @@ fn compute_transverse_propagators(config: &Config) {
                     fs::File::create(&outfilename)
                         .unwrap_or_else(|_| panic!("could not create {outfilename}")),
                 );
-                let propvals: Vec<f64> =config
+                let propvals: Vec<f64> = config
                     .momenta()
                     .par_iter()
                     .map(|p| {
@@ -366,6 +373,7 @@ fn compute_transverse_propagators(config: &Config) {
                         val
                     })
                     .collect();
+                // Write pairs (p/m, m^2 Delta_T) to file
                 config
                     .momenta()
                     .iter()
