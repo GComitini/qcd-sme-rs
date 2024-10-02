@@ -426,7 +426,7 @@ fn compute_ir_limit(config: &Config) {
                 .skip(1)
                 .map(|t| {
                     let beta = 1. / (t * m);
-                    let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
+                    let (fieldconfig, f0) = config.maybe_corrected_data(mu, *t);
                     let z =
                         propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
