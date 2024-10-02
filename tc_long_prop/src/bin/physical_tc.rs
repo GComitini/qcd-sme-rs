@@ -1,5 +1,6 @@
 use config::Config;
 use lazy_static::lazy_static;
+use serde_derive::{Deserialize, Serialize};
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::PathBuf;
@@ -541,33 +542,92 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
         .collect()
 }
 
+#[derive(Deserialize, Serialize)]
+struct InputData {
+    mg: f64,
+    om: f64,
+    renpoint: f64,
+    mq: (f64, f64, f64),
+    mqc: (f64, f64, f64),
+    f0: f64,
+    fewtemps: (f64, f64, f64),
+    moretemps: (f64, f64, f64),
+    manytemps: (f64, f64, f64),
+    fewchempots: (f64, f64, f64),
+    morechempots: (f64, f64, f64),
+    manychempots: (f64, f64, f64),
+    momenta: (f64, f64, f64),
+}
+
 fn main() {
     /* CRITICAL TEMPERATURE AS A FUNCTION OF THE CHEMICAL POTENTIAL
     FOR A PLAUSIBLE PHYSICAL CONFIGURATION, FIRST WITH NF = 2 + 1,
     THEN WITH NF = 2 + 1 + 1 */
 
     // In GeV
-    let m = 0.656;
-    let om = 1E-5;
-    let renpoint = 4.;
-    let (mq1, mq2, _mq3) = (0.350, 0.450, 1.5);
-    let (mq1c, mq2c, _mq3c) = (0.125, 0.225, 1.2);
+    let mut m = 0.656;
+    let mut om = 1E-5;
+    let mut renpoint = 4.;
+    let (mut mq1, mut mq2, mut mq3) = (0.350, 0.450, 1.5);
+    let (mut mq1c, mut mq2c, mut mq3c) = (0.125, 0.225, 1.2);
 
     // Adimensional
-    let f0 = -0.876;
+    let mut f0 = -0.876;
 
     // In units of m
-    let fewtemps = (0., 0.1758, 0.0293);
-    let moretemps = (0., 0.1758, 0.0117);
-    let manytemps = (0., 0.1758, 0.00012);
+    let mut fewtemps = (0., 0.1758, 0.0293);
+    let mut moretemps = (0., 0.1758, 0.0117);
+    let mut manytemps = (0., 0.1758, 0.00012);
 
     // In GeV
-    let fewchempots = (0., 0.8, 0.1);
-    let morechempots = (0., 0.8, 0.025);
-    let manychempots = (0., 0.8, 0.01);
+    let mut fewchempots = (0., 0.8, 0.1);
+    let mut morechempots = (0., 0.8, 0.025);
+    let mut manychempots = (0., 0.8, 0.01);
 
     // In units of m
-    let momenta = (0.01, 3., 0.01);
+    let mut momenta = (0.01, 3., 0.01);
+
+    // Read and store configuration
+    let configfilename = std::env::args().nth(1).unwrap_or("config.yml".to_string());
+    if let Ok(configfile) = fs::File::open(&configfilename) {
+        let inputdata: InputData =
+            serde_yml::from_reader(configfile).expect("could not deserialize input data");
+        (m, om, renpoint) = (inputdata.mg, inputdata.om, inputdata.renpoint);
+        (mq1, mq2, mq3) = inputdata.mq;
+        (mq1c, mq2c, mq3c) = inputdata.mqc;
+        f0 = inputdata.f0;
+        (fewtemps, moretemps, manytemps) =
+            (inputdata.fewtemps, inputdata.moretemps, inputdata.manytemps);
+        (fewchempots, morechempots, manychempots) = (
+            inputdata.fewchempots,
+            inputdata.morechempots,
+            inputdata.manychempots,
+        );
+        momenta = inputdata.momenta;
+    }
+
+    let inputdata = InputData {
+        mg: m,
+        om,
+        renpoint,
+        mq: (mq1, mq2, mq3),
+        mqc: (mq1c, mq2c, mq3c),
+        f0,
+        fewtemps,
+        moretemps,
+        manytemps,
+        fewchempots,
+        morechempots,
+        manychempots,
+        momenta,
+    };
+
+    fs::create_dir_all(THIS_BASEDIR.as_path()).expect("could not create base directory");
+    let outconfigfile = BufWriter::new(
+        fs::File::create(THIS_BASEDIR.join("config.yml"))
+            .expect("could not create configuration file"),
+    );
+    serde_yml::to_writer(outconfigfile, &inputdata).expect("could not write to configuration file");
 
     /* NF = 2 + 1 */
     let fieldconfig = FieldConfig::new(3, m, vec![(2, mq1), (1, mq2)]);
@@ -589,6 +649,7 @@ fn main() {
     compute_propagators(&config);
     compute_transverse_propagators(&config);
 
+    // * WARNING * This snippet needs to be re-written to account for non-hard-coded input data
     /* eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename; // save filename for later
     config.reset_temperatures((0., 0.05, 0.01)); // restrict to temperatures of interest
@@ -640,6 +701,7 @@ fn main() {
     compute_propagators(&config);
     compute_transverse_propagators(&config);
 
+    // * WARNING * What follows needs to be re-written to account for non-hard-coded input data
     /* /* NF = 2 + 1 + 1 */
     let fieldconfig = FieldConfig::new(3, m, vec![(2, mq1), (1, mq2), (1, mq3)]);
     let correctedfieldconfig = FieldConfig::new(3, m, vec![(2, mq1c), (1, mq2c), (1, mq3c)]);

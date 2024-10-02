@@ -1,0 +1,13 @@
+mg: 0.656
+om: 1.0e-5
+renpoint: 4.0
+mq: [0.350, 0.450, 1.5]
+mqc: [0.125, 0.225, 1.2]
+f0: -0.876
+fewtemps: [0., 0.1758, 0.0293]
+moretemps: [0., 0.1758, 0.0117]
+manytemps: [0., 0.1758, 0.00012]
+fewchempots: [0., 0.8, 0.1]
+morechempots: [0., 0.8, 0.025]
+manychempots: [0., 0.8, 0.01]
+momenta: [0.01, 3., 0.01]
