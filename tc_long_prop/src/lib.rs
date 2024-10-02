@@ -35,7 +35,7 @@ pub mod more_masses {
 
 pub const BASEDIR: &str = "target/tc_long_prop";
 
-// Finds the first local maximum (first argument) of its second argument
+// Finds the global maximum (first argument) of its second argument
 pub fn find_critical_temperature(ts: &[R], ds: &[R]) -> R {
     let (mut tc, mut dc) = (*ts.first().unwrap(), *ds.first().unwrap());
     for (&t, &d) in ts.iter().zip(ds.iter()).skip(1) {
@@ -61,6 +61,7 @@ impl ROrAD for AD {
     const ZERO: AD = AD::AD0(0.);
 }
 
+// Sums the polynomial
 fn parametric_phase_diagram<T: ROrAD>(mu: T, params: &[T]) -> T {
     let mut res = T::ZERO;
     for p in params[1..].iter().rev() {
@@ -70,17 +71,17 @@ fn parametric_phase_diagram<T: ROrAD>(mu: T, params: &[T]) -> T {
     res + params[0]
 }
 
-// This selects the "physical" portion of the phase_boundary data (neglects
-// data for mu > mu_c, after the critical temperature has vanished). The
-// current implementation only works if phase_boundary is fine enough to
-// contain the (T, mu) = (0, mu_c) point. We assume we made it fine enough
-// (i.e. we MUST make it fine enough). At the very minimum, the implementation
-// MUST be idempotent (this function is applied multiple times all throughout
-// this crate)
+// This function selects the "physical" portion of the phase_boundary data (neglects
+// data for mu > mu_c, after the critical temperature has vanished). The current
+// implementation only works if the phase_boundary argument is fine enough to contain
+// a chemical potential with Tc = 0. We assume we made it fine enough for this to be
+// the case (i.e. we MUST make it fine enough). The implementation MUST be idempotent
+// as this function is applied multiple times all throughout this crate
 pub fn reduce_phase_boundary(phase_boundary: &[(R, R)]) -> &[(R, R)] {
     phase_boundary.split(|(_, t)| *t == 0.).next().unwrap()
 }
 
+// n is the degree of the polynomial used for fitting the phase boundary
 pub fn parametrize_phase_boundary(pb: &[(R, R)], n: usize, plotpath: Option<&str>) -> Vec<R> {
     use peroxide::fuga::{matrix, Col, LevenbergMarquardt, Markers, Optimizer, AD1};
 
@@ -131,13 +132,18 @@ pub fn parametrize_phase_boundary(pb: &[(R, R)], n: usize, plotpath: Option<&str
 }
 
 // Determines whether the pair (mu, t) belongs to the deconfined phase given
-// a phase boundary
+// a phase boundary. The boundary itself is taken to be part of the confined
+// phase for the sake of simplicity, and the algorithm assumes it has the
+// expected shape. mu is assumed to be non-negative. Units must be passed
+// with consistent dimensions and/or normalization.
 pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
-    // Again, we reduce the phase boundary even if it should not be needed
+    // Again, we reduce the phase boundary even if it may not be needed
     let phase_boundary = reduce_phase_boundary(phase_boundary);
 
     if t == 0. {
-        // This assumes the last chemical potential in phase_boundary is mu_c
+        // This assumes the last chemical potential in phase_boundary is mu_c,
+        // i.e. that the phase boundary is reduced and non-pathological (e.g.
+        // it does not bend backwards)
         return mu > phase_boundary.last().unwrap().0;
     }
     if mu == 0. {
@@ -145,6 +151,10 @@ pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
         return t > phase_boundary.first().unwrap().1;
     }
 
+    // We scan from lower to higher chemical potentials. If the chemical
+    // potentials match we compare temperatures, if the temperatures match
+    // we compare chemical potentials. Otherwise we interpolate (read below
+    // and compare temperatures.
     for (i, (mmu, tt)) in phase_boundary.iter().enumerate() {
         if *mmu == mu {
             return t > *tt;
@@ -156,8 +166,7 @@ pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
             // mmu is the smallest chemical potential in our set greater than mu,
             // therefore mu0 must be the largest chemical potential in our set less
             // than mu: mu0 < mu < mmu with no other chemical potentials in between.
-            // Between these chemical potentials we interpolate the critical temperature
-            // linearly.
+            // We interpolate the critical temperature between mu0 and mmu.
             let (mu0, t0) = phase_boundary[i - 1];
             let tc = t0 + (tt - t0) / (mmu - mu0) * (mu - mu0);
             return t > tc;

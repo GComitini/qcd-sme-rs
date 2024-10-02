@@ -126,6 +126,8 @@ mod config {
             self.phase_boundary = phase_boundary.map(reduce_phase_boundary);
         }
 
+        // The boundary is taken to be part of the confined phase (inherited from
+        // is_deconfined_phase)
         pub fn maybe_corrected_data(&self, mu: R, t: R) -> (&'a FieldConfig, R) {
             match (
                 self.correctedfieldconfig,
@@ -453,6 +455,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     let mut tcs = vec![];
 
     for &mu in config.chempots() {
+        // Step 1: at fixed chemical potential, compute the propagator at p = p_min as a function of the temperature
         let (fieldconfig, f0) = config.maybe_corrected_data(mu, 0.);
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
@@ -475,10 +478,12 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
                 })
                 .collect(),
         );
+        // Step 2: at fixed chemical potential, find the critical temperature by maximizing the propagator
         let tc = find_critical_temperature(config.temps(), &vals);
         tcs.push(tc);
     }
 
+    // Compute second derivative of critical temperature
     let (cpl, d2w) = (config.chempots().len(), D2W);
     let dmu = config.chempots()[1] - config.chempots()[0];
     let mut tcsd2 = Vec::with_capacity(cpl - 2 * d2w);
@@ -488,6 +493,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
         tcsd2.push((config.chempots()[i], d2));
     }
 
+    // Save critical temperature and second derivative to file
     fs::create_dir_all(THIS_BASEDIR.as_path()).expect("Could not create base directory");
     let mut outfile = BufWriter::new(
         fs::File::create(THIS_BASEDIR.join(format!("tc_{filename}.out")))
@@ -506,6 +512,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
         writeln!(outfile, "{mu}\t{tcd2}").expect("Could not write value to file");
     }
 
+    // Plot critical temperature and second derivative
     let mut plot = Plot2D::new();
     plot.set_domain(config.chempots().clone());
     plot.set_xlabel("$\\mu$ [GeV]");
@@ -531,6 +538,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
     ));
     plot.savefig().expect("Could not save figure");
 
+    // Return phase boundary
     config
         .chempots()
         .iter()
