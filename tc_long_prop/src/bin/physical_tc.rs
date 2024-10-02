@@ -108,23 +108,20 @@ mod config {
             self.phase_boundary
         }
 
-        pub fn reset_temperatures(&mut self, temps: (R, R, R)) {
+        pub fn set_temperatures(&mut self, temps: (R, R, R)) {
             self.temps = Self::compute_vec(temps);
         }
 
-        pub fn reset_chemicalpotentials(&mut self, chempots: (R, R, R)) {
+        pub fn set_chemicalpotentials(&mut self, chempots: (R, R, R)) {
             self.chempots = Self::compute_vec(chempots);
         }
 
-        pub fn reset_correctedfieldconfig(
-            &mut self,
-            correctedfieldconfig: Option<&'a FieldConfig>,
-        ) {
+        pub fn set_correctedfieldconfig(&mut self, correctedfieldconfig: Option<&'a FieldConfig>) {
             self.correctedfieldconfig = correctedfieldconfig;
             self.set_correctedf0();
         }
 
-        pub fn reset_phase_boundary(&mut self, phase_boundary: Option<&'a [(R, R)]>) {
+        pub fn set_phase_boundary(&mut self, phase_boundary: Option<&'a [(R, R)]>) {
             // If any, reduce the phase boundary before storing it
             self.phase_boundary = phase_boundary.map(reduce_phase_boundary);
         }
@@ -652,30 +649,30 @@ fn main() {
     // * WARNING * This snippet needs to be re-written to account for non-hard-coded input data
     /* eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename; // save filename for later
-    config.reset_temperatures((0., 0.05, 0.01)); // restrict to temperatures of interest
-    config.reset_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
+    config.set_temperatures((0., 0.05, 0.01)); // restrict to temperatures of interest
+    config.set_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
     config.filename = "nf_2+1_m1"; // new filename
     compute_propagators(&config);
-    config.reset_temperatures((0., 0.1, 0.02)); // restrict to temperatures of interest
-    config.reset_chemicalpotentials((mq2 - 0.05, mq2 + 0.05, 0.01));
+    config.set_temperatures((0., 0.1, 0.02)); // restrict to temperatures of interest
+    config.set_chemicalpotentials((mq2 - 0.05, mq2 + 0.05, 0.01));
     config.filename = "nf_2+1_m2"; // new filename
     compute_propagators(&config);
     config.filename = oldfilename; // reset filename */
 
     eprintln!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 ***");
-    config.reset_temperatures(moretemps);
-    config.reset_chemicalpotentials(morechempots);
+    config.set_temperatures(moretemps);
+    config.set_chemicalpotentials(morechempots);
     compute_ir_limit(&config);
 
     eprintln!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 ***");
-    config.reset_temperatures(manytemps);
-    config.reset_chemicalpotentials(manychempots);
+    config.set_temperatures(manytemps);
+    config.set_chemicalpotentials(manychempots);
     let pb = compute_phase_diagram(&config);
 
     // Correct fieldconfig, set phase boundary and change filename for
     // calculations that follow
-    config.reset_correctedfieldconfig(Some(&correctedfieldconfig));
-    config.reset_phase_boundary(Some(&pb));
+    config.set_correctedfieldconfig(Some(&correctedfieldconfig));
+    config.set_phase_boundary(Some(&pb));
     config.filename = "nf_2+1_corrected";
 
     eprintln!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
@@ -696,8 +693,8 @@ fn main() {
     writeln!(outfile, "{phase_boundary_params:?}").expect("Could not write to parameter file");
 
     eprintln!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 ***");
-    config.reset_temperatures(fewtemps);
-    config.reset_chemicalpotentials(fewchempots);
+    config.set_temperatures(fewtemps);
+    config.set_chemicalpotentials(fewchempots);
     compute_propagators(&config);
     compute_transverse_propagators(&config);
 
@@ -723,34 +720,34 @@ fn main() {
 
     eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename;
-    config.reset_temperatures((0., 0.05, 0.01));
-    config.reset_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
+    config.set_temperatures((0., 0.05, 0.01));
+    config.set_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
     config.filename = "nf_2+1+1_m1";
     compute_propagators(&config);
-    config.reset_temperatures((0., 0.1, 0.02));
-    config.reset_chemicalpotentials((mq2 - 0.05, mq2 + 0.05, 0.01));
+    config.set_temperatures((0., 0.1, 0.02));
+    config.set_chemicalpotentials((mq2 - 0.05, mq2 + 0.05, 0.01));
     config.filename = "nf_2+1+1_m2";
     compute_propagators(&config);
-    config.reset_temperatures((0., 0.2, 0.04));
-    config.reset_chemicalpotentials((mq3 - 0.3, mq3 + 1.2, 0.15));
+    config.set_temperatures((0., 0.2, 0.04));
+    config.set_chemicalpotentials((mq3 - 0.3, mq3 + 1.2, 0.15));
     config.filename = "nf_2+1+1_m3";
     compute_propagators(&config);
     config.filename = oldfilename;
 
     eprintln!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 + 1 ***");
-    config.reset_temperatures(moretemps);
-    config.reset_chemicalpotentials(morechempots);
+    config.set_temperatures(moretemps);
+    config.set_chemicalpotentials(morechempots);
     compute_ir_limit(&config);
 
     eprintln!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
-    config.reset_temperatures(manytemps);
+    config.set_temperatures(manytemps);
     // We already know the phase diagram thanks to the nf = 2 + 1 case,
     // let's go to larger chemical potentials to see what happens
-    config.reset_chemicalpotentials((0., 3., 0.03));
+    config.set_chemicalpotentials((0., 3., 0.03));
     let pb = compute_phase_diagram(&config);
 
-    config.reset_correctedfieldconfig(Some(&correctedfieldconfig));
-    config.reset_phase_boundary(Some(&pb));
+    config.set_correctedfieldconfig(Some(&correctedfieldconfig));
+    config.set_phase_boundary(Some(&pb));
     config.filename = "nf_2+1+1_corrected";
 
     eprintln!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
@@ -758,8 +755,8 @@ fn main() {
 
     eprintln!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE LARGER QUARK MASS ***");
     let oldfilename = config.filename;
-    config.reset_temperatures((0., 0.2, 0.025));
-    config.reset_chemicalpotentials((mq3c - 0.2, mq3c + 1.3, 0.15));
+    config.set_temperatures((0., 0.2, 0.025));
+    config.set_chemicalpotentials((mq3c - 0.2, mq3c + 1.3, 0.15));
     config.filename = "nf_2+1+1_corrected_m3";
     compute_propagators(&config);
     config.filename = oldfilename; */
