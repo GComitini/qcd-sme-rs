@@ -140,14 +140,21 @@ pub fn is_deconfined_phase(mu: R, t: R, phase_boundary: &[(R, R)]) -> bool {
     // Again, we reduce the phase boundary even if it may not be needed
     let phase_boundary = reduce_phase_boundary(phase_boundary);
 
+    // We do not extrapolate, the most we do is interpolate
+    if mu < phase_boundary.first().unwrap().0 {
+        panic!(
+            "cannot extrapolate phase boundary data below the smallest provided chemical potential"
+        );
+    }
+
     if t == 0. {
         // This assumes the last chemical potential in phase_boundary is mu_c,
         // i.e. that the phase boundary is reduced and non-pathological (e.g.
         // it does not bend backwards)
         return mu > phase_boundary.last().unwrap().0;
     }
-    if mu == 0. {
-        // This assumes the first temperature in phase_boundary is t_c
+
+    if mu == 0. && phase_boundary.first().unwrap().0 == 0. {
         return t > phase_boundary.first().unwrap().1;
     }
 
