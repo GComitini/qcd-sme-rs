@@ -51,7 +51,7 @@ mod config {
             momenta: (R, R, R),
             om: R,
             renpoint: R,
-            f0: R,
+            f0_init: R,
             fieldconfig: &'a FieldConfig,
             label: &'a str,
             filename: &'a str,
@@ -64,6 +64,17 @@ mod config {
             let momenta = Self::compute_vec(momenta);
 
             let renpoint2 = renpoint * renpoint;
+
+            // Needed because a different renormalization convention is used in the library
+            let (nc, mg) = (fieldconfig.nc, fieldconfig.gluon);
+            let f0 = f0_init
+                + fieldconfig
+                    .quarks
+                    .iter()
+                    .map(|(nf, mq)| (*nf as R) * (mg / mq).ln())
+                    .sum::<R>()
+                    * 4.
+                    / (9. * (nc as R));
 
             Self {
                 pbase,
