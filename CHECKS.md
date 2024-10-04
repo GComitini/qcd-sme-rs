@@ -37,3 +37,5 @@
   - [x] Relative coefficients of gluon and quark thermal contribution: asymptotic (high temperature/large chemical potential) HTL-like scaling ([`qcd-sme/examples/qcd_gluon_propagator_asymptotics.rs`](qcd-sme/examples/qcd_gluon_propagator_asymptotics.rs))
   - [x] Full HTL limit of quark(/electron) contribution to gluon(/photon) polarization ([`qcd-sme/examples/qed_htl_limit.rs`](qcd-sme/examples/qed_htl_limit.rs), Kapusta & Gale - *Finite-Temperature Field Theory Principles and Applications* - CUP - 2006)
   - [x] Zero-momentum limit equalness of polarization projections ([`qcd-sme/examples/qcd_gluon_polarization.rs`](qcd-sme/examples/qcd_gluon_polarization.rs))
+  - [x] Transverse and longitudinal components reduce to those of pure Yang-Mills theory at zero quark number and finite temperature ([`qcd-sme/tests/limits.rs`](qcd-sme/tests/limits.rs))
+  - [x] Transverse and longitudinal components reduce to their vacuum counterpart at zero chemical potential and in the limit of very small temperatures ([`qcd-sme/tests/limits.rs`](qcd-sme/tests/limits.rs))

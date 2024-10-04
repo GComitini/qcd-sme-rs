@@ -19,6 +19,7 @@ cbindgen = "0.26"
 regex = "1.10"
 
 [dev-dependencies]
+approx = "0.5"
 rayon = "1.10"
 serial_test = { workspace = true }
 
