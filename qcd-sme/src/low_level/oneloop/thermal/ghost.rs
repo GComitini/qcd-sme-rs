@@ -11,7 +11,7 @@ mod native {
     use super::inlines;
     use crate::consts::get_default_integration_method;
     use crate::{Num, C, R};
-    use peroxide::numerical::integral::{complex_integrate, Integral};
+    use peroxide::numerical::integral::{integrate, Integral};
 
     pub fn self_energy_thermal_part_landau_i<T: Num>(q: R, om: T, p: R, m: R, beta: R) -> C {
         inlines::self_energy_thermal_part_landau_i(q, om, p, m, beta)
@@ -24,7 +24,7 @@ mod native {
         beta: R,
         integral: Integral,
     ) -> C {
-        complex_integrate(
+        integrate(
             |t| inlines::self_energy_thermal_part_landau_i((1. - t) / t, om, p, m, beta) / (t * t),
             (0., 1.),
             integral,
@@ -167,7 +167,7 @@ pub mod zero_momentum {
         use super::inlines;
         use crate::consts::get_default_integration_method;
         use crate::{Num, C, R};
-        use peroxide::numerical::integral::{complex_integrate, Integral};
+        use peroxide::numerical::integral::{integrate, Integral};
 
         pub fn self_energy_thermal_part_landau_i<T: Num>(q: R, om: T, m: R, beta: R) -> C {
             inlines::self_energy_thermal_part_landau_i(q, om, m, beta)
@@ -179,7 +179,7 @@ pub mod zero_momentum {
             beta: R,
             integral: Integral,
         ) -> C {
-            complex_integrate(
+            integrate(
                 |t| inlines::self_energy_thermal_part_landau_i((1. - t) / t, om, m, beta) / (t * t),
                 (0., 1.),
                 integral,
