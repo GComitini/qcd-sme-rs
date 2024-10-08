@@ -221,7 +221,9 @@ fn compute_propagators(config: &Config) {
             .iter()
             .map(|p| {
                 let val = propagator_l_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                eprintln!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}.");
+                eprintln!(
+                    "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}. z = {z}."
+                );
                 val
             })
             .collect();
@@ -268,7 +270,7 @@ fn compute_propagators(config: &Config) {
                     .map(|p| {
                         let val = propagator_l_landau(om, p * m, beta, mu, f0, fieldconfig).re / z;
                         eprintln!(
-                            "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label}."
+                            "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label}. z = {z}."
                         );
                         val
                     })
@@ -331,7 +333,7 @@ fn compute_transverse_propagators(config: &Config) {
             .map(|p| {
                 let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
                 eprintln!(
-                    "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label} (transverse)."
+                    "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label} (transverse). z = {z}."
                 );
                 val
             })
@@ -379,7 +381,7 @@ fn compute_transverse_propagators(config: &Config) {
                     .map(|p| {
                         let val = propagator_t_landau(om, p * m, beta, mu, f0, fieldconfig).re / z;
                         eprintln!(
-                            "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label} (transverse)."
+                            "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label} (transverse). z = {z}."
                         );
                         val
                     })
@@ -427,7 +429,7 @@ fn compute_ir_limit(config: &Config) {
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
             vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
-        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}.");
+        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
 
         vals.extend::<Vec<R>>(
             config
@@ -440,7 +442,7 @@ fn compute_ir_limit(config: &Config) {
                     let z =
                         propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}.");
+                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
                     val
                 })
                 .collect(),
@@ -471,7 +473,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
             vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
-        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}.");
+        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
 
         vals.extend::<Vec<R>>(
             config
@@ -484,7 +486,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
                     let z =
                         propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}.");
+                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
                     val
                 })
                 .collect(),
