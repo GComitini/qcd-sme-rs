@@ -1,0 +1,21 @@
+[package]
+name = "t0_chempot"
+version = "0.1.0"
+edition = "2021"
+authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
+description = "gluon propagator at zero temperature and finite chemical potential"
+repository = "https://github.com/GComitini/qcd-sme-rs"
+license = "GPL-3.0-or-later"
+keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
+            "physics", "quantum", "field theory"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+env_logger = { workspace = true }
+lazy_static = { workspace = true }
+log = { workspace = true }
+qcd-sme = { path = "../qcd-sme" }
+peroxide = { workspace = true }
+rayon = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
+serde_yml = "0.0"
