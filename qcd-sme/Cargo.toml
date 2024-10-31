@@ -6,7 +6,7 @@ authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
 description = "numerical library for the screened massive expansion of QCD"
 repository = "https://github.com/GComitini/qcd-sme-rs"
 license = "GPL-3.0-or-later"
-keywords = ["qcd", "physics", "quantum", "field theory", "screened massive expansion"]
+keywords = ["qcd", "physics", "quantum", "field", "theory"]
 categories = ["science", "mathematics"]
 
 [dependencies]
