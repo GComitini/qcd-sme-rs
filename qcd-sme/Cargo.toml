@@ -1,13 +1,12 @@
 [package]
 name = "qcd-sme"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
 description = "numerical library for the screened massive expansion of QCD"
 repository = "https://github.com/GComitini/qcd-sme-rs"
 license = "GPL-3.0-or-later"
-keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
-            "physics", "quantum", "field theory"]
+keywords = ["qcd", "physics", "quantum", "field theory", "screened massive expansion"]
 categories = ["science", "mathematics"]
 
 [dependencies]
