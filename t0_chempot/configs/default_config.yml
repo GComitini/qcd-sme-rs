@@ -1,0 +1,9 @@
+fewchempots: [0., 1., 0.1]
+manychempots: [0., 1., 0.001]
+momenta: [0.001, 4., 0.01]
+f0: -0.876
+pren: 4.
+nc: 3
+mg: 0.656
+quarkconfig: [[2, 0.350], [1, 0.450]]
+correctedquarkconfig: [[2, 0.125], [1, 0.225]]
