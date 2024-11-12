@@ -45,6 +45,7 @@ mod config {
     }
 
     impl<'a> Config<'a> {
+        #[allow(clippy::too_many_arguments)]
         pub fn new(
             // (min, max, delta)
             temps: (R, R, R),
