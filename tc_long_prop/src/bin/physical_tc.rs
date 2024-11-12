@@ -1,7 +1,7 @@
 use config::Config;
 use lazy_static::lazy_static;
 use log::info;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::PathBuf;
