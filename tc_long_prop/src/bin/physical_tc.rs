@@ -1,5 +1,6 @@
 use config::Config;
 use lazy_static::lazy_static;
+use log::info;
 use serde_derive::{Deserialize, Serialize};
 use std::fs;
 use std::io::{BufWriter, Write};
@@ -162,7 +163,7 @@ mod config {
             // quark loop does not diverge in the mq -> 0 limit due to a bad choice
             // of renormalization constants.
             self.correctedf0 = self.correctedfieldconfig.map(|cfc| {
-                self.f0
+                let cf0 = self.f0
                     + cfc
                         .quarks
                         .iter()
@@ -173,7 +174,9 @@ mod config {
                         })
                         .sum::<R>()
                         * 4.
-                        / (9. * (self.fieldconfig.nc as R))
+                        / (9. * (self.fieldconfig.nc as R));
+                info!("Set corrected f0 to {}", cf0);
+                cf0
             });
         }
 
@@ -221,9 +224,7 @@ fn compute_propagators(config: &Config) {
             .iter()
             .map(|p| {
                 let val = propagator_l_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                eprintln!(
-                    "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}. z = {z}."
-                );
+                info!("Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label}. z = {z}.");
                 val
             })
             .collect();
@@ -269,7 +270,7 @@ fn compute_propagators(config: &Config) {
                     .par_iter()
                     .map(|p| {
                         let val = propagator_l_landau(om, p * m, beta, mu, f0, fieldconfig).re / z;
-                        eprintln!(
+                        info!(
                             "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label}. z = {z}."
                         );
                         val
@@ -332,7 +333,7 @@ fn compute_transverse_propagators(config: &Config) {
             .iter()
             .map(|p| {
                 let val = propagator_t_zero_temp_landau(om, p * m, mu, f0, fieldconfig).re / z;
-                eprintln!(
+                info!(
                     "Computed (T/m, mu, p/m) = (0.0000, {mu:.4}, {p:.4}) for {label} (transverse). z = {z}."
                 );
                 val
@@ -380,7 +381,7 @@ fn compute_transverse_propagators(config: &Config) {
                     .par_iter()
                     .map(|p| {
                         let val = propagator_t_landau(om, p * m, beta, mu, f0, fieldconfig).re / z;
-                        eprintln!(
+                        info!(
                             "Computed (T/m, mu, p/m) = ({t:.4}, {mu:.4}, {p:.4}) for {label} (transverse). z = {z}."
                         );
                         val
@@ -429,7 +430,7 @@ fn compute_ir_limit(config: &Config) {
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
             vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
-        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
+        info!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
 
         vals.extend::<Vec<R>>(
             config
@@ -442,7 +443,7 @@ fn compute_ir_limit(config: &Config) {
                     let z =
                         propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
+                    info!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
                     val
                 })
                 .collect(),
@@ -473,7 +474,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
         let z = propagator_l_zero_temp_landau(om, renpoint, mu, f0, fieldconfig).re * renfac;
         let mut vals =
             vec![propagator_l_zero_temp_landau(om, pbase * m, mu, f0, fieldconfig).re / z];
-        eprintln!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
+        info!("Computed (T/m, mu) = (0.0000, {mu:.4}) for {label}. z = {z}.");
 
         vals.extend::<Vec<R>>(
             config
@@ -486,7 +487,7 @@ fn compute_phase_diagram(config: &Config) -> Vec<(R, R)> {
                     let z =
                         propagator_l_landau(om, renpoint, beta, mu, f0, fieldconfig).re * renfac;
                     let val = propagator_l_landau(om, pbase * m, beta, mu, f0, fieldconfig).re / z;
-                    eprintln!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
+                    info!("Computed (T/m, mu) = ({t:.4}, {mu:.4}) for {label}. z = {z}.");
                     val
                 })
                 .collect(),
@@ -578,6 +579,8 @@ struct InputData {
 }
 
 fn main() {
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+
     /* CRITICAL TEMPERATURE AS A FUNCTION OF THE CHEMICAL POTENTIAL
     FOR A PLAUSIBLE PHYSICAL CONFIGURATION, FIRST WITH NF = 2 + 1,
     THEN WITH NF = 2 + 1 + 1 */
@@ -610,6 +613,13 @@ fn main() {
     if let Ok(configfile) = fs::File::open(&configfilename) {
         let inputdata: InputData =
             serde_yml::from_reader(configfile).expect("could not deserialize input data");
+        info!(
+            "Using configuration file {}",
+            std::fs::canonicalize(&configfilename)
+                .unwrap()
+                .to_str()
+                .unwrap()
+        );
         (m, om, renpoint) = (inputdata.mg, inputdata.om, inputdata.renpoint);
         (mq1, mq2, mq3) = inputdata.mq;
         (mq1c, mq2c, mq3c) = inputdata.mqc;
@@ -663,12 +673,12 @@ fn main() {
         "$n_{{F}}=2+1$",
     );
 
-    eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 ***");
+    info!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 ***");
     compute_propagators(&config);
     compute_transverse_propagators(&config);
 
     // * WARNING * This snippet needs to be re-written to account for non-hard-coded input data
-    /* eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
+    /* info!("*** COMPUTING PROPAGATORS AT NF = 2 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename; // save filename for later
     config.set_temperatures((0., 0.05, 0.01)); // restrict to temperatures of interest
     config.set_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
@@ -680,12 +690,12 @@ fn main() {
     compute_propagators(&config);
     config.filename = oldfilename; // reset filename */
 
-    eprintln!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 ***");
+    info!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 ***");
     config.set_temperatures(moretemps);
     config.set_chemicalpotentials(morechempots);
     compute_ir_limit(&config);
 
-    eprintln!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 ***");
+    info!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 ***");
     config.set_temperatures(manytemps);
     config.set_chemicalpotentials(manychempots);
     let pb = compute_phase_diagram(&config);
@@ -696,10 +706,10 @@ fn main() {
     config.set_phase_boundary(Some(&pb));
     config.filename = "nf_2+1_corrected";
 
-    eprintln!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
+    info!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
     compute_phase_diagram(&config);
 
-    eprintln!("*** FITTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
+    info!("*** FITTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 ***");
     let phase_boundary_params = parametrize_phase_boundary(
         config.phase_boundary().unwrap(),
         8,
@@ -713,7 +723,7 @@ fn main() {
     );
     writeln!(outfile, "{phase_boundary_params:?}").expect("Could not write to parameter file");
 
-    eprintln!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 ***");
+    info!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 ***");
     config.set_temperatures(fewtemps);
     config.set_chemicalpotentials(fewchempots);
     compute_propagators(&config);
@@ -736,10 +746,10 @@ fn main() {
         "$n_{{F}}=2+1+1$",
     );
 
-    eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 + 1 ***");
+    info!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 + 1 ***");
     compute_propagators(&config);
 
-    eprintln!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE QUARK MASSES ***");
+    info!("*** COMPUTING PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE QUARK MASSES ***");
     let oldfilename = config.filename;
     config.set_temperatures((0., 0.05, 0.01));
     config.set_chemicalpotentials((mq1 - 0.05, mq1 + 0.05, 0.01));
@@ -755,12 +765,12 @@ fn main() {
     compute_propagators(&config);
     config.filename = oldfilename;
 
-    eprintln!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 + 1 ***");
+    info!("*** COMPUTING PROPAGATORS' IR LIMIT AT NF = 2 + 1 + 1 ***");
     config.set_temperatures(moretemps);
     config.set_chemicalpotentials(morechempots);
     compute_ir_limit(&config);
 
-    eprintln!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
+    info!("*** COMPUTING PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
     config.set_temperatures(manytemps);
     // We already know the phase diagram thanks to the nf = 2 + 1 case,
     // let's go to larger chemical potentials to see what happens
@@ -771,10 +781,10 @@ fn main() {
     config.set_phase_boundary(Some(&pb));
     config.filename = "nf_2+1+1_corrected";
 
-    eprintln!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
+    info!("*** COMPUTING CORRECTED PHASE DIAGRAM AT NF = 2 + 1 + 1 ***");
     compute_phase_diagram(&config);
 
-    eprintln!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE LARGER QUARK MASS ***");
+    info!("*** COMPUTING CORRECTED PROPAGATORS AT NF = 2 + 1 + 1, MU AROUND THE LARGER QUARK MASS ***");
     let oldfilename = config.filename;
     config.set_temperatures((0., 0.2, 0.025));
     config.set_chemicalpotentials((mq3c - 0.2, mq3c + 1.3, 0.15));
