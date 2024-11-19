@@ -180,6 +180,7 @@ out/
 playground/
 results/
 TODO*
+config.yml
 playground.py
 playground.rs
 
