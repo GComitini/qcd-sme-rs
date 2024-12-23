@@ -1,6 +1,6 @@
 [package]
 name = "qcd-sme"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
 description = "numerical library for the screened massive expansion of QCD"
