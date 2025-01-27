@@ -16,6 +16,6 @@ lazy_static = { workspace = true }
 log = { workspace = true }
 qcd-sme = { path = "../qcd-sme" }
 peroxide = { workspace = true }
-rayon = "1.10"
+rayon = { workspace = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_yml = "0.0"
