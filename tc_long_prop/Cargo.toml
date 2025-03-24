@@ -14,6 +14,7 @@ categories = ["science", "mathematics"]
 env_logger = { workspace = true }
 lazy_static = { workspace = true }
 log = { workspace = true }
+gnuplot = { workspace = true }
 qcd-sme = { path = "../qcd-sme" }
 peroxide = { workspace = true }
 rayon = { workspace = true }
