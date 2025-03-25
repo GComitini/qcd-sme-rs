@@ -1,3 +1,5 @@
+#[cfg(feature = "ftm_big")]
+use qcd_sme::consts::set_default_max_iter_integral;
 use qcd_sme::qcd::thermal::gluon::{
     dressing_t_landau_w_field_config as qcd_dressing,
     dressing_t_zero_temp_landau_w_field_config as qcd_dressing_zero_temp,
@@ -46,23 +48,39 @@ fn max_om_idx(mat: &[R]) -> usize {
     imx
 }
 
-fn find_and_plot_ym_t(oms: &[C], t: R, m: R, f0: R, dom: R, ommax: R, nom: usize, dir: &str) -> C {
+fn find_and_plot_ym_t(
+    oms: &[C],
+    t: R,
+    m: R,
+    f0: R,
+    ommin: R,
+    ommax: R,
+    nom: usize,
+    dir: &str,
+) -> C {
+    #[cfg(not(feature = "ftm_big"))]
+    let nrc = nom;
+    #[cfg(feature = "ftm_big")]
+    let nrc = nom + 1;
+
+    let nact = nrc * nrc;
+
     let mat: Vec<R> = if t == 0. {
-        oms.par_iter()
-            .map(|&om| {
+        oms.par_iter().enumerate()
+            .map(|(i, &om)| {
                 let res = ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).abs();
                 info!(
-                    "Computed pure Yang-Mills dressing function at T = 0.000 GeV for z = ({om}) GeV: {res}"
+                    "Computed pure Yang-Mills dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
                 res
             })
             .collect()
     } else {
-        oms.par_iter()
-            .map(|&om| {
+        oms.par_iter().enumerate()
+            .map(|(i,&om)| {
                 let res = ym_dressing(om, P0, m, 1. / t, f0).abs();
                 info!(
-                    "Computed pure Yang-Mills dressing function at T = {t:.3} GeV for z = ({om}) GeV: {res}"
+                    "Computed pure Yang-Mills dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
                 res
             })
@@ -70,12 +88,16 @@ fn find_and_plot_ym_t(oms: &[C], t: R, m: R, f0: R, dom: R, ommax: R, nom: usize
     };
 
     let omx = oms[max_om_idx(&mat)];
-    info!("Computed pure Yang-Mills dressing function at T = {t:.3} GeV. Pole is at ({omx}) GeV.");
+    info!(
+        "Computed pure Yang-Mills dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV."
+    );
 
     let mut figure = Figure::new();
     figure
         .axes3d()
-        .surface(mat, nom, nom, Some((dom, dom, ommax, ommax)), &[])
+        .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
+        .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
+        .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
@@ -113,36 +135,45 @@ fn find_and_plot_qcd_t(
     t: R,
     config: &FieldConfig,
     f0: R,
-    dom: R,
+    ommin: R,
     ommax: R,
     nom: usize,
     dir: &str,
 ) -> C {
+    #[cfg(not(feature = "ftm_big"))]
+    let nrc = nom;
+    #[cfg(feature = "ftm_big")]
+    let nrc = nom + 1;
+
+    let nact = nrc * nrc;
+
     let mat: Vec<R> = if t == 0. {
-        oms.par_iter()
-            .map(|&om| {
+        oms.par_iter().enumerate()
+            .map(|(i, &om)| {
                 let res = qcd_dressing_zero_temp(om, P0, 0., f0, config).abs();
-                info!("Computed full QCD mu=0 dressing function at T = 0.000 GeV for z = ({om}) GeV: {res}");
+                info!("Computed full QCD mu=0 dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
             .collect()
     } else {
-        oms.par_iter()
-            .map(|&om| {
+        oms.par_iter().enumerate()
+            .map(|(i, &om)| {
                 let res = qcd_dressing(om, P0, 1. / t, 0., f0, config).abs();
-                info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV for z = ({om}) GeV: {res}");
+                info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
             .collect()
     };
 
     let omx = oms[max_om_idx(&mat)];
-    info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV. Pole is at ({omx}) GeV.");
+    info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV.");
 
     let mut figure = Figure::new();
     figure
         .axes3d()
-        .surface(mat, nom, nom, Some((dom, dom, ommax, ommax)), &[])
+        .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
+        .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
+        .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
@@ -180,29 +211,40 @@ fn find_and_plot_qcd_mu(
     mu: R,
     config: &FieldConfig,
     f0: R,
-    dom: R,
+    ommin: R,
     ommax: R,
     nom: usize,
     dir: &str,
 ) -> C {
+    #[cfg(not(feature = "ftm_big"))]
+    let nrc = nom;
+    #[cfg(feature = "ftm_big")]
+    let nrc = nom + 1;
+
+    let nact = nrc * nrc;
+
     let mat: Vec<R> = oms
-        .par_iter()
-        .map(|&om| {
+        .par_iter().enumerate()
+        .map(|(i, &om)| {
             let res = qcd_dressing_zero_temp(om, P0, mu, f0, config).abs();
             info!(
-                "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV for z = ({om}) GeV: {res}"
+                "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
             );
             res
         })
         .collect();
 
     let omx = oms[max_om_idx(&mat)];
-    info!("Computed full QCD T=0 dressing function at mu = {mu:.3} GeV. Pole is at ({omx}) GeV.");
+    info!(
+        "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV. Pole is at ({omx:.4}) GeV."
+    );
 
     let mut figure = Figure::new();
     figure
         .axes3d()
-        .surface(mat, nom, nom, Some((dom, dom, ommax, ommax)), &[])
+        .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
+        .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
+        .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
@@ -237,23 +279,62 @@ fn find_and_plot_qcd_mu(
 
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+
+    #[cfg(feature = "ftm_big")]
+    set_default_max_iter_integral(20);
+
     if !SHOW {
         fs::remove_dir_all(THIS_BASEDIR.as_path()).ok();
         fs::create_dir_all(THIS_BASEDIR.as_path()).unwrap();
     };
 
+    #[cfg(not(feature = "ftm_big"))]
     let ommax = 1.;
+    #[cfg(not(feature = "ftm_big"))]
     let nom = 100;
+    #[cfg(not(feature = "ftm_big"))]
     let nom_actual = nom * nom;
+    #[cfg(not(feature = "ftm_big"))]
     let dom = ommax / (nom as R);
+    #[cfg(not(feature = "ftm_big"))]
+    let ommin = dom;
+
+    #[cfg(feature = "ftm_big")]
+    let ommax = 3.;
+    #[cfg(feature = "ftm_big")]
+    let nom = 225;
+    #[cfg(feature = "ftm_big")]
+    let nom_actual = nom * nom + 2 * nom + 1;
+    #[cfg(feature = "ftm_big")]
+    let dom = 2. * ommax / (nom as R);
+    #[cfg(feature = "ftm_big")]
+    let ommin = -ommax;
 
     let mut oms = Vec::with_capacity(nom_actual);
 
+    #[cfg(not(feature = "ftm_big"))]
     for i in 1..=nom {
         for j in 1..=nom {
             oms.push(C::new((j as R) * dom, (i as R) * dom));
         }
     }
+
+    #[cfg(feature = "ftm_big")]
+    for i in 0..=nom {
+        for j in 0..=nom {
+            let (x, y) = ((j as R) * dom - ommax, (i as R) * dom - ommax);
+            if x != 0. && y != 0. {
+                oms.push(C::new(x, y));
+            }
+        }
+    }
+    #[cfg(feature = "ftm_big")]
+    assert!(
+        nom_actual == oms.len(),
+        "nom_actual and oms.len() are not equal ({} != {}). Fix this now so it doesn't panic later",
+        nom_actual,
+        oms.len()
+    );
 
     let (mut ym_fixed, mut ym_lattice, mut qcd_fixed_mu_zero, mut qcd_fixed_t_zero) =
         (vec![], vec![], vec![], vec![]);
@@ -269,7 +350,7 @@ fn main() {
         [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
             .iter()
             .for_each(|&t| {
-                let z = find_and_plot_ym_t(&oms, t, MG, F0, dom, ommax, nom, "ym_fixed");
+                let z = find_and_plot_ym_t(&oms, t, MG, F0, ommin, ommax, nom, "ym_fixed");
                 ym_fixed.push((t, z.im, z.re))
             });
         let res0 = ym_fixed[0];
@@ -300,7 +381,7 @@ fn main() {
         ]
         .iter()
         .for_each(|&(t, mg, f0)| {
-            let z = find_and_plot_ym_t(&oms, t, mg, f0, dom, ommax, nom, "ym_lattice");
+            let z = find_and_plot_ym_t(&oms, t, mg, f0, ommin, ommax, nom, "ym_lattice");
             ym_lattice.push((t, z.im, z.re));
         });
 
@@ -351,7 +432,7 @@ fn main() {
                 t,
                 &fieldconfig,
                 f00,
-                dom,
+                ommin,
                 ommax,
                 nom,
                 "qcd_zero_density_fixed",
@@ -367,7 +448,7 @@ fn main() {
                     t,
                     &correctedfieldconfig,
                     f0c,
-                    dom,
+                    ommin,
                     ommax,
                     nom,
                     "qcd_zero_density_fixed",
@@ -393,7 +474,7 @@ fn main() {
                 mu,
                 &fieldconfig,
                 f00,
-                dom,
+                ommin,
                 ommax,
                 nom,
                 "qcd_zero_temperature_fixed",
@@ -407,7 +488,7 @@ fn main() {
                 mu,
                 &correctedfieldconfig,
                 f0c,
-                dom,
+                ommin,
                 ommax,
                 nom,
                 "qcd_zero_temperature_fixed",

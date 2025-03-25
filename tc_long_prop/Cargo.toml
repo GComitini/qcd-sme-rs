@@ -20,3 +20,9 @@ peroxide = { workspace = true }
 rayon = { workspace = true }
 serde = { workspace = true }
 serde_yml = { workspace = true }
+
+[features]
+# Enable to make fintmu_poles output 'the big picture' (wider range
+# of momenta, twosided). Takes *a lot* more time to execute, likely
+# a factor of 10000x
+ftm_big = []
