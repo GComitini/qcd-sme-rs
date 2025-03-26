@@ -5,7 +5,8 @@ use qcd_sme::qcd::thermal::gluon::{
     dressing_t_zero_temp_landau_w_field_config as qcd_dressing_zero_temp,
 };
 use qcd_sme::qcd::FieldConfig;
-use qcd_sme::types::{Num, C, NCTYPE, R};
+use qcd_sme::types::Num;
+use qcd_sme::types::{C, NCTYPE, R};
 use qcd_sme::ym::gluon::dressing_landau as ym_dressing_zero_temp;
 use qcd_sme::ym::thermal::gluon::dressing_t_landau as ym_dressing;
 use tc_long_prop::BASEDIR;
@@ -68,7 +69,10 @@ fn find_and_plot_ym_t(
     let mat: Vec<R> = if t == 0. {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
+                #[cfg(not(feature = "ftm_cut"))]
                 let res = ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).abs();
+                #[cfg(feature = "ftm_cut")]
+                let res = ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).im;
                 info!(
                     "Computed pure Yang-Mills dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
@@ -78,7 +82,10 @@ fn find_and_plot_ym_t(
     } else {
         oms.par_iter().enumerate()
             .map(|(i,&om)| {
+                #[cfg(not(feature = "ftm_cut"))]
                 let res = ym_dressing(om, P0, m, 1. / t, f0).abs();
+                #[cfg(feature = "ftm_cut")]
+                let res = ym_dressing(om, P0, m, 1. / t, f0).im;
                 info!(
                     "Computed pure Yang-Mills dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
@@ -92,13 +99,17 @@ fn find_and_plot_ym_t(
         "Computed pure Yang-Mills dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV."
     );
 
+    #[cfg(not(feature = "ftm_cut"))]
+    let (zmin, zmax) = (0., 100.);
+    #[cfg(feature = "ftm_cut")]
+    let (zmin, zmax) = (-2., 2.);
     let mut figure = Figure::new();
     figure
         .axes3d()
         .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
         .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
-        .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
+        .set_z_range(AutoOption::Fix(zmin), AutoOption::Fix(zmax))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
         .set_title(
@@ -150,7 +161,10 @@ fn find_and_plot_qcd_t(
     let mat: Vec<R> = if t == 0. {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
+                #[cfg(not(feature = "ftm_cut"))]
                 let res = qcd_dressing_zero_temp(om, P0, 0., f0, config).abs();
+                #[cfg(feature = "ftm_cut")]
+                let res = qcd_dressing_zero_temp(om, P0, 0., f0, config).im;
                 info!("Computed full QCD mu=0 dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
@@ -158,7 +172,10 @@ fn find_and_plot_qcd_t(
     } else {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
+                #[cfg(not(feature = "ftm_cut"))]
                 let res = qcd_dressing(om, P0, 1. / t, 0., f0, config).abs();
+                #[cfg(feature = "ftm_cut")]
+                let res = qcd_dressing(om, P0, 1. / t, 0., f0, config).im;
                 info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
@@ -168,13 +185,17 @@ fn find_and_plot_qcd_t(
     let omx = oms[max_om_idx(&mat)];
     info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV.");
 
+    #[cfg(not(feature = "ftm_cut"))]
+    let (zmin, zmax) = (0., 100.);
+    #[cfg(feature = "ftm_cut")]
+    let (zmin, zmax) = (-2., 2.);
     let mut figure = Figure::new();
     figure
         .axes3d()
         .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
         .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
-        .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
+        .set_z_range(AutoOption::Fix(zmin), AutoOption::Fix(zmax))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
         .set_title(
@@ -226,7 +247,10 @@ fn find_and_plot_qcd_mu(
     let mat: Vec<R> = oms
         .par_iter().enumerate()
         .map(|(i, &om)| {
+            #[cfg(not(feature = "ftm_cut"))]
             let res = qcd_dressing_zero_temp(om, P0, mu, f0, config).abs();
+            #[cfg(feature = "ftm_cut")]
+            let res = qcd_dressing_zero_temp(om, P0, mu, f0, config).im;
             info!(
                 "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
             );
@@ -239,13 +263,17 @@ fn find_and_plot_qcd_mu(
         "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV. Pole is at ({omx:.4}) GeV."
     );
 
+    #[cfg(not(feature = "ftm_cut"))]
+    let (zmin, zmax) = (0., 100.);
+    #[cfg(feature = "ftm_cut")]
+    let (zmin, zmax) = (-2., 2.);
     let mut figure = Figure::new();
     figure
         .axes3d()
         .surface(mat, nrc, nrc, Some((ommin, ommin, ommax, ommax)), &[])
         .set_x_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
         .set_y_range(AutoOption::Fix(ommin), AutoOption::Fix(ommax))
-        .set_z_range(AutoOption::Fix(0.), AutoOption::Fix(100.))
+        .set_z_range(AutoOption::Fix(zmin), AutoOption::Fix(zmax))
         .set_x_label("Im(\u{03c9})", &[])
         .set_y_label("Re(\u{03c9})", &[])
         .set_title(
@@ -290,36 +318,41 @@ fn main() {
 
     #[cfg(not(feature = "ftm_big"))]
     let ommax = 1.;
-    #[cfg(not(feature = "ftm_big"))]
-    let nom = 100;
-    #[cfg(not(feature = "ftm_big"))]
-    let nom_actual = nom * nom;
-    #[cfg(not(feature = "ftm_big"))]
-    let dom = ommax / (nom as R);
-    #[cfg(not(feature = "ftm_big"))]
-    let ommin = dom;
-
     #[cfg(feature = "ftm_big")]
     let ommax = 3.;
+
+    #[cfg(all(not(feature = "ftm_big"), not(feature = "ftm_cut")))]
+    let nom = 100;
+    #[cfg(all(not(feature = "ftm_big"), feature = "ftm_cut"))]
+    let nom = 150;
     #[cfg(feature = "ftm_big")]
     let nom = 225;
-    #[cfg(feature = "ftm_big")]
+
+    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    let nom_actual = nom * nom;
+    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
     let nom_actual = nom * nom + 2 * nom + 1;
-    #[cfg(feature = "ftm_big")]
+
+    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    let dom = ommax / (nom as R);
+    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
     let dom = 2. * ommax / (nom as R);
-    #[cfg(feature = "ftm_big")]
+
+    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    let ommin = dom;
+    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
     let ommin = -ommax;
 
     let mut oms = Vec::with_capacity(nom_actual);
 
-    #[cfg(not(feature = "ftm_big"))]
+    #[cfg(all(not(feature = "ftm_big"), not(feature = "ftm_cut")))]
     for i in 1..=nom {
         for j in 1..=nom {
             oms.push(C::new((j as R) * dom, (i as R) * dom));
         }
     }
 
-    #[cfg(feature = "ftm_big")]
+    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
     for i in 0..=nom {
         for j in 0..=nom {
             let (x, y) = ((j as R) * dom - ommax, (i as R) * dom - ommax);

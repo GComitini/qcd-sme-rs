@@ -26,3 +26,8 @@ serde_yml = { workspace = true }
 # of momenta, twosided). Takes *a lot* more time to execute, likely
 # a factor of 10000x
 ftm_big = []
+
+# Enable to make fintmu_poles plot the imaginary part of the dressing
+# function instead of its absolute value (look for cuts instead
+# of poles)
+ftm_cut = []
