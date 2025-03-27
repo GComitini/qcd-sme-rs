@@ -25,6 +25,10 @@ const NC: NCTYPE = 3;
 const MG: R = 0.656;
 const P0: R = 0.01;
 const F0: R = -0.876;
+#[cfg(feature = "ftm_proptest")]
+const PREN: R = 4.;
+#[cfg(feature = "ftm_proptest")]
+const OMEPS: R = 1E-3;
 
 const PIXX: u32 = 1600;
 const PIXY: u32 = 1600;
@@ -145,6 +149,68 @@ fn find_and_plot_ym_t(
     omx
 }
 
+#[cfg(feature = "ftm_proptest")]
+fn ym_t_proptest(momenta: &[R], t: R, m: R, f0: R, normalize: bool, dir: &str) {
+    let prop: Vec<R> = if t == 0. {
+        let mut z = 1. / ym_dressing_zero_temp((OMEPS * OMEPS + PREN * PREN) / (m * m), f0).re();
+        if normalize {
+            z *= MG * MG;
+        }
+        momenta
+            .par_iter()
+            .map(|&p| {
+                let p2 = if normalize {p*p*MG*MG} else {p*p};
+                let res = z * ym_dressing_zero_temp((OMEPS * OMEPS + p2) / (m * m), f0).re()
+                    / (OMEPS * OMEPS + p2);
+                info!(
+                    "PROPTEST: Computed pure Yang-Mills propagator at T = 0.000 GeV for p = {p:.4} GeV: {res}"
+                );
+                res
+            })
+            .collect()
+    } else {
+        let mut z = 1. / ym_dressing(OMEPS, PREN, m, 1. / t, f0).re;
+        if normalize {
+            z *= MG * MG;
+        };
+        momenta.par_iter()
+            .map(|&p| {
+                let p = if normalize {p*MG} else {p};
+                let res = z * ym_dressing(OMEPS, p, m, 1. / t, f0).re/(OMEPS * OMEPS + p * p);
+                info!(
+                    "PROPTEST: Computed pure Yang-Mills propagator at T = {t:.3} GeV for p = {p:.4} GeV: {res}"
+                );
+                res
+            })
+            .collect()
+    };
+
+    let mut figure = Figure::new();
+    let zmax = if normalize { 4. } else { 9. };
+    figure
+        .axes2d()
+        .lines(momenta, prop, &[])
+        .set_x_range(
+            AutoOption::Fix(*momenta.first().unwrap()),
+            AutoOption::Fix(*momenta.last().unwrap()),
+        )
+        .set_y_range(AutoOption::Fix(0.), AutoOption::Fix(zmax));
+    if SHOW {
+        figure.show().unwrap();
+    } else {
+        figure
+            .save_to_png(
+                THIS_BASEDIR
+                    .join(dir)
+                    .join(format!("proptest_ym_t{t:.3}.png"))
+                    .as_path(),
+                PIXX,
+                PIXY,
+            )
+            .unwrap();
+    }
+}
+
 fn find_and_plot_qcd_t(
     oms: &[C],
     t: R,
@@ -235,6 +301,67 @@ fn find_and_plot_qcd_t(
     omx
 }
 
+#[cfg(feature = "ftm_proptest")]
+fn qcd_t_proptest(momenta: &[R], t: R, config: &FieldConfig, f0: R, normalize: bool, dir: &str) {
+    let prop: Vec<R> = if t == 0. {
+        let mut z = 1. / qcd_dressing_zero_temp(OMEPS, PREN, 0., f0, config).re;
+        if normalize {
+            z *= MG * MG;
+        };
+        momenta.par_iter()
+            .map(|&p| {
+                let p = if normalize {p*MG} else {p};
+                let res = z * qcd_dressing_zero_temp(OMEPS, p, 0., f0, config).re
+                    / (OMEPS * OMEPS + p * p);
+                info!(
+                    "PROPTEST: Computed full QCD mu=0 propagator at T = 0.000 GeV for p = {p:.4} GeV: {res}"
+                );
+                res
+            })
+            .collect()
+    } else {
+        let mut z = 1. / qcd_dressing(OMEPS, PREN, 1. / t, 0., f0, config).re;
+        if normalize {
+            z *= MG * MG;
+        };
+        momenta.par_iter()
+            .map(|&p| {
+                let p = if normalize {p*MG} else {p};
+                let res = z * qcd_dressing(OMEPS, p, 1. / t, 0., f0, config).re/(OMEPS * OMEPS + p * p);
+                info!(
+                    "PROPTEST: Computed full QCD mu=0 propagator at T = {t:.3} GeV for p = {p:.4} GeV: {res}"
+                );
+                res
+            })
+            .collect()
+    };
+
+    let mut figure = Figure::new();
+    let zmax = if normalize { 4. } else { 9. };
+    figure
+        .axes2d()
+        .lines(momenta, prop, &[])
+        .set_x_range(
+            AutoOption::Fix(*momenta.first().unwrap()),
+            AutoOption::Fix(*momenta.last().unwrap()),
+        )
+        .set_y_range(AutoOption::Fix(0.), AutoOption::Fix(zmax));
+    if SHOW {
+        figure.show().unwrap();
+    } else {
+        figure
+            .save_to_png(
+                THIS_BASEDIR
+                    .join(dir)
+                    .join(format!("proptest_qcd_t{t:.3}.png"))
+                    .as_path(),
+                PIXX,
+                PIXY,
+            )
+            .unwrap();
+    }
+}
+
 fn find_and_plot_qcd_mu(
     oms: &[C],
     mu: R,
@@ -315,7 +442,53 @@ fn find_and_plot_qcd_mu(
     omx
 }
 
+#[cfg(feature = "ftm_proptest")]
+fn qcd_mu_proptest(momenta: &[R], mu: R, config: &FieldConfig, f0: R, normalize: bool, dir: &str) {
+    let mut z = 1. / qcd_dressing_zero_temp(OMEPS, PREN, mu, f0, config).re;
+    if normalize {
+        z *= MG * MG;
+    };
+    let prop: Vec<R> = momenta
+            .par_iter()
+            .map(|&p| {
+                let p = if normalize {p*MG} else {p};
+                let res = z * qcd_dressing_zero_temp(OMEPS, p, mu, f0, config).re
+                    / (OMEPS * OMEPS + p * p);
+                info!(
+                    "PROPTEST: Computed full QCD t=0 propagator at mu = {mu:.3} GeV for p = {p:.4} GeV: {res}"
+                );
+                res
+            })
+            .collect();
+
+    let mut figure = Figure::new();
+    let zmax = if normalize { 4. } else { 9. };
+    figure
+        .axes2d()
+        .lines(momenta, prop, &[])
+        .set_x_range(
+            AutoOption::Fix(*momenta.first().unwrap()),
+            AutoOption::Fix(*momenta.last().unwrap()),
+        )
+        .set_y_range(AutoOption::Fix(0.), AutoOption::Fix(zmax));
+    if SHOW {
+        figure.show().unwrap();
+    } else {
+        figure
+            .save_to_png(
+                THIS_BASEDIR
+                    .join(dir)
+                    .join(format!("proptest_qcd_mu{mu:.3}.png"))
+                    .as_path(),
+                PIXX,
+                PIXY,
+            )
+            .unwrap();
+    }
+}
+
 fn main() {
+    /* 0. Setup */
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
     #[cfg(feature = "ftm_big")]
@@ -370,6 +543,20 @@ fn main() {
     let (mut ym_fixed, mut ym_lattice, mut qcd_fixed_mu_zero, mut qcd_fixed_t_zero) =
         (vec![], vec![], vec![], vec![]);
 
+    #[cfg(feature = "ftm_proptest")]
+    let ym_momenta: Vec<R> = {
+        let (pmin, pmax, np) = (0.2, 3., 100);
+        let dp = (pmax - pmin) / (np as R);
+        (0..=np).map(|i| pmin + (i as R) * dp).collect()
+    };
+
+    #[cfg(feature = "ftm_proptest")]
+    let qcd_momenta: Vec<R> = {
+        let (pmin, pmax, np) = (0.01, 3., 100);
+        let dp = (pmax - pmin) / (np as R);
+        (0..=np).map(|i| pmin + (i as R) * dp).collect()
+    };
+
     /* I. Pure Yang-Mills */
 
     if !NO_YM {
@@ -382,7 +569,9 @@ fn main() {
             .iter()
             .for_each(|&t| {
                 let z = find_and_plot_ym_t(&oms, t, MG, F0, ommin, ommax, nom, "ym_fixed");
-                ym_fixed.push((t, z.im, z.re))
+                ym_fixed.push((t, z.im, z.re));
+                #[cfg(feature = "ftm_proptest")]
+                ym_t_proptest(&ym_momenta, t, MG, F0, true, "ym_fixed");
             });
         let res0 = ym_fixed[0];
 
@@ -414,6 +603,8 @@ fn main() {
         .for_each(|&(t, mg, f0)| {
             let z = find_and_plot_ym_t(&oms, t, mg, f0, ommin, ommax, nom, "ym_lattice");
             ym_lattice.push((t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            ym_t_proptest(&ym_momenta, t, mg, f0, false, "ym_lattice");
         });
 
         let mut fpf =
@@ -469,6 +660,15 @@ fn main() {
                 "qcd_zero_density_fixed",
             );
             qcd_fixed_mu_zero.push((t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_t_proptest(
+                &qcd_momenta,
+                t,
+                &fieldconfig,
+                f00,
+                true,
+                "qcd_zero_density_fixed",
+            );
         });
 
         [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
@@ -484,7 +684,16 @@ fn main() {
                     nom,
                     "qcd_zero_density_fixed",
                 );
-                qcd_fixed_mu_zero.push((t, z.im, z.re))
+                qcd_fixed_mu_zero.push((t, z.im, z.re));
+                #[cfg(feature = "ftm_proptest")]
+                qcd_t_proptest(
+                    &qcd_momenta,
+                    t,
+                    &correctedfieldconfig,
+                    f0c,
+                    true,
+                    "qcd_zero_density_fixed",
+                );
             });
 
         let mut fpf = BufWriter::new(
@@ -511,6 +720,15 @@ fn main() {
                 "qcd_zero_temperature_fixed",
             );
             qcd_fixed_t_zero.push((mu, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_mu_proptest(
+                &qcd_momenta,
+                mu,
+                &fieldconfig,
+                f00,
+                true,
+                "qcd_zero_temperature_fixed",
+            );
         });
 
         [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].iter().for_each(|&mu| {
@@ -524,7 +742,16 @@ fn main() {
                 nom,
                 "qcd_zero_temperature_fixed",
             );
-            qcd_fixed_t_zero.push((mu, z.im, z.re))
+            qcd_fixed_t_zero.push((mu, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_mu_proptest(
+                &qcd_momenta,
+                mu,
+                &correctedfieldconfig,
+                f0c,
+                true,
+                "qcd_zero_temperature_fixed",
+            );
         });
 
         let mut fpf = BufWriter::new(
