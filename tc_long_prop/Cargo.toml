@@ -22,12 +22,15 @@ serde = { workspace = true }
 serde_yml = { workspace = true }
 
 [features]
+# Do not enable manually, used by fintmu_poles' features
+ftm_twosided = []
+
 # Enable to make fintmu_poles output 'the big picture' (wider range
 # of momenta, twosided). Takes *a lot* more time to execute, likely
 # a factor of 10000x
-ftm_big = []
+ftm_big = ["ftm_twosided"]
 
 # Enable to make fintmu_poles plot the imaginary part of the dressing
 # function instead of its absolute value (look for cuts instead
 # of poles)
-ftm_cut = []
+ftm_cut = ["ftm_twosided"]

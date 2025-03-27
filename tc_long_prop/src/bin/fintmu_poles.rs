@@ -59,9 +59,9 @@ fn find_and_plot_ym_t(
     nom: usize,
     dir: &str,
 ) -> C {
-    #[cfg(not(feature = "ftm_big"))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let nrc = nom;
-    #[cfg(feature = "ftm_big")]
+    #[cfg(feature = "ftm_twosided")]
     let nrc = nom + 1;
 
     let nact = nrc * nrc;
@@ -69,10 +69,12 @@ fn find_and_plot_ym_t(
     let mat: Vec<R> = if t == 0. {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
-                #[cfg(not(feature = "ftm_cut"))]
-                let res = ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).abs();
-                #[cfg(feature = "ftm_cut")]
-                let res = ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).im;
+                let res = if om.re == 0. { R::NAN } else {
+                    #[cfg(not(feature = "ftm_cut"))]
+                    { ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).abs() }
+                    #[cfg(feature = "ftm_cut")]
+                    { ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).im }
+                };
                 info!(
                     "Computed pure Yang-Mills dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
@@ -82,10 +84,12 @@ fn find_and_plot_ym_t(
     } else {
         oms.par_iter().enumerate()
             .map(|(i,&om)| {
-                #[cfg(not(feature = "ftm_cut"))]
-                let res = ym_dressing(om, P0, m, 1. / t, f0).abs();
-                #[cfg(feature = "ftm_cut")]
-                let res = ym_dressing(om, P0, m, 1. / t, f0).im;
+                let res = if om.re == 0. { R::NAN } else {
+                    #[cfg(not(feature = "ftm_cut"))]
+                    { ym_dressing(om, P0, m, 1. / t, f0).abs() }
+                    #[cfg(feature = "ftm_cut")]
+                    { ym_dressing(om, P0, m, 1. / t, f0).im }
+                };
                 info!(
                     "Computed pure Yang-Mills dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
                 );
@@ -151,9 +155,9 @@ fn find_and_plot_qcd_t(
     nom: usize,
     dir: &str,
 ) -> C {
-    #[cfg(not(feature = "ftm_big"))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let nrc = nom;
-    #[cfg(feature = "ftm_big")]
+    #[cfg(feature = "ftm_twosided")]
     let nrc = nom + 1;
 
     let nact = nrc * nrc;
@@ -161,10 +165,12 @@ fn find_and_plot_qcd_t(
     let mat: Vec<R> = if t == 0. {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
-                #[cfg(not(feature = "ftm_cut"))]
-                let res = qcd_dressing_zero_temp(om, P0, 0., f0, config).abs();
-                #[cfg(feature = "ftm_cut")]
-                let res = qcd_dressing_zero_temp(om, P0, 0., f0, config).im;
+                let res = if om.re == 0. { R::NAN } else {
+                    #[cfg(not(feature = "ftm_cut"))]
+                    { qcd_dressing_zero_temp(om, P0, 0., f0, config).abs() }
+                    #[cfg(feature = "ftm_cut")]
+                    { qcd_dressing_zero_temp(om, P0, 0., f0, config).im }
+                };
                 info!("Computed full QCD mu=0 dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
@@ -172,10 +178,12 @@ fn find_and_plot_qcd_t(
     } else {
         oms.par_iter().enumerate()
             .map(|(i, &om)| {
-                #[cfg(not(feature = "ftm_cut"))]
-                let res = qcd_dressing(om, P0, 1. / t, 0., f0, config).abs();
-                #[cfg(feature = "ftm_cut")]
-                let res = qcd_dressing(om, P0, 1. / t, 0., f0, config).im;
+                let res = if om.re == 0. { R::NAN } else {
+                    #[cfg(not(feature = "ftm_cut"))]
+                    { qcd_dressing(om, P0, 1. / t, 0., f0, config).abs() }
+                    #[cfg(feature = "ftm_cut")]
+                    { qcd_dressing(om, P0, 1. / t, 0., f0, config).im }
+                };
                 info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1);
                 res
             })
@@ -237,9 +245,9 @@ fn find_and_plot_qcd_mu(
     nom: usize,
     dir: &str,
 ) -> C {
-    #[cfg(not(feature = "ftm_big"))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let nrc = nom;
-    #[cfg(feature = "ftm_big")]
+    #[cfg(feature = "ftm_twosided")]
     let nrc = nom + 1;
 
     let nact = nrc * nrc;
@@ -247,10 +255,12 @@ fn find_and_plot_qcd_mu(
     let mat: Vec<R> = oms
         .par_iter().enumerate()
         .map(|(i, &om)| {
-            #[cfg(not(feature = "ftm_cut"))]
-            let res = qcd_dressing_zero_temp(om, P0, mu, f0, config).abs();
-            #[cfg(feature = "ftm_cut")]
-            let res = qcd_dressing_zero_temp(om, P0, mu, f0, config).im;
+            let res = if om.re == 0. { R::NAN } else {
+                #[cfg(not(feature = "ftm_cut"))]
+                { qcd_dressing_zero_temp(om, P0, mu, f0, config).abs() }
+                #[cfg(feature = "ftm_cut")]
+                { qcd_dressing_zero_temp(om, P0, mu, f0, config).im }
+            };
             info!(
                 "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
             );
@@ -321,53 +331,41 @@ fn main() {
     #[cfg(feature = "ftm_big")]
     let ommax = 3.;
 
-    #[cfg(all(not(feature = "ftm_big"), not(feature = "ftm_cut")))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let nom = 100;
-    #[cfg(all(not(feature = "ftm_big"), feature = "ftm_cut"))]
-    let nom = 150;
-    #[cfg(feature = "ftm_big")]
-    let nom = 225;
+    #[cfg(feature = "ftm_twosided")]
+    let nom = 200;
 
-    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let nom_actual = nom * nom;
-    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
+    #[cfg(feature = "ftm_twosided")]
     let nom_actual = nom * nom + 2 * nom + 1;
 
-    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let dom = ommax / (nom as R);
-    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
+    #[cfg(feature = "ftm_twosided")]
     let dom = 2. * ommax / (nom as R);
 
-    #[cfg(not(any(feature = "ftm_big", feature = "ftm_cut")))]
+    #[cfg(not(feature = "ftm_twosided"))]
     let ommin = dom;
-    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
+    #[cfg(feature = "ftm_twosided")]
     let ommin = -ommax;
 
     let mut oms = Vec::with_capacity(nom_actual);
 
-    #[cfg(all(not(feature = "ftm_big"), not(feature = "ftm_cut")))]
+    #[cfg(not(feature = "ftm_twosided"))]
     for i in 1..=nom {
         for j in 1..=nom {
             oms.push(C::new((j as R) * dom, (i as R) * dom));
         }
     }
 
-    #[cfg(any(feature = "ftm_big", feature = "ftm_cut"))]
+    #[cfg(feature = "ftm_twosided")]
     for i in 0..=nom {
         for j in 0..=nom {
-            let (x, y) = ((j as R) * dom - ommax, (i as R) * dom - ommax);
-            if x != 0. && y != 0. {
-                oms.push(C::new(x, y));
-            }
+            oms.push(C::new((j as R) * dom - ommax, (i as R) * dom - ommax));
         }
     }
-    #[cfg(feature = "ftm_big")]
-    assert!(
-        nom_actual == oms.len(),
-        "nom_actual and oms.len() are not equal ({} != {}). Fix this now so it doesn't panic later",
-        nom_actual,
-        oms.len()
-    );
 
     let (mut ym_fixed, mut ym_lattice, mut qcd_fixed_mu_zero, mut qcd_fixed_t_zero) =
         (vec![], vec![], vec![], vec![]);
