@@ -22,7 +22,7 @@ serde = { workspace = true }
 serde_yml = { workspace = true }
 
 [features]
-default = ["ftm_proptest"]
+default = ["ftm_proptest", "ftmq_3d_poles"]
 
 # Enable to make fintmu_poles also plot the propagators. For testing,
 # purposes, but since it doesn't slow down the main routine meaningfully
@@ -41,3 +41,12 @@ ftm_big = ["ftm_twosided"]
 # function instead of its absolute value (look for cuts instead
 # of poles)
 ftm_cut = ["ftm_twosided"]
+
+# Enable to make fintmu_qed plot the photon dressing function over the
+# complex plane, to explore the presence of poles
+ftmq_3d_poles = []
+
+# Enable to make fintmu_qed plot the photon propagator on the Riemann
+# sheet obtained by crossing the branch cut from positive to negative
+# Euclidean frequencies
+ftmq_alt_riemann = []
