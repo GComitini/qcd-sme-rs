@@ -53,6 +53,7 @@ fn max_om_idx(mat: &[R]) -> usize {
     imx
 }
 
+#[allow(clippy::too_many_arguments)]
 fn find_and_plot_ym_t(
     oms: &[C],
     t: R,
@@ -103,6 +104,7 @@ fn find_and_plot_ym_t(
     };
 
     let omx = oms[max_om_idx(&mat)];
+    let omx = C::new(omx.re.abs(), omx.im.abs());
     info!(
         "Computed pure Yang-Mills dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV."
     );
@@ -149,6 +151,9 @@ fn find_and_plot_ym_t(
     omx
 }
 
+// If normalize is true, input momenta are treated as adimensionalized by MG and
+// the output propagator is adimensionalized by MG. Note that MG is a fixed scale,
+// not the (possibly temperature-dependent) mass parameter at the given temperature
 #[cfg(feature = "ftm_proptest")]
 fn ym_t_proptest(momenta: &[R], t: R, m: R, f0: R, normalize: bool, dir: &str) {
     let prop: Vec<R> = if t == 0. {
@@ -211,6 +216,7 @@ fn ym_t_proptest(momenta: &[R], t: R, m: R, f0: R, normalize: bool, dir: &str) {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn find_and_plot_qcd_t(
     oms: &[C],
     t: R,
@@ -257,6 +263,7 @@ fn find_and_plot_qcd_t(
     };
 
     let omx = oms[max_om_idx(&mat)];
+    let omx = C::new(omx.re.abs(), omx.im.abs());
     info!("Computed full QCD mu=0 dressing function at T = {t:.3} GeV. Pole is at ({omx:.4}) GeV.");
 
     #[cfg(not(feature = "ftm_cut"))]
@@ -362,6 +369,7 @@ fn qcd_t_proptest(momenta: &[R], t: R, config: &FieldConfig, f0: R, normalize: b
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn find_and_plot_qcd_mu(
     oms: &[C],
     mu: R,
@@ -396,6 +404,7 @@ fn find_and_plot_qcd_mu(
         .collect();
 
     let omx = oms[max_om_idx(&mat)];
+    let omx = C::new(omx.re.abs(), omx.im.abs());
     info!(
         "Computed full QCD T=0 dressing function at mu = {mu:.3} GeV. Pole is at ({omx:.4}) GeV."
     );
@@ -626,10 +635,10 @@ fn main() {
             + fieldconfig
                 .quarks
                 .iter()
-                .map(|(nf, mq)| (*nf as R) * (MG / mq).ln())
+                .map(|(nf, mq)| (*nf as R) * (fieldconfig.gluon / mq).ln())
                 .sum::<R>()
                 * 4.
-                / (9. * (NC as R));
+                / (9. * (fieldconfig.nc as R));
         let f0c = f00
             + correctedfieldconfig
                 .quarks
@@ -771,38 +780,26 @@ fn main() {
             .axes2d()
             .set_x_label("Re(\u{03c9})", &[])
             .set_y_label("Im(\u{03c9})", &[])
-            .set_x_range(AutoOption::Fix(0.5), AutoOption::Fix(1.))
-            .set_y_range(AutoOption::Fix(0.3), AutoOption::Fix(0.8));
+            .set_x_range(AutoOption::Fix(0.4), AutoOption::Fix(1.))
+            .set_y_range(AutoOption::Fix(0.2), AutoOption::Fix(0.8));
 
         if !NO_YM {
             ax2.lines_points(
-                ym_fixed[0..ym_fixed.len() - 1]
-                    .iter()
-                    .map(|&(_, x, _)| x)
-                    .collect::<Vec<R>>(),
-                ym_fixed[0..ym_fixed.len() - 1]
-                    .iter()
-                    .map(|&(_, _, y)| y)
-                    .collect::<Vec<R>>(),
+                ym_fixed[0..10].iter().map(|&(_, x, _)| x),
+                ym_fixed[0..10].iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
             )
             .lines_points(
-                ym_lattice.iter().map(|&(_, x, _)| x).collect::<Vec<R>>(),
-                ym_lattice.iter().map(|&(_, _, y)| y).collect::<Vec<R>>(),
+                ym_lattice.iter().map(|&(_, x, _)| x),
+                ym_lattice.iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
             );
         }
 
         if !NO_QCD {
             ax2.lines_points(
-                qcd_fixed_mu_zero[0..ym_fixed.len() - 1]
-                    .iter()
-                    .map(|&(_, x, _)| x)
-                    .collect::<Vec<R>>(),
-                qcd_fixed_mu_zero[0..ym_fixed.len() - 1]
-                    .iter()
-                    .map(|&(_, _, y)| y)
-                    .collect::<Vec<R>>(),
+                qcd_fixed_mu_zero[0..10].iter().map(|&(_, x, _)| x),
+                qcd_fixed_mu_zero[0..10].iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
             );
         }
@@ -823,18 +820,12 @@ fn main() {
             .axes2d()
             .set_x_label("Re(\u{03c9})", &[])
             .set_y_label("Im(\u{03c9})", &[])
-            .set_x_range(AutoOption::Fix(0.5), AutoOption::Fix(1.))
-            .set_y_range(AutoOption::Fix(0.3), AutoOption::Fix(0.8));
+            .set_x_range(AutoOption::Fix(0.4), AutoOption::Fix(1.))
+            .set_y_range(AutoOption::Fix(0.2), AutoOption::Fix(0.8));
 
         ax2.lines_points(
-            qcd_fixed_t_zero
-                .iter()
-                .map(|&(_, x, _)| x)
-                .collect::<Vec<R>>(),
-            qcd_fixed_t_zero
-                .iter()
-                .map(|&(_, _, y)| y)
-                .collect::<Vec<R>>(),
+            qcd_fixed_t_zero.iter().map(|&(_, x, _)| x),
+            qcd_fixed_t_zero.iter().map(|&(_, _, y)| y),
             &[PlotOption::LineWidth(3.)],
         );
 
