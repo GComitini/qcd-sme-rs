@@ -14,6 +14,7 @@ use lazy_static::lazy_static;
 use log::info;
 use rayon::prelude::*;
 use std::f64::consts::PI;
+use std::io::{self, Write};
 use std::{fs, path::PathBuf};
 
 const NC: NCTYPE = 3;
@@ -91,6 +92,13 @@ fn plot_ym_t(oms: &[R], t: R, m: R, f0: R, dir: &str) {
                 PIXY,
             )
             .unwrap();
+
+        let mut fout = io::BufWriter::new(
+            fs::File::create(THIS_BASEDIR.join(dir).join(format!("ym_t{t:.3}.out"))).unwrap(),
+        );
+        oms.iter().zip(spectr.iter()).for_each(|(om, s)| {
+            writeln!(fout, "{om:.4}\t{s:.4}").unwrap();
+        });
     }
 }
 
@@ -148,6 +156,13 @@ fn plot_qcd_t(oms: &[R], t: R, config: &FieldConfig, f0: R, dir: &str) {
                 PIXY,
             )
             .unwrap();
+
+        let mut fout = io::BufWriter::new(
+            fs::File::create(THIS_BASEDIR.join(dir).join(format!("qcd_t{t:.3}.out"))).unwrap(),
+        );
+        oms.iter().zip(spectr.iter()).for_each(|(om, s)| {
+            writeln!(fout, "{om:.4}\t{s:.4}").unwrap();
+        });
     }
 }
 
@@ -192,6 +207,13 @@ fn plot_qcd_mu(oms: &[R], mu: R, config: &FieldConfig, f0: R, dir: &str) {
                 PIXY,
             )
             .unwrap();
+
+        let mut fout = io::BufWriter::new(
+            fs::File::create(THIS_BASEDIR.join(dir).join(format!("qcd_mu{mu:.3}.out"))).unwrap(),
+        );
+        oms.iter().zip(spectr.iter()).for_each(|(om, s)| {
+            writeln!(fout, "{om:.4}\t{s:.4}").unwrap();
+        });
     }
 }
 
