@@ -39,13 +39,13 @@ lazy_static! {
 fn plot_ym_t(oms: &[R], t: R, m: R, f0: R, dir: &str) {
     let spectr: Vec<R> = if t == 0. {
         let z = 1.
-            / ym_propagator_zero_temp((OMEPS * OMEPS + PREN * PREN) / (MG * MG), F0)
+            / ym_propagator_zero_temp((OMEPS * OMEPS + PREN * PREN) / (m * m), f0)
             / (PREN * PREN);
         oms.par_iter()
             .map(| &om| {
                 let res = if om == 0. { R::NAN } else {
                     let om = C::new(OMEPS, -om);
-                    z*ym_propagator_zero_temp((om * om + P0 * P0) / (MG * MG), F0).im/PI
+                    z*ym_propagator_zero_temp((om * om + P0 * P0) / (m * m), f0).im/PI
                 };
                 info!(
                     "Computed pure Yang-Mills spectral function at T = 0.000 GeV for om = {om:.4} GeV: {res}"
@@ -227,7 +227,7 @@ fn main() {
         fs::create_dir_all(THIS_BASEDIR.as_path()).unwrap();
     };
 
-    let ommin = 0.1;
+    let ommin = 0.02;
     let ommax = 2.0;
     let nom = 200;
     let dom = (ommax - ommin) / (nom as R);
@@ -284,10 +284,10 @@ fn main() {
             + fieldconfig
                 .quarks
                 .iter()
-                .map(|(nf, mq)| (*nf as R) * (MG / mq).ln())
+                .map(|(nf, mq)| (*nf as R) * (fieldconfig.gluon / mq).ln())
                 .sum::<R>()
                 * 4.
-                / (9. * (NC as R));
+                / (9. * (fieldconfig.nc as R));
         let f0c = f00
             + correctedfieldconfig
                 .quarks
