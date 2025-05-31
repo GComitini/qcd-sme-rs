@@ -17,5 +17,5 @@ log = { workspace = true }
 qcd-sme = { path = "../qcd-sme" }
 peroxide = { workspace = true }
 rayon = { workspace = true }
-serde = { version = "1.0", features = ["derive"] }
-serde_yml = { version = "0.10", package = "serde_yaml_ng" }
+serde = { workspace = true }
+serde_yml = { workspace = true }

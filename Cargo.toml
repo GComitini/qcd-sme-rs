@@ -8,6 +8,8 @@ lazy_static = "1.4"
 log = "0.4"
 peroxide = { version = ">=0.38",  features = ["plot", "complex"] }
 rayon = "1.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_yml = { version = "0.10", package = "serde_yaml_ng" }
 serial_test = "3.1"
 
 [profile.release]
