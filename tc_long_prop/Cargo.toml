@@ -1,6 +1,6 @@
 [package]
 name = "tc_long_prop"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
 description = "critical temperature of QCD from the longitudinal gluon propagator"
