@@ -1,12 +1,16 @@
 [workspace]
 resolver = "2"
-members = ["qcd-sme", "t0_chempot", "tc_long_prop", "tmu_analytic"]
+members = ["qcd-sme", "qcd_t_lattice", "t0_chempot", "tc_long_prop", "tmu_analytic"]
 
 [workspace.dependencies]
+argmin = "0.10"
+argmin-math = "0.4"
+argmin-observer-slog = "0.1"
 env_logger = "0.11"
+gnuplot = "0.0"
 lazy_static = "1.4"
 log = "0.4"
-gnuplot = "0.0"
+nalgebra = "0.33"
 peroxide = { version = ">=0.38",  features = ["plot", "complex"] }
 rayon = "1.10"
 serde = { version = "1.0", features = ["derive"] }

@@ -1,0 +1,25 @@
+[package]
+name = "qcd_t_lattice"
+version = "0.1.0"
+edition = "2021"
+authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
+description = "gluon propagator at zero chemical potential on the lattice"
+repository = "https://github.com/GComitini/qcd-sme-rs"
+license = "GPL-3.0-or-later"
+keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
+            "physics", "quantum", "field theory"]
+categories = ["science", "mathematics"]
+
+[dependencies]
+argmin = { workspace = true }
+argmin-math = { workspace = true }
+argmin-observer-slog = { workspace = true }
+env_logger = { workspace = true }
+lazy_static = { workspace = true }
+log = { workspace = true }
+nalgebra = { workspace = true }
+qcd-sme = { path = "../qcd-sme" }
+peroxide = { workspace = true }
+rayon = { workspace = true }
+serde = { workspace = true }
+serde_yml = { workspace = true }
