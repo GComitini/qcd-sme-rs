@@ -248,7 +248,7 @@ impl From<InputConfig> for Config {
                 }
                 true
             })
-            .map(|mu| *mu)
+            .copied()
             .collect();
         let manychempots = Self::compute_vec(value.manychempots)
             // Remove values of chemical potential around discontinuities
@@ -261,7 +261,7 @@ impl From<InputConfig> for Config {
                 }
                 true
             })
-            .map(|mu| *mu)
+            .copied()
             .collect();
         let momenta = Self::compute_vec(value.momenta);
 

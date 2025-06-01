@@ -1,6 +1,6 @@
 [package]
 name = "t0_chempot"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Giorgio Comitini <giorgio.comitini@dfa.unict.it>"]
 description = "gluon propagator at zero temperature and finite chemical potential"

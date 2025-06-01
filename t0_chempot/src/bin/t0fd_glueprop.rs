@@ -78,7 +78,7 @@ fn plot_propagators(config: &Config, corr: bool) {
         plot.insert_image(d);
     });
     plot.set_xlabel("$p$ [GeV]");
-    plot.set_ylabel(&format!("$\\Delta_{{T}}(p)$ [GeV$^{{-2}}$]"));
+    plot.set_ylabel("$\\Delta_{{T}}(p)$ [GeV$^{{-2}}$]");
     plot.set_ylim((0., config.ymax.unwrap_or(9.0)));
     plot.set_legend(legends.iter().map(|s| s.as_str()).collect());
     plot.set_path(
@@ -96,7 +96,7 @@ fn plot_propagators(config: &Config, corr: bool) {
         plot.insert_image(d);
     });
     plot.set_xlabel("$p$ [GeV]");
-    plot.set_ylabel(&format!("$\\Delta_{{L}}(p)$ [GeV$^{{-2}}$]"));
+    plot.set_ylabel("$\\Delta_{{L}}(p)$ [GeV$^{{-2}}$]");
     plot.set_ylim((0., config.ymax.unwrap_or(9.0)));
     plot.set_legend(legends.iter().map(|s| s.as_str()).collect());
     plot.set_path(
