@@ -17,7 +17,7 @@ fn do_dressing(
     nf: u32,
     plot: &mut Plot2D,
 ) -> Result<()> {
-    let mut outfile = BufWriter::new(File::create(&format!(
+    let mut outfile = BufWriter::new(File::create(format!(
         "target/qcd_gluon_propagator_compare_{}.txt",
         unsafe { PLOT_INDEX }
     ))?);

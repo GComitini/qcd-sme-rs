@@ -167,7 +167,7 @@ mod native {
     ) -> C {
         if mu.abs() < mq.abs() {
             return C::new(0., 0.);
-        };
+        }
         integrate(
             |q| inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
             (0., fermi_momentum(mq, mu)),
@@ -184,7 +184,7 @@ mod native {
     ) -> C {
         if mu.abs() < mq.abs() {
             return C::new(0., 0.);
-        };
+        }
         integrate(
             |q| inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, p, mq, mu),
             (0., fermi_momentum(mq, mu)),
@@ -715,7 +715,7 @@ pub mod zero_matsubara {
         ) -> R {
             if mu.abs() < mq.abs() {
                 return 0.;
-            };
+            }
             integrate(
                 |q| {
                     super::super::inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(
@@ -740,7 +740,7 @@ pub mod zero_matsubara {
         ) -> R {
             if mu.abs() < mq.abs() {
                 return 0.;
-            };
+            }
             integrate(
                 |q| {
                     super::super::inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(
@@ -1162,7 +1162,7 @@ pub mod zero_momentum {
         ) -> C {
             if mu.abs() < mq.abs() {
                 return C::new(0., 0.);
-            };
+            }
             integrate(
                 |q| {
                     inlines::polarization_quark_l_thermal_part_zero_temp_landau_i(q, om, mq, mu)
@@ -1181,7 +1181,7 @@ pub mod zero_momentum {
         ) -> C {
             if mu.abs() < mq.abs() {
                 return C::new(0., 0.);
-            };
+            }
             integrate(
                 |q| {
                     inlines::polarization_quark_t_thermal_part_zero_temp_landau_i(q, om, mq, mu)
@@ -1446,15 +1446,15 @@ mod tests {
     const TOLERANCE: R = 1e-11;
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -1490,7 +1490,7 @@ mod tests {
                 assert_equal(
                     polarization_glue_l_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1501,7 +1501,7 @@ mod tests {
                         *q, *om, *p, *m, *beta,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1536,7 +1536,7 @@ mod tests {
                 assert_equal(
                     polarization_glue_t_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1547,7 +1547,7 @@ mod tests {
                         *q, *om, *p, *m, *beta,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1575,7 +1575,7 @@ mod tests {
             -0.0004212440449496511 + 0. * I,
             -0.0003336641405716638 + 0. * I,
             -0.0005021727489952145 + 0. * I,
-            -1.1925807073568502e-07 + 0. * I,
+            -1.192_580_707_356_850_2e-7 + 0. * I,
             -0.0010669564506489019 + 0. * I,
             -0.001195324222875188 + 0. * I,
         ];
@@ -1586,7 +1586,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_l_thermal_part_landau_i(*q, *om, *p, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1597,7 +1597,7 @@ mod tests {
                         *q, *om, *p, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1622,10 +1622,10 @@ mod tests {
 
         let res: [C; 7] = [
             0.0001555678194717369 + 0. * I,
-            1.801267697432198e-05 + 0. * I,
-            -2.3742678845706716e-05 + 0. * I,
+            1.801_267_697_432_198e-5 + 0. * I,
+            -2.374_267_884_570_671_6e-5 + 0. * I,
             -0.00015027646885955933 + 0. * I,
-            -3.597043163726963e-08 + 0. * I,
+            -3.597_043_163_726_963e-8 + 0. * I,
             -0.0003218137257399576 + 0. * I,
             -0.00036053181120629027 + 0. * I,
         ];
@@ -1636,7 +1636,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_t_thermal_part_landau_i(*q, *om, *p, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1647,7 +1647,7 @@ mod tests {
                         *q, *om, *p, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1678,7 +1678,7 @@ mod tests {
             assert_equal(
                 polarization_glue_l_thermal_part_landau_i(*q, *p, *m, *beta),
                 res[i],
-            )
+            );
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -1687,7 +1687,7 @@ mod tests {
                     *q, *p, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 
@@ -1718,7 +1718,7 @@ mod tests {
             assert_equal(
                 polarization_glue_t_thermal_part_landau_i(*q, *p, *m, *beta),
                 res[i],
-            )
+            );
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -1727,7 +1727,7 @@ mod tests {
                     *q, *p, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 
@@ -1753,7 +1753,7 @@ mod tests {
             -0.0011644036243622508,
             -0.0004318279074659662,
             -0.001700976124595237,
-            -2.0103148436168134e-06,
+            -2.010_314_843_616_813_4e-6,
             -0.01798551978076218,
             -0.020149395452711206,
         ];
@@ -1764,7 +1764,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_l_thermal_part_landau_i(*q, *p, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1775,7 +1775,7 @@ mod tests {
                         *q, *p, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1799,9 +1799,9 @@ mod tests {
 
         let res: [R; 6] = [
             0.00018211145069647552,
-            2.336631910538359e-05,
-            9.444246149959117e-05,
-            1.1909109425785625e-08,
+            2.336_631_910_538_359e-5,
+            9.444_246_149_959_117e-5,
+            1.190_910_942_578_562_5e-8,
             0.00010654625758190622,
             0.00011936506168260148,
         ];
@@ -1812,7 +1812,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_t_thermal_part_landau_i(*q, *p, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1823,7 +1823,7 @@ mod tests {
                         *q, *p, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1854,7 +1854,7 @@ mod tests {
             assert_equal(
                 polarization_glue_l_thermal_part_landau_i(*q, *om, *m, *beta),
                 res[i],
-            )
+            );
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -1863,7 +1863,7 @@ mod tests {
                     *q, *om, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 
@@ -1894,7 +1894,7 @@ mod tests {
             assert_equal(
                 polarization_glue_t_thermal_part_landau_i(*q, *om, *m, *beta),
                 res[i],
-            )
+            );
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -1903,7 +1903,7 @@ mod tests {
                     *q, *om, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 
@@ -1929,7 +1929,7 @@ mod tests {
             -0.0006552698065849495,
             -0.00030880656355125976,
             -0.0002853078006088784,
-            -3.975991731807946e-08,
+            -3.975_991_731_807_946e-8,
             -0.0003557168080792885,
             -0.00039851384461139094,
         ];
@@ -1940,7 +1940,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_l_thermal_part_landau_i(*q, *om, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1951,7 +1951,7 @@ mod tests {
                         *q, *om, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 
@@ -1977,7 +1977,7 @@ mod tests {
             -0.0006552698065849495,
             -0.00030880656355125976,
             -0.0002853078006088784,
-            -3.975991731807946e-08,
+            -3.975_991_731_807_946e-8,
             -0.0003557168080792885,
             -0.00039851384461139094,
         ];
@@ -1988,7 +1988,7 @@ mod tests {
                 assert_equal(
                     polarization_quark_t_thermal_part_landau_i(*q, *om, *mq, *beta, *mu),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -1999,7 +1999,7 @@ mod tests {
                         *q, *om, *mq, *beta, *mu,
                     ),
                     res[i],
-                )
+                );
             });
     }
 }

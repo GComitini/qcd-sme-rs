@@ -235,15 +235,15 @@ mod tests {
     const TOLERANCE: R = 1e-11;
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -265,11 +265,11 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            1.0169819975930068e-05 + 0. * I,
+            1.016_981_997_593_006_8e-5 + 0. * I,
             -0.00049390422718809 + 0. * I,
             -0.0002989874313323077 + 2.9161839440024374e-20 * I,
             -0.00036085673585223516 + 0. * I,
-            -3.7033632854858595e-05 + 0. * I,
+            -3.703_363_285_485_859_5e-5 + 0. * I,
             0.0071054002993155285 + 0. * I,
         ];
 
@@ -279,7 +279,7 @@ mod tests {
                 assert_equal(
                     self_energy_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
-                )
+                );
             });
 
         args.iter()
@@ -288,7 +288,7 @@ mod tests {
                 assert_equal(
                     oneloop__ghost__self_energy_thermal_part_landau_i(*q, *om, *p, *m, *beta),
                     res[i],
-                )
+                );
             });
     }
 
@@ -316,7 +316,7 @@ mod tests {
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(self_energy_thermal_part_landau_i(*q, *p, *m, *beta), res[i])
+            assert_equal(self_energy_thermal_part_landau_i(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
@@ -325,7 +325,7 @@ mod tests {
                     *q, *p, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 
@@ -345,7 +345,7 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -4.858855776705466e-05 + 0. * I,
+            -4.858_855_776_705_466e-5 + 0. * I,
             -0.00018227434215185073 + 0. * I,
             -0.0010742009005355816 + 0. * I,
             -0.00015064888460959 + 0. * I,
@@ -356,7 +356,7 @@ mod tests {
             assert_equal(
                 self_energy_thermal_part_landau_i(*q, *om, *m, *beta),
                 res[i],
-            )
+            );
         });
 
         args.iter().enumerate().for_each(|(i, (q, om, m, beta))| {
@@ -365,7 +365,7 @@ mod tests {
                     *q, *om, *m, *beta,
                 ),
                 res[i],
-            )
+            );
         });
     }
 }

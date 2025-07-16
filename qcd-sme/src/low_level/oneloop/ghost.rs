@@ -211,15 +211,15 @@ mod tests {
     ];
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }

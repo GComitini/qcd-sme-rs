@@ -68,7 +68,7 @@ fn main() {
         })
         .collect();
     plot.insert_image(glplt);
-    legend.push(format!("p = 0 GeV"));
+    legend.push("p = 0 GeV".to_string());
 
     /* PLOT */
 

@@ -648,15 +648,15 @@ mod tests {
     const TOLERANCE: R = 1e-11;
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -684,7 +684,7 @@ mod tests {
             .for_each(|(i, (q, p, delta))| assert_equal(tlog(*q, *p, *delta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, delta))| {
-            assert_equal(oneloop__zero_matsubara__tlog(*q, *p, *delta), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog(*q, *p, *delta), res[i]);
         });
     }
 
@@ -705,7 +705,7 @@ mod tests {
             .for_each(|(i, (q, p))| assert_equal(tlog_same_mass(*q, *p), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p))| {
-            assert_equal(oneloop__zero_matsubara__tlog_same_mass(*q, *p), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog_same_mass(*q, *p), res[i]);
         });
     }
 
@@ -726,7 +726,7 @@ mod tests {
             .for_each(|(i, (q, p))| assert_equal(tlog_zero_mass(*q, *p), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p))| {
-            assert_equal(oneloop__zero_matsubara__tlog_zero_mass(*q, *p), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog_zero_mass(*q, *p), res[i]);
         });
     }
 
@@ -753,7 +753,7 @@ mod tests {
             .for_each(|(i, (q, p, delta))| assert_equal(tlog_t(*q, *p, *delta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, delta))| {
-            assert_equal(oneloop__zero_matsubara__tlog_t(*q, *p, *delta), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog_t(*q, *p, *delta), res[i]);
         });
     }
 
@@ -770,7 +770,7 @@ mod tests {
             .for_each(|(i, (q, p))| assert_equal(tlog_t_same_mass(*q, *p), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p))| {
-            assert_equal(oneloop__zero_matsubara__tlog_t_same_mass(*q, *p), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog_t_same_mass(*q, *p), res[i]);
         });
     }
 
@@ -787,7 +787,7 @@ mod tests {
             .for_each(|(i, (q, p))| assert_equal(tlog_t_zero_mass(*q, *p), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p))| {
-            assert_equal(oneloop__zero_matsubara__tlog_t_zero_mass(*q, *p), res[i])
+            assert_equal(oneloop__zero_matsubara__tlog_t_zero_mass(*q, *p), res[i]);
         });
     }
 
@@ -808,15 +808,15 @@ mod tests {
             0.00021895985426890845 + 0. * I,
             0.00011228270074367213 + 0. * I,
             0.0003186172300055374 - 0. * I,
-            3.1269427573130054e-05 + 0. * I,
-            1.9672643889409893e-07 + 0. * I,
+            3.126_942_757_313_005_4e-5 + 0. * I,
+            1.967_264_388_940_989_3e-7 + 0. * I,
             0.00029390621690845704 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(i_m_m_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -825,8 +825,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -846,15 +846,15 @@ mod tests {
             0.00021895985426890845 + 0. * I,
             0.00011228270074367213 + 0. * I,
             0.0003186172300055374 + 0. * I,
-            3.1269427573130054e-05 + 0. * I,
-            1.9672643889409893e-07 + 0. * I,
+            3.126_942_757_313_005_4e-5 + 0. * I,
+            1.967_264_388_940_989_3e-7 + 0. * I,
             0.00029390621690845704 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(i_m_m_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -863,8 +863,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_i(*q, *p, *m2, *m1, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -895,8 +895,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -925,8 +925,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -942,23 +942,23 @@ mod tests {
         ];
 
         let res: [R; 5] = [
-            9.462757686043952e-05,
-            4.119200029357628e-05,
+            9.462_757_686_043_952e-5,
+            4.119_200_029_357_628e-5,
             0.00016266939999670026,
-            1.6303682659986545e-08,
+            1.630_368_265_998_654_5e-8,
             0.0027505091169885637,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(i_m_m_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(i_m_m_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -986,8 +986,8 @@ mod tests {
             .for_each(|(i, (q, p, m, beta))| assert_equal(i_m_0_i(*q, *p, *m, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(oneloop__zero_matsubara__i_m_0_i(*q, *p, *m, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__i_m_0_i(*q, *p, *m, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1013,8 +1013,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(i_m_0_i(*q, *p, 0., *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__i_m_0_i(*q, *p, 0., *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__i_m_0_i(*q, *p, 0., *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1040,8 +1040,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(i_0_0_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__i_0_0_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__i_0_0_i(*q, *p, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1061,7 +1061,7 @@ mod tests {
             -0.0002737302427601515 + 0. * I,
             -0.00010586394672260547 + 0. * I,
             -0.0003141662984876339 + 0. * I,
-            -2.3832631235225262e-05 + 0. * I,
+            -2.383_263_123_522_526_2e-5 + 0. * I,
             -9.82767094708467e-07 + 0. * I,
             0.0003507598523247177 + 0. * I,
         ];
@@ -1069,7 +1069,7 @@ mod tests {
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_l_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(i_m_m_l_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -1078,8 +1078,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_l_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1099,7 +1099,7 @@ mod tests {
             -0.0002737302427601515 + 0. * I,
             -0.00010586394672260547 + 0. * I,
             -0.0003141662984876339 + 0. * I,
-            -2.3832631235225262e-05 + 0. * I,
+            -2.383_263_123_522_526_2e-5 + 0. * I,
             -9.82767094708467e-07 + 0. * I,
             0.0003507598523247177 + 0. * I,
         ];
@@ -1107,7 +1107,7 @@ mod tests {
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_l_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(i_m_m_l_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -1116,8 +1116,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_l_i(*q, *p, *m2, *m1, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1136,20 +1136,20 @@ mod tests {
             -0.0004953119679504928 + 0. * I,
             -0.00022461796781799337 + 0. * I,
             -0.00036571886342540004 + 0. * I,
-            -6.809256340417035e-05 + 0. * I,
+            -6.809_256_340_417_035e-5 + 0. * I,
             -0.00029996813256250835 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(i_m_m_l_i(*q, *p, *m, 0., *beta), res[i])
+            assert_equal(i_m_m_l_i(*q, *p, *m, 0., *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_l_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1178,8 +1178,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_l_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1198,22 +1198,22 @@ mod tests {
 
         let res: [R; 5] = [
             -0.00017263855122418587,
-            -6.436250045871297e-05,
+            -6.436_250_045_871_297e-5,
             -0.0002541709374948442,
-            -2.3249214509967408e-07,
+            -2.324_921_450_996_740_8e-7,
             -0.03922253505916862,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(i_m_m_l_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(i_m_m_l_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_l_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1232,7 +1232,7 @@ mod tests {
             -0.0004953119679504928 + 0. * I,
             -0.00022461796781799337 + 0. * I,
             -0.00036571886342540004 + 0. * I,
-            -6.809256340417035e-05 + 0. * I,
+            -6.809_256_340_417_035e-5 + 0. * I,
             -0.00029996813256250835 + 0. * I,
         ];
 
@@ -1244,8 +1244,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_0_l_i(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1274,8 +1274,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_0_l_i(*q, *p, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1301,8 +1301,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(i_0_0_l_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__i_0_0_l_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__i_0_0_l_i(*q, *p, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1319,18 +1319,18 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            2.661876938912228e-05 + 0. * I,
-            4.524149407383567e-06 + 0. * I,
-            1.691036349200717e-05 + 0. * I,
-            1.2763318875993865e-06 + 0. * I,
-            8.026749066028401e-09 + 0. * I,
-            1.1996800492555959e-05 + 0. * I,
+            2.661_876_938_912_228e-5 + 0. * I,
+            4.524_149_407_383_567e-6 + 0. * I,
+            1.691_036_349_200_717e-5 + 0. * I,
+            1.276_331_887_599_386_5e-6 + 0. * I,
+            8.026_749_066_028_401e-9 + 0. * I,
+            1.199_680_049_255_595_9e-5 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_t_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(i_m_m_t_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -1339,8 +1339,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_t_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1357,18 +1357,18 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            2.661876938912228e-05 + 0. * I,
-            4.524149407383567e-06 + 0. * I,
-            1.691036349200717e-05 + 0. * I,
-            1.2763318875993865e-06 + 0. * I,
-            8.026749066028401e-09 + 0. * I,
-            1.1996800492555959e-05 + 0. * I,
+            2.661_876_938_912_228e-5 + 0. * I,
+            4.524_149_407_383_567e-6 + 0. * I,
+            1.691_036_349_200_717e-5 + 0. * I,
+            1.276_331_887_599_386_5e-6 + 0. * I,
+            8.026_749_066_028_401e-9 + 0. * I,
+            1.199_680_049_255_595_9e-5 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(i_m_m_t_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(i_m_m_t_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -1377,8 +1377,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__i_m_m_t_i(*q, *p, *m2, *m1, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1395,22 +1395,22 @@ mod tests {
 
         let res: [C; 5] = [
             0.00011882444004533821 + 0. * I,
-            5.938278177055409e-05 + 0. * I,
+            5.938_278_177_055_409e-5 + 0. * I,
             0.00012712441686931497 + 0. * I,
-            2.269272158451893e-05 + 0. * I,
+            2.269_272_158_451_893e-5 + 0. * I,
             0.0006764564522967755 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(i_m_m_t_i(*q, *p, *m, 0., *beta), res[i])
+            assert_equal(i_m_m_t_i(*q, *p, *m, 0., *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_t_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1439,8 +1439,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_t_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1458,23 +1458,23 @@ mod tests {
         ];
 
         let res: [R; 5] = [
-            1.1474231175378945e-05,
-            1.657061934083353e-06,
-            6.229442050158883e-06,
+            1.147_423_117_537_894_5e-5,
+            1.657_061_934_083_353e-6,
+            6.229_442_050_158_883e-6,
             6.243512691177725e-10,
             0.00010533104046035392,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(i_m_m_t_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(i_m_m_t_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__i_m_m_t_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1491,9 +1491,9 @@ mod tests {
 
         let res: [C; 5] = [
             0.00011882444004533821 + 0. * I,
-            5.938278177055409e-05 + 0. * I,
+            5.938_278_177_055_409e-5 + 0. * I,
             0.00012712441686931497 + 0. * I,
-            2.269272158451893e-05 + 0. * I,
+            2.269_272_158_451_893e-5 + 0. * I,
             0.0006764564522967755 + 0. * I,
         ];
 
@@ -1505,8 +1505,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_0_t_i(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1535,8 +1535,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__i_m_0_t_i(*q, *p, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1562,8 +1562,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(i_0_0_t_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__i_0_0_t_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__i_0_0_t_i(*q, *p, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1583,15 +1583,15 @@ mod tests {
             -0.00013512366005816255 + 0. * I,
             -0.000124935761700426 + 0. * I,
             0.000159728508866181 + 0. * I,
-            -2.110957177353348e-06 + 0. * I,
-            -1.3859086412622471e-08 + 0. * I,
+            -2.110_957_177_353_348e-6 + 0. * I,
+            -1.385_908_641_262_247_1e-8 + 0. * I,
             0.0007975402376583009 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(d_i_m_m_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -1600,8 +1600,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1622,15 +1622,15 @@ mod tests {
             -0.00013512366005816255 + 0. * I,
             -0.000124935761700426 + 0. * I,
             0.000159728508866181 + 0. * I,
-            -2.110957177353348e-06 + 0. * I,
-            -1.3859086412622471e-08 + 0. * I,
+            -2.110_957_177_353_348e-6 + 0. * I,
+            -1.385_908_641_262_247_1e-8 + 0. * I,
             0.0007975402376583009 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(d_i_m_m_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -1639,8 +1639,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_i(*q, *p, *m2, *m1, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1659,20 +1659,20 @@ mod tests {
             -0.00035814806344659474 + 0. * I,
             -0.00038421028036718765 + 0. * I,
             -0.0014457519778219698 + 0. * I,
-            -3.602192466474754e-05 + 0. * I,
+            -3.602_192_466_474_754e-5 + 0. * I,
             -0.0005714135841238835 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_i(*q, *p, *m, 0., *beta), res[i])
+            assert_equal(d_i_m_m_i(*q, *p, *m, 0., *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1701,8 +1701,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1721,22 +1721,22 @@ mod tests {
 
         let res: [R; 5] = [
             -8.06278854344546e-05,
-            -9.054439293510987e-05,
+            -9.054_439_293_510_987e-5,
             -0.0004541467473151286,
-            -4.551725431729111e-08,
+            -4.551_725_431_729_111e-8,
             -0.007678978154258283,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(d_i_m_m_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1755,7 +1755,7 @@ mod tests {
             -0.00035814806344659474,
             -0.00038421028036718765,
             -0.0014457519778219698,
-            -3.602192466474754e-05,
+            -3.602_192_466_474_754e-5,
             -0.0005714135841238835,
         ];
 
@@ -1767,8 +1767,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_i(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1797,8 +1797,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_i(*q, *p, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1824,8 +1824,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(d_i_0_0_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__d_i_0_0_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__d_i_0_0_i(*q, *p, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -1845,15 +1845,15 @@ mod tests {
             0.00021884510543155269 + 0. * I,
             0.00018178617254283424 + 0. * I,
             -0.00034560348043263025 + 0. * I,
-            1.5665621361903764e-06 + 0. * I,
-            2.3898696881077647e-08 + 0. * I,
+            1.566_562_136_190_376_4e-6 + 0. * I,
+            2.389_869_688_107_764_7e-8 + 0. * I,
             -0.011805950974524424 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_l_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(d_i_m_m_l_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -1862,8 +1862,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_l_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1884,15 +1884,15 @@ mod tests {
             0.00021884510543155269 + 0. * I,
             0.00018178617254283424 + 0. * I,
             -0.00034560348043263025 + 0. * I,
-            1.5665621361903764e-06 + 0. * I,
-            2.3898696881077647e-08 + 0. * I,
+            1.566_562_136_190_376_4e-6 + 0. * I,
+            2.389_869_688_107_764_7e-8 + 0. * I,
             -0.011805950974524424 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_l_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(d_i_m_m_l_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -1901,8 +1901,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_l_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -1921,20 +1921,20 @@ mod tests {
             0.00041385189120479195 + 0. * I,
             0.00024695011102484065 + 0. * I,
             0.0004882847601707977 + 0. * I,
-            4.369914164071785e-06 + 0. * I,
+            4.369_914_164_071_785e-6 + 0. * I,
             -0.007145776237643935 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_l_i(*q, *p, *m, 0., *beta), res[i])
+            assert_equal(d_i_m_m_l_i(*q, *p, *m, 0., *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_l_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1963,8 +1963,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_l_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -1990,15 +1990,15 @@ mod tests {
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_l_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(d_i_m_m_l_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_l_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2017,7 +2017,7 @@ mod tests {
             0.00041385189120479195,
             0.00024695011102484065,
             0.0004882847601707977,
-            4.369914164071785e-06,
+            4.369_914_164_071_785e-6,
             -0.007145776237643935,
         ];
 
@@ -2029,8 +2029,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_l_i(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2059,8 +2059,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_l_i(*q, *p, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2086,8 +2086,8 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(d_i_0_0_l_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__d_i_0_0_l_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__d_i_0_0_l_i(*q, *p, *beta), res[i]);
+        });
     }
 
     #[test]
@@ -2104,18 +2104,18 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            -3.244028555061239e-05 + 0. * I,
-            -1.303958804276184e-05 + 0. * I,
-            -5.7830387408577956e-05 + 0. * I,
-            -8.584123721940744e-08 + 0. * I,
+            -3.244_028_555_061_239e-5 + 0. * I,
+            -1.303_958_804_276_184e-5 + 0. * I,
+            -5.783_038_740_857_795_6e-5 + 0. * I,
+            -8.584_123_721_940_744e-8 + 0. * I,
             -1.7175969905878855e-10 + 0. * I,
-            9.876174424143459e-05 + 0. * I,
+            9.876_174_424_143_459e-5 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_t_i(*q, *p, *m1, *m2, *beta), res[i])
+                assert_equal(d_i_m_m_t_i(*q, *p, *m1, *m2, *beta), res[i]);
             });
 
         args.iter()
@@ -2124,8 +2124,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_t_i(*q, *p, *m1, *m2, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -2143,18 +2143,18 @@ mod tests {
         ];
 
         let res: [C; 6] = [
-            -3.244028555061239e-05 + 0. * I,
-            -1.303958804276184e-05 + 0. * I,
-            -5.7830387408577956e-05 + 0. * I,
-            -8.584123721940744e-08 + 0. * I,
+            -3.244_028_555_061_239e-5 + 0. * I,
+            -1.303_958_804_276_184e-5 + 0. * I,
+            -5.783_038_740_857_795_6e-5 + 0. * I,
+            -8.584_123_721_940_744e-8 + 0. * I,
             -1.7175969905878855e-10 + 0. * I,
-            9.876174424143459e-05 + 0. * I,
+            9.876_174_424_143_459e-5 + 0. * I,
         ];
 
         args.iter()
             .enumerate()
             .for_each(|(i, (q, p, m1, m2, beta))| {
-                assert_equal(d_i_m_m_t_i(*q, *p, *m2, *m1, *beta), res[i])
+                assert_equal(d_i_m_m_t_i(*q, *p, *m2, *m1, *beta), res[i]);
             });
 
         args.iter()
@@ -2163,8 +2163,8 @@ mod tests {
                 assert_equal(
                     oneloop__zero_matsubara__d_i_m_m_t_i(*q, *p, *m2, *m1, *beta),
                     res[i],
-                )
-            })
+                );
+            });
     }
 
     #[test]
@@ -2180,23 +2180,23 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -5.807951967299498e-05 + 0. * I,
-            -2.4922506756341184e-05 + 0. * I,
-            -5.711655480955709e-05 + 0. * I,
-            -1.469056612934212e-06 + 0. * I,
-            1.7453508136235085e-05 + 0. * I,
+            -5.807_951_967_299_498e-5 + 0. * I,
+            -2.492_250_675_634_118_4e-5 + 0. * I,
+            -5.711_655_480_955_709e-5 + 0. * I,
+            -1.469_056_612_934_212e-6 + 0. * I,
+            1.745_350_813_623_508_5e-5 + 0. * I,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_t_i(*q, *p, *m, 0., *beta), res[i])
+            assert_equal(d_i_m_m_t_i(*q, *p, *m, 0., *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_t_i(*q, *p, *m, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2225,8 +2225,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_t_i(*q, *p, 0., 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2244,23 +2244,23 @@ mod tests {
         ];
 
         let res: [R; 5] = [
-            -2.3656894215109883e-05,
-            -1.0298000073394072e-05,
-            -4.066734999917508e-05,
-            -4.075920664996636e-09,
+            -2.365_689_421_510_988_3e-5,
+            -1.029_800_007_339_407_2e-5,
+            -4.066_734_999_917_508e-5,
+            -4.075_920_664_996_636e-9,
             -0.0006876272792471408,
         ];
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
-            assert_equal(d_i_m_m_t_i_same_mass(*q, *p, *m, *beta), res[i])
+            assert_equal(d_i_m_m_t_i_same_mass(*q, *p, *m, *beta), res[i]);
         });
 
         args.iter().enumerate().for_each(|(i, (q, p, m, beta))| {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_m_t_i_same_mass(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2276,11 +2276,11 @@ mod tests {
         ];
 
         let res: [C; 5] = [
-            -5.807951967299498e-05 + 0. * I,
-            -2.4922506756341184e-05 + 0. * I,
-            -5.711655480955709e-05 + 0. * I,
-            -1.469056612934212e-06 + 0. * I,
-            1.7453508136235085e-05 + 0. * I,
+            -5.807_951_967_299_498e-5 + 0. * I,
+            -2.492_250_675_634_118_4e-5 + 0. * I,
+            -5.711_655_480_955_709e-5 + 0. * I,
+            -1.469_056_612_934_212e-6 + 0. * I,
+            1.745_350_813_623_508_5e-5 + 0. * I,
         ];
 
         args.iter()
@@ -2291,8 +2291,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_t_i(*q, *p, *m, *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2321,8 +2321,8 @@ mod tests {
             assert_equal(
                 oneloop__zero_matsubara__d_i_m_0_t_i(*q, *p, 0., *beta),
                 res[i],
-            )
-        })
+            );
+        });
     }
 
     #[test]
@@ -2348,7 +2348,7 @@ mod tests {
             .for_each(|(i, (q, p, beta))| assert_equal(d_i_0_0_t_i(*q, *p, *beta), res[i]));
 
         args.iter().enumerate().for_each(|(i, (q, p, beta))| {
-            assert_equal(oneloop__zero_matsubara__d_i_0_0_t_i(*q, *p, *beta), res[i])
-        })
+            assert_equal(oneloop__zero_matsubara__d_i_0_0_t_i(*q, *p, *beta), res[i]);
+        });
     }
 }

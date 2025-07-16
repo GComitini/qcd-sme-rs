@@ -485,15 +485,15 @@ mod tests {
     ];
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -531,18 +531,18 @@ mod tests {
             assert_equal(
                 qcd__gluon__dressing_inv_landau(s, mq, -0.876),
                 REAL_RESULTS[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_inv_landau(s, mq, -0.876), complex_results[i])
+            assert_equal(dressing_inv_landau(s, mq, -0.876), complex_results[i]);
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_inv_landau__complex(s, mq, -0.876),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -559,7 +559,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_inv(s, mq, -0.876, xi), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing_inv(s, mq, -0.876, xi), real_results[i])
+            assert_equal(qcd__gluon__dressing_inv(s, mq, -0.876, xi), real_results[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -571,7 +571,7 @@ mod tests {
             assert_equal(
                 qcd__gluon__dressing_inv__complex(s, mq, -0.876, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -590,7 +590,7 @@ mod tests {
             1.1401568799573452 + 0.055334806887922264 * I,
             1.589666710187457 + 0.3247512836933115 * I,
         ];
-        test_dressing_inv(0., REAL_RESULTS, complex_results)
+        test_dressing_inv(0., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -608,7 +608,7 @@ mod tests {
             0.9583733661197 - 0.007262635347060228 * I,
             1.161549580008014 + 0.20970212098190188 * I,
         ];
-        test_dressing_inv(1., REAL_RESULTS, complex_results)
+        test_dressing_inv(1., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -645,7 +645,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_landau(s, mq, -0.876), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing_landau(s, mq, -0.876), real_results[i])
+            assert_equal(qcd__gluon__dressing_landau(s, mq, -0.876), real_results[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -657,7 +657,7 @@ mod tests {
             assert_equal(
                 qcd__gluon__dressing_landau__complex(s, mq, -0.876),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -674,7 +674,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing(s, mq, -0.876, xi), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(qcd__gluon__dressing(s, mq, -0.876, xi), real_results[i])
+            assert_equal(qcd__gluon__dressing(s, mq, -0.876, xi), real_results[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -686,7 +686,7 @@ mod tests {
             assert_equal(
                 qcd__gluon__dressing__complex(s, mq, -0.876, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -711,7 +711,7 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(0., real_results, complex_results)
+        test_dressing(0., real_results, complex_results);
     }
 
     #[test]
@@ -735,7 +735,7 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(1., real_results, complex_results)
+        test_dressing(1., real_results, complex_results);
     }
 
     #[test]
@@ -764,28 +764,28 @@ mod tests {
         ];
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed_inv_landau(s, mq, -0.876), REAL_RESULTS[i])
+            assert_equal(dressing_crossed_inv_landau(s, mq, -0.876), REAL_RESULTS[i]);
         });
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_inv_landau(s, mq, -0.876),
                 REAL_RESULTS[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 dressing_crossed_inv_landau(s, mq, -0.876),
                 complex_results[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_inv_landau__complex(s, mq, -0.876),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -799,25 +799,25 @@ mod tests {
         let mq = get_default_quark_mass();
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed_inv(s, mq, -0.876, xi), real_results[i])
+            assert_equal(dressing_crossed_inv(s, mq, -0.876, xi), real_results[i]);
         });
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_inv(s, mq, -0.876, xi),
                 real_results[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed_inv(s, mq, -0.876, xi), complex_results[i])
+            assert_equal(dressing_crossed_inv(s, mq, -0.876, xi), complex_results[i]);
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_inv__complex(s, mq, -0.876, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -836,7 +836,7 @@ mod tests {
             1.0412407008118778 + 0.0464390633718008 * I,
             1.4593613027930297 + 0.31457224197479217 * I,
         ];
-        test_dressing_crossed_inv(0., REAL_RESULTS, complex_results)
+        test_dressing_crossed_inv(0., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -854,7 +854,7 @@ mod tests {
             0.8594571869742331 - 0.016158378863181694 * I,
             1.0312441726135864 + 0.19952307926338256 * I,
         ];
-        test_dressing_crossed_inv(1., REAL_RESULTS, complex_results)
+        test_dressing_crossed_inv(1., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -888,25 +888,25 @@ mod tests {
         }
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed_landau(s, mq, -0.876), real_results[i])
+            assert_equal(dressing_crossed_landau(s, mq, -0.876), real_results[i]);
         });
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_landau(s, mq, -0.876),
                 real_results[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed_landau(s, mq, -0.876), complex_results[i])
+            assert_equal(dressing_crossed_landau(s, mq, -0.876), complex_results[i]);
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed_landau__complex(s, mq, -0.876),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -926,18 +926,18 @@ mod tests {
             assert_equal(
                 qcd__gluon__dressing_crossed(s, mq, -0.876, xi),
                 real_results[i],
-            )
+            );
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(dressing_crossed(s, mq, -0.876, xi), complex_results[i])
+            assert_equal(dressing_crossed(s, mq, -0.876, xi), complex_results[i]);
         });
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(
                 qcd__gluon__dressing_crossed__complex(s, mq, -0.876, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -962,7 +962,7 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing_crossed(0., real_results, complex_results)
+        test_dressing_crossed(0., real_results, complex_results);
     }
 
     #[test]
@@ -986,6 +986,6 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing_crossed(1., real_results, complex_results)
+        test_dressing_crossed(1., real_results, complex_results);
     }
 }

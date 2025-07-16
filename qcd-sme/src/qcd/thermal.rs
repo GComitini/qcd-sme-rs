@@ -913,29 +913,29 @@ mod tests {
     const TOLERANCE: R = 10E-12;
 
     fn assert_equal_with_tol<T: Num>(lhs: T, rhs: T, tol: R) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < tol,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {tol:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < tol,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {tol:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < tol,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {tol:e} rhs"
             );
         }
     }
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }

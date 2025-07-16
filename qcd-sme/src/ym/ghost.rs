@@ -181,15 +181,15 @@ mod tests {
     ];
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -219,7 +219,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_inv_landau(s, 0.14524), REAL_RESULTS[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(ym__ghost__dressing_inv_landau(s, 0.14524), REAL_RESULTS[i])
+            assert_equal(ym__ghost__dressing_inv_landau(s, 0.14524), REAL_RESULTS[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -231,7 +231,7 @@ mod tests {
             assert_equal(
                 ym__ghost__dressing_inv_landau__complex(s, 0.14524),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -245,7 +245,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_inv(s, 0.14524, xi), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(ym__ghost__dressing_inv(s, 0.14524, xi), real_results[i])
+            assert_equal(ym__ghost__dressing_inv(s, 0.14524, xi), real_results[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -257,7 +257,7 @@ mod tests {
             assert_equal(
                 ym__ghost__dressing_inv__complex(s, 0.14524, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -276,7 +276,7 @@ mod tests {
             0.7924787703649405 + 0.053746283212455476 * I,
             1.0470366251236884 + 0.14090558554076238 * I,
         ];
-        test_dressing_inv(0., REAL_RESULTS, complex_results)
+        test_dressing_inv(0., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -294,7 +294,7 @@ mod tests {
             0.7108702663624812 + 0.03053744864916315 * I,
             0.8646160684787401 + 0.08947640770652185 * I,
         ];
-        test_dressing_inv(1., REAL_RESULTS, complex_results)
+        test_dressing_inv(1., REAL_RESULTS, complex_results);
     }
 
     #[test]
@@ -328,7 +328,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(dressing_landau(s, 0.14524), real_results[i]));
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(ym__ghost__dressing_landau(s, 0.14524), real_results[i])
+            assert_equal(ym__ghost__dressing_landau(s, 0.14524), real_results[i]);
         });
 
         COMPLEX_TEST_VAL
@@ -340,7 +340,7 @@ mod tests {
             assert_equal(
                 ym__ghost__dressing_landau__complex(s, 0.14524),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -367,7 +367,7 @@ mod tests {
             assert_equal(
                 ym__ghost__dressing__complex(s, 0.14524, xi),
                 complex_results[i],
-            )
+            );
         });
     }
 
@@ -392,7 +392,7 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(0., real_results, complex_results)
+        test_dressing(0., real_results, complex_results);
     }
 
     #[test]
@@ -416,6 +416,6 @@ mod tests {
         for v in &mut complex_results {
             *v = v.inv();
         }
-        test_dressing(1., real_results, complex_results)
+        test_dressing(1., real_results, complex_results);
     }
 }

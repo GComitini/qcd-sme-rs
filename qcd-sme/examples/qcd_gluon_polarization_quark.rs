@@ -29,9 +29,7 @@ fn main() {
     /* 3DIMENSIONALLY-TRANSVERSE POLARIZATION  */
     let mut plot = peroxide::util::plot::Plot2D::new();
     plot.set_domain(momenta.clone());
-    plot.set_path(&format!(
-        "target/qcd_gluon_polarization_quark_transverse.png"
-    ));
+    plot.set_path(&"target/qcd_gluon_polarization_quark_transverse.png".to_string());
     let mut legends = Vec::new();
 
     for &t in &temperatures {
@@ -60,7 +58,7 @@ fn main() {
         .collect();
 
     plot.insert_image(glplt);
-    legends.push(format!("T = 0 GeV",));
+    legends.push("T = 0 GeV".to_string());
 
     plot.set_legend(legends.iter().map(|s| s.as_str()).collect());
     plot.savefig().expect("Could not save figure");
@@ -68,9 +66,7 @@ fn main() {
     /* 3DIMENSIONALLY-LONGITUDINAL POLARIZATION  */
     let mut plot = peroxide::util::plot::Plot2D::new();
     plot.set_domain(momenta.clone());
-    plot.set_path(&format!(
-        "target/qcd_gluon_polarization_quark_longitudinal.png"
-    ));
+    plot.set_path(&"target/qcd_gluon_polarization_quark_longitudinal.png".to_string());
     let mut legends = Vec::new();
 
     for &t in &temperatures {
@@ -99,7 +95,7 @@ fn main() {
         .collect();
 
     plot.insert_image(glplt);
-    legends.push(format!("T = 0 GeV",));
+    legends.push("T = 0 GeV".to_string());
 
     plot.set_legend(legends.iter().map(|s| s.as_str()).collect());
     plot.savefig().expect("Could not save figure");

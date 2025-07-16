@@ -16,17 +16,17 @@ fn main() {
 
     let mut plot = plot::Plot2D::new();
     plot.set_domain(chempots.clone());
-    plot.set_path(&format!("target/qcd_quark_charge_density.png"));
+    plot.set_path(&"target/qcd_quark_charge_density.png".to_string());
     let mut plot_detail = plot::Plot2D::new();
     plot_detail.set_domain(chempots[detail_range.clone()].to_vec());
-    plot_detail.set_path(&format!("target/qcd_quark_charge_density_detail.png"));
+    plot_detail.set_path(&"target/qcd_quark_charge_density_detail.png".to_string());
     let mut legends = Vec::new();
 
     let temperatures = [
         0.100, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.,
     ];
 
-    legends.push(format!("T = 0.0 GeV"));
+    legends.push("T = 0.0 GeV".to_string());
     let vals: Vec<f64> = chempots
         .par_iter()
         .map(|&mu| {

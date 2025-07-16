@@ -308,15 +308,15 @@ mod tests {
     ];
 
     fn assert_equal<T: Num>(lhs: T, rhs: T) {
-        if rhs != T::zero() {
-            assert!(
-                (lhs / rhs - 1.).abs() < TOLERANCE,
-                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
-            );
-        } else {
+        if rhs == T::zero() {
             assert!(
                 (lhs - rhs).abs() < TOLERANCE,
                 "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e}"
+            );
+        } else {
+            assert!(
+                (lhs / rhs - 1.).abs() < TOLERANCE,
+                "|lhs-rhs| = |({lhs}) - ({rhs})| >= {TOLERANCE:e} rhs"
             );
         }
     }
@@ -476,7 +476,7 @@ mod tests {
             .for_each(|(i, &s)| assert_equal(f_q_crossed(s), complex_results[i]));
 
         COMPLEX_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
-            assert_equal(oneloop__gluon__f_q_crossed__complex(s), complex_results[i])
+            assert_equal(oneloop__gluon__f_q_crossed__complex(s), complex_results[i]);
         });
     }
 }
