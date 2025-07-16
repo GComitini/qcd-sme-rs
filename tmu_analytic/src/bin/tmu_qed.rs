@@ -14,7 +14,7 @@ use rayon::prelude::*;
 use std::f64::consts::PI;
 use std::fs;
 use std::path::PathBuf;
-use tc_long_prop::BASEDIR;
+use tmu_analytic::BASEDIR;
 
 const PREFACTOR: R = (16. * PI * PI) / 3.;
 

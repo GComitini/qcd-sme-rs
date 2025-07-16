@@ -14,39 +14,8 @@ categories = ["science", "mathematics"]
 env_logger = { workspace = true }
 lazy_static = { workspace = true }
 log = { workspace = true }
-gnuplot = { workspace = true }
 qcd-sme = { path = "../qcd-sme" }
 peroxide = { workspace = true }
 rayon = { workspace = true }
 serde = { workspace = true }
 serde_yml = { workspace = true }
-
-[features]
-default = ["ftm_proptest", "ftmq_3d_poles"]
-
-# Enable to make fintmu_poles also plot the propagators. For testing,
-# purposes, but since it doesn't slow down the main routine meaningfully
-# it's enabled by default
-ftm_proptest = []
-
-# Do not enable manually, used by fintmu_poles' features
-ftm_twosided = []
-
-# Enable to make fintmu_poles output 'the big picture' (wider range
-# of momenta, twosided). Takes *a lot* more time to execute, likely
-# a factor of 10000x
-ftm_big = ["ftm_twosided"]
-
-# Enable to make fintmu_poles plot the imaginary part of the dressing
-# function instead of its absolute value (look for cuts instead
-# of poles)
-ftm_cut = ["ftm_twosided"]
-
-# Enable to make fintmu_qed plot the photon dressing function over the
-# complex plane, to explore the presence of poles
-ftmq_3d_poles = []
-
-# Enable to make fintmu_qed plot the photon propagator on the Riemann
-# sheet obtained by crossing the branch cut from positive to negative
-# Euclidean frequencies
-ftmq_alt_riemann = []

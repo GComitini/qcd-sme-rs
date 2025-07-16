@@ -7,7 +7,7 @@ use qcd_sme::qcd::FieldConfig;
 use qcd_sme::types::{C, NCTYPE, R};
 use qcd_sme::ym::gluon::propagator_landau as ym_propagator_zero_temp;
 use qcd_sme::ym::thermal::gluon::propagator_t_landau as ym_propagator;
-use tc_long_prop::BASEDIR;
+use tmu_analytic::BASEDIR;
 
 use gnuplot::{AutoOption, AxesCommon, Figure};
 use lazy_static::lazy_static;
