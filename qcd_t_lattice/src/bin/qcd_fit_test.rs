@@ -1,6 +1,6 @@
 use argmin::core::State;
 use qcd_sme::consts::{set_default_max_iter_integral, set_default_tol_integral};
-use qcd_t_lattice::fit::{paramgradient3, param_errors, ChiSquare3Params};
+use qcd_t_lattice::fit::{param_errors, paramgradient3, ChiSquare3Params};
 use qcd_t_lattice::gluon::propagator_l;
 use qcd_t_lattice::{FieldConfig, OMEPS, R};
 

@@ -1,5 +1,5 @@
 use qcd_sme::consts::{set_default_max_iter_integral, set_default_tol_integral};
-use qcd_t_lattice::{gluon::*, FieldConfig, OMEPS, R};
+use qcd_t_lattice::{fit::FitType, gluon::*, FieldConfig, OMEPS, R};
 use rayon::prelude::*;
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -8,6 +8,7 @@ const PMIN: R = 0.01;
 const PMAX: R = 4.;
 const NP: usize = 400;
 const DP: R = (PMAX - PMIN) / (NP as R);
+const PREN: R = 4.;
 
 fn main() {
     set_default_max_iter_integral(30);
@@ -35,22 +36,38 @@ fn main() {
         .parse::<R>()
         .expect("The quark mass argument must be a float!");
 
-    let mg = std::env::args()
+    let rentype = std::env::args()
         .nth(4)
+        .expect("You need to pass the renormalization type as argument!");
+    let rentype = match rentype.as_str() {
+        "ren" => FitType::RenormZ,
+        "unren" => FitType::FittedZ,
+        el => panic!("Unknown renornmalization type {el}"),
+    };
+
+    let mg = std::env::args()
+        .nth(5)
         .expect("You need to pass the gluon mass in GeV as argument!")
         .replace(",", "")
         .parse::<R>()
         .expect("The gluon mass argument must be a float!");
 
-    let z = std::env::args()
-        .nth(5)
-        .expect("You need to pass z as argument!")
-        .replace(",", "")
-        .parse::<R>()
-        .expect("The z argument must be a float!");
+    let (mut z, nextarg) = if rentype == FitType::RenormZ {
+        (0., 6)
+    } else {
+        (
+            std::env::args()
+                .nth(6)
+                .expect("You need to pass z as argument!")
+                .replace(",", "")
+                .parse::<R>()
+                .expect("The z argument must be a float!"),
+            7,
+        )
+    };
 
     let f0 = std::env::args()
-        .nth(6)
+        .nth(nextarg)
         .expect("You need to pass f0 as argument!")
         .parse::<R>()
         .expect("The f0 argument must be a float!");
@@ -58,15 +75,19 @@ fn main() {
     let ff = &|p| {
         let fieldconfig = FieldConfig::new(3, mg, vec![(2, mq)]);
         match comp.as_str() {
-            "l" | "L" => z * propagator_l(OMEPS, p, 1. / t, f0, &fieldconfig).re,
-            "t" | "T" => z * propagator_t(OMEPS, p, 1. / t, f0, &fieldconfig).re,
+            "l" | "L" => propagator_l(OMEPS, p, 1. / t, f0, &fieldconfig).re,
+            "t" | "T" => propagator_t(OMEPS, p, 1. / t, f0, &fieldconfig).re,
             _ => unreachable!(),
         }
     };
 
     let ps: Vec<R> = (0..=NP).map(|i| PMIN + DP * (i as R)).collect();
 
-    let prop: Vec<(R, R)> = ps.par_iter().map(|p| (*p, ff(*p))).collect();
+    if rentype == FitType::RenormZ {
+        z = 1. / (PREN * PREN * ff(PREN))
+    };
+
+    let prop: Vec<(R, R)> = ps.par_iter().map(|p| (*p, z * ff(*p))).collect();
 
     let mut fout = BufWriter::new(
         File::create(format!(
