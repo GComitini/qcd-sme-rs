@@ -19,6 +19,7 @@ use std::{fs, path::PathBuf};
 
 const NC: NCTYPE = 3;
 const MG: R = 0.656;
+const MQ: R = 0.4;
 const P0: R = 0.01;
 const F0: R = -0.876;
 const PREN: R = 4.;
@@ -340,6 +341,46 @@ fn main() {
                 f0c,
                 "qcd_zero_temperature_fixed",
             );
+        });
+
+        // IIC. Zero density, as a function of temperature, Nf=2, lowest temperature params from lattice
+        const MGQCD: R = 0.752;
+        const F0QCD: R = -0.506;
+        let fieldconfig = FieldConfig::new(NC, MGQCD, vec![(2, MQ)]);
+
+        if !SHOW {
+            fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2").as_path()).unwrap();
+        }
+
+        [0., 0.05, 0.10, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
+            .iter()
+            .for_each(|&t| {
+                plot_qcd_t(&oms, t, &fieldconfig, F0QCD, "qcd_zero_density_fixed_nf2");
+            });
+    }
+
+    /* III. Full QCD, lattice parameters */
+
+    if !NO_QCD {
+        // IIIA. Zero density, as a function of temperature, Nf=2
+        if !SHOW {
+            fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_lattice").as_path()).unwrap();
+        }
+
+        // These data were obtained by renormalizing the zero-matsubara transverse propagator
+        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 400 MeV
+        [
+            (0.139, 0.7517777951910817, -0.5062071238487814),
+            (0.154, 0.7639062870106536, -0.44084616449186326),
+            (0.174, 0.7345150400347596, -0.3843769966635342),
+            (0.199, 0.7306060280562273, -0.38161604237819363),
+            (0.233, 0.746307345288752, -0.3585815488317115),
+            (0.278, 0.7924693589714722, -0.32681035700549366),
+        ]
+        .iter()
+        .for_each(|(t, mg, f0)| {
+            let fieldconfig = FieldConfig::new(NC, *mg, vec![(2, MQ)]);
+            plot_qcd_t(&oms, *t, &fieldconfig, *f0, "qcd_zero_density_lattice");
         });
     }
 }
