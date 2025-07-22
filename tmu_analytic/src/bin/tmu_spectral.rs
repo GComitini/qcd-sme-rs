@@ -229,7 +229,7 @@ fn main() {
 
     let ommin = 0.02;
     let ommax = 2.0;
-    let nom = 200;
+    let nom = 500;
     let dom = (ommax - ommin) / (nom as R);
 
     let oms: Vec<R> = (0..=nom).map(|i| ommin + (i as R) * dom).collect();
@@ -272,11 +272,12 @@ fn main() {
         });
     }
 
-    /* II. Full QCD */
+    /* II. Full QCD, fixed parameters */
 
     if !NO_QCD {
         let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.35), (1, 0.45)]);
-        let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
+        //let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
+        let correctedfieldconfig = fieldconfig.clone();
 
         // To avoid a spurious MOM-scheme divergence in the Mquark->0 limit
         // we must absorb ln(Mquark) into f0
@@ -301,7 +302,7 @@ fn main() {
                 * 4.
                 / (9. * (fieldconfig.nc as R));
 
-        // IIA. Zero density, as a function of temperature, fixed parameters
+        // IIA. Zero density, as a function of temperature
         if !SHOW {
             fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_fixed").as_path()).unwrap();
         }
@@ -322,7 +323,7 @@ fn main() {
                 );
             });
 
-        // IIB. Zero temperature, as a function of chemical potential, fixed parameters
+        // IIB. Zero temperature, as a function of chemical potential
         if !SHOW {
             fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_temperature_fixed").as_path()).unwrap();
         }
