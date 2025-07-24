@@ -1,4 +1,6 @@
-use gnuplot::{AutoOption, AxesCommon, Figure, LabelOption};
+#[cfg(feature = "ftmq_3d_poles")]
+use gnuplot::LabelOption;
+use gnuplot::{AutoOption, AxesCommon, Figure};
 use lazy_static::lazy_static;
 use log::info;
 #[cfg(feature = "ftmq_alt_riemann")]
@@ -9,10 +11,13 @@ use qcd_sme::common::thermal::{
 use qcd_sme::consts::set_default_max_iter_integral;
 use qcd_sme::low_level::oneloop::gluon::f_q;
 use qcd_sme::low_level::oneloop::thermal::gluon as gluon_thermal_parts;
-use qcd_sme::{qcd::FieldConfig, Num, C, R};
+#[cfg(feature = "ftmq_3d_poles")]
+use qcd_sme::Num;
+use qcd_sme::{qcd::FieldConfig, C, R};
 use rayon::prelude::*;
 use std::f64::consts::PI;
-use std::fs;
+use std::fs::{self, File};
+use std::io::{BufWriter, Write};
 use std::path::PathBuf;
 use tmu_analytic::BASEDIR;
 
@@ -20,9 +25,17 @@ const PREFACTOR: R = (16. * PI * PI) / 3.;
 
 // This is not really used, it cancels out from expressions
 const MG: R = 1.;
-const F0: R = 2.89;
+// Yields alpha_QED = 0.3091 at T = 0 for one massless fermion.
+// This translates to alpha_s = 2 alpha_QED = 0.6182. In full
+// QCD with two quarks of mass 350 MeV and one of mass 450 MeV,
+// our standard value F0 = -0.876 (in paper convention) yields
+// alpha_s = 0.6186.
+const F0: R = 3.364;
+// Yields alpha_QED = 0.3092 at T = 0 for two fermions of mass
+// 350 MeV and one fermion of mass 450 MeV, see above.
+//const F0: R = 2.945;
 
-const P0: R = 0.01;
+const P0: R = 0.005;
 const PREN: R = 4.;
 const OMEPS: R = 1E-3;
 const OMEPSC: C = C::new(OMEPS, 0.);
@@ -81,7 +94,7 @@ fn qed_dressing_t_zero_temp(om: C, p: R, mu: R, f0: R, config: &FieldConfig) -> 
         .quarks
         .iter()
         .map(|&(nf, mq)| {
-            gluon_thermal_parts::polarization_quark_l_thermal_part_zero_temp_landau(om, p, mq, mu)
+            gluon_thermal_parts::polarization_quark_t_thermal_part_zero_temp_landau(om, p, mq, mu)
                 * (nf as R)
         })
         .sum();
@@ -180,6 +193,19 @@ fn plot_qed_spectral_t(oms: &[R], t: R, config: &FieldConfig, f0: R, dir: &str) 
             .unwrap();
     }
 
+    let mut fout = BufWriter::new(
+        File::create(
+            THIS_BASEDIR
+                .join(dir)
+                .join(format!("qed_spectr_t{t:.3}.out")),
+        )
+        .unwrap(),
+    );
+
+    oms.iter().zip(spectr.iter()).for_each(|(om, sp)| {
+        writeln!(fout, "{om:.5} {sp:.7}").unwrap();
+    });
+
     oms[max_idx(&spectr)]
 }
 
@@ -244,6 +270,7 @@ fn plot_qed_dressing_t(momenta: &[R], t: R, config: &FieldConfig, f0: R, dir: &s
     }
 }
 
+// Note: I didn't check this function
 #[cfg(feature = "ftmq_3d_poles")]
 #[allow(clippy::too_many_arguments)]
 fn plot_qed_dressing_cplane_t(
@@ -354,6 +381,19 @@ fn plot_qed_spectral_mu(oms: &[R], mu: R, config: &FieldConfig, f0: R, dir: &str
             })
             .collect();
 
+    let mut fout = BufWriter::new(
+        File::create(
+            THIS_BASEDIR
+                .join(dir)
+                .join(format!("qed_spectr_mu{mu:.3}.out")),
+        )
+        .unwrap(),
+    );
+
+    oms.iter().zip(spectr.iter()).for_each(|(om, sp)| {
+        writeln!(fout, "{om:.5} {sp:.7}").unwrap();
+    });
+
     let mut figure = Figure::new();
     figure
         .axes2d()
@@ -425,6 +465,7 @@ fn plot_qed_dressing_mu(momenta: &[R], mu: R, config: &FieldConfig, f0: R, dir: 
     }
 }
 
+// Note: I didn't check this function
 #[cfg(feature = "ftmq_3d_poles")]
 #[allow(clippy::too_many_arguments)]
 fn plot_qed_dressing_cplane_mu(
@@ -508,20 +549,22 @@ fn plot_qed_dressing_cplane_mu(
     omx
 }
 
-fn qed_alpha(f0: R, t: R, config: &FieldConfig) -> R {
+fn qed_alpha(f0: R, t: R, mu: R, config: &FieldConfig) -> R {
     if t == 0. {
-        PREFACTOR / 24. / PI * PREN * PREN * qed_prop_t_zero_temp(OMEPSC, PREN, 0., f0, config).re
+        PREFACTOR / 24. / PI * PREN * PREN * qed_prop_t_zero_temp(OMEPSC, PREN, mu, f0, config).re
     } else {
-        PREFACTOR / 24. / PI * PREN * PREN * qed_prop_t(OMEPSC, PREN, 1. / t, 0., f0, config).re
+        PREFACTOR / 24. / PI * PREN * PREN * qed_prop_t(OMEPSC, PREN, 1. / t, mu, f0, config).re
     }
 }
 
-fn qed_pole_literature(f0: R, t: R, config: &FieldConfig) -> R {
-    (4. * PI / 9. * qed_alpha(f0, t, config)).sqrt() * t
+// HTL pole found in the literature (massless fermions)
+fn qed_pole_literature(f0: R, t: R, mu: R, config: &FieldConfig) -> R {
+    let nf: R = config.quarks.iter().map(|(nf, _)| *nf as R).sum();
+    (4. * PI / 9. * nf * qed_alpha(f0, t, mu, config)).sqrt() * t
 }
 
-fn qed_width_literature(f0: R, t: R, config: &FieldConfig) -> R {
-    qed_alpha(f0, t, config) / 6. * qed_pole_literature(f0, t, config)
+fn qed_width_literature(f0: R, t: R, mu: R, config: &FieldConfig) -> R {
+    qed_alpha(f0, t, mu, config) / 6. * qed_pole_literature(f0, t, mu, config)
 }
 
 fn main() {
@@ -534,9 +577,9 @@ fn main() {
         fs::create_dir_all(THIS_BASEDIR.as_path()).unwrap();
     };
 
-    let ommin = 0.1;
-    let ommax = 2.0;
-    let nom = 200;
+    let ommin = 0.005;
+    let ommax = 0.5;
+    let nom = 1000;
     let dom = (ommax - ommin) / (nom as R);
 
     let oms: Vec<R> = (0..=nom).map(|i| ommin + (i as R) * dom).collect();
@@ -578,12 +621,11 @@ fn main() {
     let (mut qed_alphas, mut qed_poles_lit, mut qed_widths_lit, mut qed_poles_comp) =
         (vec![], vec![], vec![], vec![]);
 
-    [
-        0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8,
-        0.85, 0.9, 0.95, 1.,
-    ]
-    .iter()
-    .for_each(|&t| {
+    let temps = [
+        0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+    ];
+
+    temps.iter().for_each(|&t| {
         qed_poles_comp.push(plot_qed_spectral_t(
             &oms,
             t,
@@ -592,6 +634,7 @@ fn main() {
             "qed_fixed_zero_density",
         ));
         plot_qed_dressing_t(&momenta, t, &config, F0, "qed_fixed_zero_density");
+        #[cfg(feature = "ftmq_3d_poles")]
         plot_qed_dressing_cplane_t(
             &omcs,
             t,
@@ -602,10 +645,34 @@ fn main() {
             omcimscale,
             "qed_fixed_zero_density",
         );
-        qed_alphas.push(qed_alpha(F0, t, &config));
-        qed_poles_lit.push(qed_pole_literature(F0, t, &config));
-        qed_widths_lit.push(qed_width_literature(F0, t, &config));
+        qed_alphas.push(qed_alpha(F0, t, 0., &config));
+        qed_poles_lit.push(qed_pole_literature(F0, t, 0., &config));
+        qed_widths_lit.push(qed_width_literature(F0, t, 0., &config));
     });
+
+    let mut fout = std::io::BufWriter::new(
+        File::create(
+            THIS_BASEDIR
+                .join("qed_fixed_zero_density")
+                .join("couplings_and_poles.out"),
+        )
+        .unwrap(),
+    );
+
+    temps
+        .iter()
+        .zip(
+            qed_alphas
+                .iter()
+                .zip(qed_poles_comp.iter().zip(qed_poles_lit.iter())),
+        )
+        .for_each(|(t, (a_qed, (pc, pl)))| {
+            writeln!(
+                fout,
+                "t: {t:.3}\ta_qed: {a_qed:.5}\tpole (comp.): {pc:.5}\tpole (lit.): {pl:.5}"
+            )
+            .unwrap()
+        });
 
     info!("Computed for alphas: {qed_alphas:.5?}");
     info!("Corresponding poles (computed): {qed_poles_comp:.5?}");
@@ -617,28 +684,50 @@ fn main() {
         fs::create_dir_all(THIS_BASEDIR.join("qed_fixed_zero_temp").as_path()).unwrap();
     }
 
-    let mut qed_poles_comp = vec![];
+    let (mut qed_alphas, mut qed_poles_comp) = (vec![], vec![]);
 
-    [0., 0.10, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.]
+    let chempots = [0., 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.];
+
+    chempots.iter().for_each(|&mu| {
+        qed_poles_comp.push(plot_qed_spectral_mu(
+            &oms,
+            mu,
+            &config,
+            F0,
+            "qed_fixed_zero_temp",
+        ));
+        plot_qed_dressing_mu(&momenta, mu, &config, F0, "qed_fixed_zero_temp");
+        #[cfg(feature = "ftmq_3d_poles")]
+        plot_qed_dressing_cplane_mu(
+            &omcs,
+            mu,
+            F0,
+            &config,
+            omcmax,
+            nomc,
+            omcimscale,
+            "qed_fixed_zero_temp",
+        );
+        qed_alphas.push(qed_alpha(F0, 0., mu, &config));
+    });
+
+    let mut fout = std::io::BufWriter::new(
+        File::create(
+            THIS_BASEDIR
+                .join("qed_fixed_zero_temp")
+                .join("couplings_and_poles.out"),
+        )
+        .unwrap(),
+    );
+
+    chempots
         .iter()
-        .for_each(|&mu| {
-            qed_poles_comp.push(plot_qed_spectral_mu(
-                &oms,
-                mu,
-                &config,
-                F0,
-                "qed_fixed_zero_temp",
-            ));
-            plot_qed_dressing_mu(&momenta, mu, &config, F0, "qed_fixed_zero_temp");
-            plot_qed_dressing_cplane_mu(
-                &omcs,
-                mu,
-                F0,
-                &config,
-                omcmax,
-                nomc,
-                omcimscale,
-                "qed_fixed_zero_temp",
-            );
+        .zip(qed_alphas.iter().zip(qed_poles_comp.iter()))
+        .for_each(|(mu, (a_qed, pc))| {
+            writeln!(
+                fout,
+                "mu: {mu:.3}\ta_qed: {a_qed:.5}\tpole (comp.): {pc:.5}"
+            )
+            .unwrap()
         });
 }
