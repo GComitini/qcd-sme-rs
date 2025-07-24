@@ -22,7 +22,7 @@ serde = { workspace = true }
 serde_yml = { workspace = true }
 
 [features]
-default = ["ftm_proptest", "ftmq_3d_poles"]
+default = ["ftm_proptest"]
 
 # Enable to make fintmu_poles also plot the propagators. For testing,
 # purposes, but since it doesn't slow down the main routine meaningfully
