@@ -23,6 +23,7 @@ use std::{
 
 const NC: NCTYPE = 3;
 const MG: R = 0.656;
+const MQ: R = 0.4;
 const P0: R = 0.01;
 const F0: R = -0.876;
 #[cfg(feature = "ftm_proptest")]
@@ -76,9 +77,9 @@ fn find_and_plot_ym_t(
             .map(|(i, &om)| {
                 let res = if om.re == 0. { R::NAN } else {
                     #[cfg(not(feature = "ftm_cut"))]
-                    { ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).abs() }
+                    { ym_dressing_zero_temp((om * om + P0 * P0) / (m*m), f0).abs() }
                     #[cfg(feature = "ftm_cut")]
-                    { ym_dressing_zero_temp((om * om + P0 * P0) / (MG * MG), F0).im }
+                    { ym_dressing_zero_temp((om * om + P0 * P0) / (m*m), f0).im }
                 };
                 info!(
                     "Computed pure Yang-Mills dressing function at T = 0.000 GeV for z = ({om:.4}) GeV ({}/{nact}): {res}", i+1
@@ -308,6 +309,9 @@ fn find_and_plot_qcd_t(
     omx
 }
 
+// Warning: this function will normalize momenta and propagator with respect
+// to MG, which usually is the **pure Yang-Mills** gluon mass. This may or
+// may not be what you want.
 #[cfg(feature = "ftm_proptest")]
 fn qcd_t_proptest(momenta: &[R], t: R, config: &FieldConfig, f0: R, normalize: bool, dir: &str) {
     let prop: Vec<R> = if t == 0. {
@@ -451,6 +455,9 @@ fn find_and_plot_qcd_mu(
     omx
 }
 
+// Warning: this function will normalize momenta and propagator with respect
+// to MG, which usually is the **pure Yang-Mills** gluon mass. This may or
+// may not be what you want.
 #[cfg(feature = "ftm_proptest")]
 fn qcd_mu_proptest(momenta: &[R], mu: R, config: &FieldConfig, f0: R, normalize: bool, dir: &str) {
     let mut z = 1. / qcd_dressing_zero_temp(OMEPS, PREN, mu, f0, config).re;
@@ -549,8 +556,14 @@ fn main() {
         }
     }
 
-    let (mut ym_fixed, mut ym_lattice, mut qcd_fixed_mu_zero, mut qcd_fixed_t_zero) =
-        (vec![], vec![], vec![], vec![]);
+    let (
+        mut ym_fixed,
+        mut ym_lattice,
+        mut qcd_fixed_mu_zero,
+        mut qcd_fixed_t_zero,
+        mut qcd_fixed_nf2_mu_zero,
+        mut qcd_lattice_mu_zero,
+    ) = (vec![], vec![], vec![], vec![], vec![], vec![]);
 
     #[cfg(feature = "ftm_proptest")]
     let ym_momenta: Vec<R> = {
@@ -627,7 +640,8 @@ fn main() {
 
     if !NO_QCD {
         let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.35), (1, 0.45)]);
-        let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
+        //let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
+        let correctedfieldconfig = fieldconfig.clone();
 
         // To avoid a spurious MOM-scheme divergence in the Mquark->0 limit
         // we must absorb ln(Mquark) into f0
@@ -769,11 +783,99 @@ fn main() {
         qcd_fixed_t_zero
             .iter()
             .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap());
+
+        // IIC. Zero density, as a function of temperature, Nf=2, lowest temperature fixed params from lattice
+        const MGQCD: R = 0.752;
+        const F0QCD: R = -0.506;
+        let fieldconfig = FieldConfig::new(NC, MGQCD, vec![(2, MQ)]);
+
+        if !SHOW {
+            fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2").as_path()).unwrap();
+        }
+
+        [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
+            .iter()
+            .for_each(|&t| {
+                let z = find_and_plot_qcd_t(
+                    &oms,
+                    t,
+                    &fieldconfig,
+                    F0QCD,
+                    ommin,
+                    ommax,
+                    nom,
+                    "qcd_zero_density_fixed_nf2",
+                );
+                qcd_fixed_nf2_mu_zero.push((t, z.im, z.re));
+                #[cfg(feature = "ftm_proptest")]
+                qcd_t_proptest(
+                    &qcd_momenta,
+                    t,
+                    &fieldconfig,
+                    F0QCD,
+                    true,
+                    "qcd_zero_density_fixed_nf2",
+                );
+            });
+
+        let mut fpf = BufWriter::new(
+            fs::File::create(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2.out")).unwrap(),
+        );
+        qcd_fixed_nf2_mu_zero
+            .iter()
+            .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap());
+
+        // IID. Zero density, as a function of temperature, Nf=2, fitted params from lattice
+        if !SHOW {
+            fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_lattice").as_path()).unwrap();
+        }
+
+        // These data were obtained by renormalizing the zero-matsubara transverse propagator
+        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 400 MeV
+        [
+            (0.139, 0.7517777951910817, -0.5062071238487814),
+            (0.154, 0.7639062870106536, -0.44084616449186326),
+            (0.174, 0.7345150400347596, -0.3843769966635342),
+            (0.199, 0.7306060280562273, -0.38161604237819363),
+            (0.233, 0.746307345288752, -0.3585815488317115),
+            (0.278, 0.7924693589714722, -0.32681035700549366),
+        ]
+        .iter()
+        .for_each(|(t, mg, f0)| {
+            let fieldconfig = FieldConfig::new(NC, *mg, vec![(2, MQ)]);
+            let z = find_and_plot_qcd_t(
+                &oms,
+                *t,
+                &fieldconfig,
+                *f0,
+                ommin,
+                ommax,
+                nom,
+                "qcd_zero_density_lattice",
+            );
+            qcd_lattice_mu_zero.push((*t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_t_proptest(
+                &qcd_momenta,
+                *t,
+                &fieldconfig,
+                *f0,
+                true,
+                "qcd_zero_density_lattice",
+            );
+        });
+
+        let mut fpf = BufWriter::new(
+            fs::File::create(THIS_BASEDIR.join("qcd_zero_density_lattice.out")).unwrap(),
+        );
+        qcd_lattice_mu_zero
+            .iter()
+            .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap());
     }
 
     /* III. Pole trajectories */
 
-    // IIIA. Ym fixed, ym lattice and zero-density qcd fixed, as a function of temperature
+    // IIIA. Ym fixed, ym lattice, zero-density qcd fixed and zero-density qcd lattice, as a function of temperature
     if !(NO_YM && NO_QCD) {
         let mut figure = Figure::new();
         let ax2 = figure
@@ -800,6 +902,16 @@ fn main() {
             ax2.lines_points(
                 qcd_fixed_mu_zero[0..10].iter().map(|&(_, x, _)| x),
                 qcd_fixed_mu_zero[0..10].iter().map(|&(_, _, y)| y),
+                &[PlotOption::LineWidth(3.)],
+            )
+            .lines_points(
+                qcd_fixed_nf2_mu_zero[0..10].iter().map(|&(_, x, _)| x),
+                qcd_fixed_nf2_mu_zero[0..10].iter().map(|&(_, _, y)| y),
+                &[PlotOption::LineWidth(3.)],
+            )
+            .lines_points(
+                qcd_lattice_mu_zero[0..6].iter().map(|&(_, x, _)| x),
+                qcd_lattice_mu_zero[0..6].iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
             );
         }
