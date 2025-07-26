@@ -176,7 +176,7 @@ mod config {
                         .sum::<R>()
                         * 4.
                         / (9. * (self.fieldconfig.nc as R));
-                info!("Set corrected f0 to {}", cf0);
+                info!("Set corrected f0 to {cf0}");
                 cf0
             });
         }
@@ -209,7 +209,7 @@ fn compute_propagators(config: &Config) {
         let mut plot = Plot2D::new();
         plot.set_xlabel("$p/m$");
         plot.set_ylabel("$m^{2}\\,\\Delta_{L}(p)$");
-        plot.set_title(&format!("{}, $\\mu={mu:.4}$ GeV", title));
+        plot.set_title(&format!("{title}, $\\mu={mu:.4}$ GeV"));
         plot.set_domain(config.momenta().clone());
         plot.set_legend(legends.iter().map(|l| l.as_str()).collect());
 
@@ -318,7 +318,7 @@ fn compute_transverse_propagators(config: &Config) {
         let mut plot = Plot2D::new();
         plot.set_xlabel("$p/m$");
         plot.set_ylabel("$m^{2}\\,\\Delta_{T}(p)$");
-        plot.set_title(&format!("{}, $\\mu={mu:.4}$ GeV", title));
+        plot.set_title(&format!("{title}, $\\mu={mu:.4}$ GeV"));
         plot.set_domain(config.momenta().clone());
         plot.set_legend(legends.iter().map(|l| l.as_str()).collect());
 

@@ -181,7 +181,7 @@ impl Config {
             self.correctedquarkconfig.as_ref(),
         );
         if let Some(cf0) = self.correctedf0 {
-            debug!("Set corrected f0 to {}", cf0);
+            debug!("Set corrected f0 to {cf0}");
         }
     }
 
@@ -273,7 +273,7 @@ impl From<InputConfig> for Config {
         let correctedf0 = Self::compute_corrected_f0(f0, nc, &value.quarkconfig, cqc.as_ref());
 
         if let Some(cf0) = correctedf0 {
-            debug!("Set corrected f0 to {}", cf0);
+            debug!("Set corrected f0 to {cf0}");
         }
 
         Self {
