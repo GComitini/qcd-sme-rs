@@ -506,8 +506,6 @@ mod tests {
             qcd__gluon__dressing_inv_landau, qcd__gluon__dressing_inv_landau__complex,
         };
 
-        let mq = get_default_quark_mass();
-
         const REAL_RESULTS: [R; 4] = [
             1.2096404250687727,
             1.1138500463610683,
@@ -521,6 +519,8 @@ mod tests {
             1.1401568799573452 + 0.055334806887922264 * I,
             1.589666710187457 + 0.3247512836933115 * I,
         ];
+
+        let mq = get_default_quark_mass();
 
         REAL_TEST_VAL
             .iter()

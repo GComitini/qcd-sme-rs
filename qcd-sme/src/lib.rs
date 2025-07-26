@@ -8,6 +8,8 @@
 #![allow(clippy::similar_names)]
 #![allow(clippy::suspicious_operation_groupings)]
 #![allow(clippy::wildcard_imports)]
+#![allow(clippy::unreadable_literal)]
+#![allow(clippy::should_panic_without_expect)]
 
 pub mod common;
 pub mod consts;
