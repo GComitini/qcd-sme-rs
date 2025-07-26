@@ -11,6 +11,8 @@ keywords = ["qcd", "non-perturbative", "gluon", "quark", "mass", "yang-mills",
 categories = ["science", "mathematics"]
 
 [dependencies]
+argmin = { workspace = true }
+argmin-observer-slog = { workspace = true }
 env_logger = { workspace = true }
 lazy_static = { workspace = true }
 log = { workspace = true }
