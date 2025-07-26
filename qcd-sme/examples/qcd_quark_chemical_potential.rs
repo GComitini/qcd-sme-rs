@@ -18,10 +18,10 @@ fn main() {
 
     let mut plot = plot::Plot2D::new();
     plot.set_domain(densities.clone());
-    plot.set_path(&"target/qcd_quark_chemical_potential.png".to_string());
+    plot.set_path("target/qcd_quark_chemical_potential.png");
     let mut plot_detail = plot::Plot2D::new();
     plot_detail.set_domain(densities[detail_range.clone()].to_vec());
-    plot_detail.set_path(&"target/qcd_quark_chemical_potential_detail.png".to_string());
+    plot_detail.set_path("target/qcd_quark_chemical_potential_detail.png");
     let mut legends = Vec::new();
 
     let temperatures = [

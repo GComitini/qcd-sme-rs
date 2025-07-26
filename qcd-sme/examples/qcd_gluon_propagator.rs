@@ -31,7 +31,7 @@ fn main() {
     /* 3DIMENSIONALLY-TRANSVERSE POLARIZATION  */
     let mut plot = peroxide::util::plot::Plot2D::new();
     plot.set_domain(momenta.clone());
-    plot.set_path(&"target/qcd_gluon_propagator_transverse.png".to_string());
+    plot.set_path("target/qcd_gluon_propagator_transverse.png");
     let mut legends = Vec::new();
 
     for &t in &temperatures {
@@ -68,7 +68,7 @@ fn main() {
     /* 3DIMENSIONALLY-LONGITUDINAL POLARIZATION  */
     let mut plot = peroxide::util::plot::Plot2D::new();
     plot.set_domain(momenta.clone());
-    plot.set_path(&"target/qcd_gluon_propagator_longitudinal.png".to_string());
+    plot.set_path("target/qcd_gluon_propagator_longitudinal.png");
     let mut legends = Vec::new();
 
     for &t in &temperatures {

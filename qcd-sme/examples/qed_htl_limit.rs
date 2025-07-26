@@ -54,14 +54,14 @@ fn main() {
         plot_re.set_ylabel("Re{$\\Delta(p)$} [MeV$^{-2}$]");
         plot_re.set_title(&format!("$\\omega={om}$ MeV, $m_{{e}}={ME}$ MeV"));
         plot_re.set_domain(momenta.clone());
-        plot_re.set_path(&format!("target/qed_htl_limit/T{:.2}_re.png", t));
+        plot_re.set_path(&format!("target/qed_htl_limit/T{t:.2}_re.png"));
 
         let mut plot_im = Plot2D::new();
         plot_im.set_xlabel("$p$ [MeV]");
         plot_im.set_ylabel("Im{$\\Delta(p)$} [MeV$^{-2}$]");
         plot_im.set_title(&format!("$\\omega={om}$ MeV, $m_{{e}}={ME}$ MeV"));
         plot_im.set_domain(momenta.clone());
-        plot_im.set_path(&format!("target/qed_htl_limit/T{:.2}_im.png", t));
+        plot_im.set_path(&format!("target/qed_htl_limit/T{t:.2}_im.png"));
 
         let vals: Vec<C> = momenta
             .iter()

@@ -9,7 +9,7 @@ use std::{
 static mut PLOT_INDEX: usize = 0;
 
 fn do_dressing(
-    momenta: &Vec<f64>,
+    momenta: &[f64],
     m: f64,
     mq: f64,
     f0: f64,
@@ -37,7 +37,7 @@ fn do_dressing(
         .iter()
         .map(|p2| {
             let val = dressing_crossed_inv_landau(p2 / m2, mq / m, f0) / z;
-            writeln!(outfile, "{}", format!("{p2}\t{val}")).ok();
+            writeln!(outfile, "{p2}\t{val}").ok();
             val
         })
         .collect();

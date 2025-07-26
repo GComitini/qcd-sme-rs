@@ -747,8 +747,6 @@ mod tests {
             qcd__gluon__dressing_crossed_inv_landau__complex,
         };
 
-        let mq = get_default_quark_mass();
-
         const REAL_RESULTS: [R; 4] = [
             1.1452200013339067,
             1.0278169334356733,
@@ -762,6 +760,8 @@ mod tests {
             1.0412407008118778 + 0.0464390633718008 * I,
             1.4593613027930297 + 0.31457224197479217 * I,
         ];
+
+        let mq = get_default_quark_mass();
 
         REAL_TEST_VAL.iter().enumerate().for_each(|(i, &s)| {
             assert_equal(dressing_crossed_inv_landau(s, mq, -0.876), REAL_RESULTS[i]);
