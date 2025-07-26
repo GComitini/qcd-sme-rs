@@ -316,6 +316,10 @@ pub mod quark {
         (nc() as R) * s * (fm * fm * fm) / (3. * PI2)
     }
 
+    /// # Panics
+    /// This function panics if density as a function of chemical potential
+    /// could not be inverted to yield chemical potential as a function of
+    /// density
     pub fn chemical_potential_with_method(m: R, beta: R, n: R, integral: Integral) -> R {
         if n == 0. {
             return 0.;
