@@ -11,30 +11,39 @@ const F0: R = -0.876;
 const PREN: R = 4.;
 const OMEPS: R = 1E-3;
 
-fn alpha_s_from_f0(f0: R, t: R, config: &FieldConfig) -> R {
+fn alpha_s_from_f0_and_pren(f0: R, t: R, pren: R, config: &FieldConfig) -> R {
     4. * PI / (3. * (NC as R))
-        * PREN
-        * PREN
+        * pren
+        * pren
         * if t == 0. {
-            qcd_propagator_zero_temp(OMEPS, PREN, 0., f0, config).re
+            qcd_propagator_zero_temp(OMEPS, pren, 0., f0, config).re
         } else {
-            qcd_propagator(OMEPS, PREN, 1. / t, 0., f0, config).re
+            qcd_propagator(OMEPS, pren, 1. / t, 0., f0, config).re
         }
 }
 
-fn f0_from_alpha_s(a_s: R, t: R, config: &FieldConfig) -> R {
+fn alpha_s_from_f0(f0: R, t: R, config: &FieldConfig) -> R {
+    alpha_s_from_f0_and_pren(f0, t, PREN, config)
+}
+
+fn f0_from_alpha_s_and_pren(a_s: R, t: R, pren: R, config: &FieldConfig) -> R {
     4. * PI / (3. * (NC as R) * a_s)
-        - 1. / (PREN
-            * PREN
+        - 1. / (pren
+            * pren
             * if t == 0. {
-                qcd_propagator_zero_temp(OMEPS, PREN, 0., 0., config).re
+                qcd_propagator_zero_temp(OMEPS, pren, 0., 0., config).re
             } else {
-                qcd_propagator(OMEPS, PREN, 1. / t, 0., 0., config).re
+                qcd_propagator(OMEPS, pren, 1. / t, 0., 0., config).re
             })
+}
+
+fn f0_from_alpha_s(a_s: R, t: R, config: &FieldConfig) -> R {
+    f0_from_alpha_s_and_pren(a_s, t, PREN, config)
 }
 
 fn main() {
     /* I. Pure Yang-Mills theory */
+    // IA. Massive
     let config = FieldConfig::new(NC, MG, vec![]);
     println!("* Pure Yang-Mills theory");
     println!(
@@ -47,6 +56,23 @@ fn main() {
         f0_from_alpha_s(a_s, 0., &config)
     );
     println!("");
+
+    // IB. Massless
+    qcd_sme::consts::set_default_max_iter_integral(20);
+    let config = FieldConfig::new(NC, 0.005, vec![]);
+    let (t, f0ml, pren) = (0.1, 25., 0.5);
+    println!("* Massless pure Yang-Mills theory at p_ren = {pren} GeV");
+    println!(
+        "T = {t}, F0 = {f0ml} => a_s = {}",
+        alpha_s_from_f0_and_pren(f0ml, t, pren, &config)
+    );
+    let a_s = 0.04153253103565679;
+    println!(
+        "T = {t}, a_s = {a_s} => F0 = {}",
+        f0_from_alpha_s_and_pren(a_s, t, pren, &config)
+    );
+    println!("");
+    qcd_sme::consts::set_default_max_iter_integral(50);
 
     /* II. Full QCD */
     // IIA. Pure Yang-Mills parameters
