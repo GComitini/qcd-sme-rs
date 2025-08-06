@@ -243,11 +243,13 @@ fn main() {
             fs::create_dir_all(THIS_BASEDIR.join("ym_fixed").as_path()).unwrap();
         }
 
-        [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                plot_ym_t(&oms, t, MG, F0, "ym_fixed");
-            });
+        [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            plot_ym_t(&oms, t, MG, F0, "ym_fixed");
+        });
 
         // IB. Parameters from the lattice
         if !SHOW {
@@ -312,17 +314,19 @@ fn main() {
             plot_qcd_t(&oms, t, &fieldconfig, f00, "qcd_zero_density_fixed");
         });
 
-        [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                plot_qcd_t(
-                    &oms,
-                    t,
-                    &correctedfieldconfig,
-                    f0c,
-                    "qcd_zero_density_fixed",
-                );
-            });
+        [
+            0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            plot_qcd_t(
+                &oms,
+                t,
+                &correctedfieldconfig,
+                f0c,
+                "qcd_zero_density_fixed",
+            );
+        });
 
         // IIB. Zero temperature, as a function of chemical potential
         if !SHOW {
@@ -352,11 +356,13 @@ fn main() {
             fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2").as_path()).unwrap();
         }
 
-        [0., 0.05, 0.10, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                plot_qcd_t(&oms, t, &fieldconfig, F0QCD, "qcd_zero_density_fixed_nf2");
-            });
+        [
+            0., 0.05, 0.10, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.60, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            plot_qcd_t(&oms, t, &fieldconfig, F0QCD, "qcd_zero_density_fixed_nf2");
+        });
     }
 
     /* III. Full QCD, lattice parameters */

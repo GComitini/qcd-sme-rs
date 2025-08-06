@@ -190,7 +190,9 @@ fn main() {
         // IA. Fixed parameters
         let mut prev_zero = vec![1., 1.];
 
-        let temps = [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5];
+        let temps = [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ];
         temps.iter().for_each(|&t| {
             println!("Searching YM zero at fixed parameters for T = {t:.3}");
             let ymzf = YMZeroFinder { mg: MG, f0: F0, t };
@@ -262,7 +264,9 @@ fn main() {
                 .sum::<R>()
                 * 4.
                 / (9. * (fieldconfig.nc as R));
-        let temps = [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5];
+        let temps = [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ];
         temps.iter().for_each(|&t| {
             println!("Searching QCD zero at fixed parameters for T = {t:.3}");
             let qcdzf = QCDZeroFinder {
@@ -293,7 +297,9 @@ fn main() {
         const MGQCD: R = 0.752;
         const F0QCD: R = -0.506;
         let fieldconfig = FieldConfig::new(NC, MGQCD, vec![(2, MQ)]);
-        let temps = [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5];
+        let temps = [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ];
         temps.iter().for_each(|&t| {
             println!("Searching Nf = 2 QCD zero at fixed parameters for T = {t:.3}");
             let qcdzf = QCDZeroFinder {

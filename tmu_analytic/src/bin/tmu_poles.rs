@@ -587,14 +587,16 @@ fn main() {
             fs::create_dir_all(THIS_BASEDIR.join("ym_fixed").as_path()).unwrap();
         }
 
-        [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                let z = find_and_plot_ym_t(&oms, t, MG, F0, ommin, ommax, nom, "ym_fixed");
-                ym_fixed.push((t, z.im, z.re));
-                #[cfg(feature = "ftm_proptest")]
-                ym_t_proptest(&ym_momenta, t, MG, F0, true, "ym_fixed");
-            });
+        [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            let z = find_and_plot_ym_t(&oms, t, MG, F0, ommin, ommax, nom, "ym_fixed");
+            ym_fixed.push((t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            ym_t_proptest(&ym_momenta, t, MG, F0, true, "ym_fixed");
+        });
         let res0 = ym_fixed[0];
 
         let mut fpf = BufWriter::new(fs::File::create(THIS_BASEDIR.join("ym_fixed.out")).unwrap());
@@ -694,30 +696,32 @@ fn main() {
             );
         });
 
-        [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                let z = find_and_plot_qcd_t(
-                    &oms,
-                    t,
-                    &correctedfieldconfig,
-                    f0c,
-                    ommin,
-                    ommax,
-                    nom,
-                    "qcd_zero_density_fixed",
-                );
-                qcd_fixed_mu_zero.push((t, z.im, z.re));
-                #[cfg(feature = "ftm_proptest")]
-                qcd_t_proptest(
-                    &qcd_momenta,
-                    t,
-                    &correctedfieldconfig,
-                    f0c,
-                    true,
-                    "qcd_zero_density_fixed",
-                );
-            });
+        [
+            0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            let z = find_and_plot_qcd_t(
+                &oms,
+                t,
+                &correctedfieldconfig,
+                f0c,
+                ommin,
+                ommax,
+                nom,
+                "qcd_zero_density_fixed",
+            );
+            qcd_fixed_mu_zero.push((t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_t_proptest(
+                &qcd_momenta,
+                t,
+                &correctedfieldconfig,
+                f0c,
+                true,
+                "qcd_zero_density_fixed",
+            );
+        });
 
         let mut fpf = BufWriter::new(
             fs::File::create(THIS_BASEDIR.join("qcd_zero_density_fixed.out")).unwrap(),
@@ -793,30 +797,32 @@ fn main() {
             fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2").as_path()).unwrap();
         }
 
-        [0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
-            .iter()
-            .for_each(|&t| {
-                let z = find_and_plot_qcd_t(
-                    &oms,
-                    t,
-                    &fieldconfig,
-                    F0QCD,
-                    ommin,
-                    ommax,
-                    nom,
-                    "qcd_zero_density_fixed_nf2",
-                );
-                qcd_fixed_nf2_mu_zero.push((t, z.im, z.re));
-                #[cfg(feature = "ftm_proptest")]
-                qcd_t_proptest(
-                    &qcd_momenta,
-                    t,
-                    &fieldconfig,
-                    F0QCD,
-                    true,
-                    "qcd_zero_density_fixed_nf2",
-                );
-            });
+        [
+            0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7,
+        ]
+        .iter()
+        .for_each(|&t| {
+            let z = find_and_plot_qcd_t(
+                &oms,
+                t,
+                &fieldconfig,
+                F0QCD,
+                ommin,
+                ommax,
+                nom,
+                "qcd_zero_density_fixed_nf2",
+            );
+            qcd_fixed_nf2_mu_zero.push((t, z.im, z.re));
+            #[cfg(feature = "ftm_proptest")]
+            qcd_t_proptest(
+                &qcd_momenta,
+                t,
+                &fieldconfig,
+                F0QCD,
+                true,
+                "qcd_zero_density_fixed_nf2",
+            );
+        });
 
         let mut fpf = BufWriter::new(
             fs::File::create(THIS_BASEDIR.join("qcd_zero_density_fixed_nf2.out")).unwrap(),
