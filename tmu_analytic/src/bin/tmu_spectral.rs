@@ -376,6 +376,7 @@ fn main() {
         // These data were obtained by renormalizing the zero-matsubara transverse propagator
         // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 400 MeV
         [
+            (0., 0.7517777951910817, -0.5062071238487814), // This is a fake T = 0 value for reference
             (0.139, 0.7517777951910817, -0.5062071238487814),
             (0.154, 0.7639062870106536, -0.44084616449186326),
             (0.174, 0.7345150400347596, -0.3843769966635342),
