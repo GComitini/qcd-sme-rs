@@ -42,6 +42,8 @@ fn f0_from_alpha_s(a_s: R, t: R, config: &FieldConfig) -> R {
 }
 
 fn main() {
+    compile_error!("This binary was not modified for the low-mass case, do so before using it");
+
     /* I. Pure Yang-Mills theory */
     // IA. Massive
     let config = FieldConfig::new(NC, MG, vec![]);

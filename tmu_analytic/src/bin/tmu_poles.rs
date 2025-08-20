@@ -23,7 +23,7 @@ use std::{
 
 const NC: NCTYPE = 3;
 const MG: R = 0.656;
-const MQ: R = 0.4;
+const MQ: R = 0.2;
 const P0: R = 0.01;
 const F0: R = -0.876;
 #[cfg(feature = "ftm_proptest")]
@@ -35,7 +35,7 @@ const PIXX: u32 = 1600;
 const PIXY: u32 = 1600;
 
 const NO_QCD: bool = false;
-const NO_YM: bool = false;
+const NO_YM: bool = true;
 const SHOW: bool = false;
 
 lazy_static! {
@@ -563,7 +563,7 @@ fn main() {
         mut qcd_fixed_t_zero,
         mut qcd_fixed_nf2_mu_zero,
         mut qcd_lattice_mu_zero,
-    ) = (vec![], vec![], vec![], vec![], vec![], vec![]);
+    ): (_, _, _, Vec<()>, Vec<()>, _) = (vec![], vec![], vec![], vec![], vec![], vec![]);
 
     #[cfg(feature = "ftm_proptest")]
     let ym_momenta: Vec<R> = {
@@ -641,7 +641,7 @@ fn main() {
     /* II. Full QCD */
 
     if !NO_QCD {
-        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.35), (1, 0.45)]);
+        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
         //let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
         let correctedfieldconfig = fieldconfig.clone();
 
@@ -730,7 +730,7 @@ fn main() {
             .iter()
             .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap());
 
-        // IIB. Zero temperature, as a function of chemical potential, fixed parameters
+        /* // IIB. Zero temperature, as a function of chemical potential, fixed parameters
         if !SHOW {
             fs::create_dir_all(THIS_BASEDIR.join("qcd_zero_temperature_fixed").as_path()).unwrap();
         }
@@ -829,7 +829,7 @@ fn main() {
         );
         qcd_fixed_nf2_mu_zero
             .iter()
-            .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap());
+            .for_each(|(t, x, y)| writeln!(fpf, "{t:.4}\t{x:.4}\t{y:.4}").unwrap()); */
 
         // IID. Zero density, as a function of temperature, Nf=2, fitted params from lattice
         if !SHOW {
@@ -837,14 +837,14 @@ fn main() {
         }
 
         // These data were obtained by renormalizing the zero-matsubara transverse propagator
-        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 400 MeV
+        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 200 MeV
         [
-            (0.139, 0.7517777951910817, -0.5062071238487814),
-            (0.154, 0.7639062870106536, -0.44084616449186326),
-            (0.174, 0.7345150400347596, -0.3843769966635342),
-            (0.199, 0.7306060280562273, -0.38161604237819363),
-            (0.233, 0.746307345288752, -0.3585815488317115),
-            (0.278, 0.7924693589714722, -0.32681035700549366),
+            (0.139, 0.7360461258894254, -0.38326508306172924),
+            (0.154, 0.7492957152865027, -0.31556760023282565),
+            (0.174, 0.7217297548149253, -0.25830998457395093),
+            (0.199, 0.7196745401373572, -0.24971877005975093),
+            (0.233, 0.7375872973499797, -0.21776224853123094),
+            (0.278, 0.7855533106315216, -0.1736425033681984),
         ]
         .iter()
         .for_each(|(t, mg, f0)| {
@@ -910,11 +910,11 @@ fn main() {
                 qcd_fixed_mu_zero[0..10].iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
             )
-            .lines_points(
+            /* .lines_points(
                 qcd_fixed_nf2_mu_zero[0..10].iter().map(|&(_, x, _)| x),
                 qcd_fixed_nf2_mu_zero[0..10].iter().map(|&(_, _, y)| y),
                 &[PlotOption::LineWidth(3.)],
-            )
+            )*/
             .lines_points(
                 qcd_lattice_mu_zero[0..6].iter().map(|&(_, x, _)| x),
                 qcd_lattice_mu_zero[0..6].iter().map(|&(_, _, y)| y),
@@ -931,7 +931,7 @@ fn main() {
         }
     }
 
-    // IIIB. Zero-temperature qcd fixed
+    /* // IIIB. Zero-temperature qcd fixed
     if !NO_QCD {
         let mut figure = Figure::new();
         let ax2 = figure
@@ -954,5 +954,5 @@ fn main() {
                 .save_to_png(THIS_BASEDIR.join("poles_mu.png"), PIXX, PIXY)
                 .unwrap();
         }
-    }
+    } */
 }

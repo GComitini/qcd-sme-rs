@@ -19,7 +19,7 @@ use std::{fs, path::PathBuf};
 
 const NC: NCTYPE = 3;
 const MG: R = 0.656;
-const MQ: R = 0.4;
+const MQ: R = 0.2;
 const P0: R = 0.01;
 const F0: R = -0.876;
 const PREN: R = 4.;
@@ -29,7 +29,7 @@ const PIXX: u32 = 1600;
 const PIXY: u32 = 1600;
 
 const NO_QCD: bool = false;
-const NO_YM: bool = false;
+const NO_YM: bool = true;
 const SHOW: bool = false;
 
 lazy_static! {
@@ -142,7 +142,7 @@ fn plot_qcd_t(oms: &[R], t: R, config: &FieldConfig, f0: R, dir: &str) {
             AutoOption::Fix(*oms.first().unwrap()),
             AutoOption::Fix(*oms.last().unwrap()),
         )
-        .set_y_range(AutoOption::Fix(-1.1), AutoOption::Fix(2.5));
+        .set_y_range(AutoOption::Fix(-1.1), AutoOption::Fix(5.0));
 
     if SHOW {
         figure.show().unwrap();
@@ -278,7 +278,7 @@ fn main() {
     /* II. Full QCD, fixed parameters */
 
     if !NO_QCD {
-        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.35), (1, 0.45)]);
+        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
         //let correctedfieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
         let correctedfieldconfig = fieldconfig.clone();
 
@@ -374,15 +374,15 @@ fn main() {
         }
 
         // These data were obtained by renormalizing the zero-matsubara transverse propagator
-        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 400 MeV
+        // at mu = 4 GeV, cutting the lattice data at 2 GeV and fixing mq = 200 MeV
         [
-            (0., 0.7517777951910817, -0.5062071238487814), // This is a fake T = 0 value for reference
-            (0.139, 0.7517777951910817, -0.5062071238487814),
-            (0.154, 0.7639062870106536, -0.44084616449186326),
-            (0.174, 0.7345150400347596, -0.3843769966635342),
-            (0.199, 0.7306060280562273, -0.38161604237819363),
-            (0.233, 0.746307345288752, -0.3585815488317115),
-            (0.278, 0.7924693589714722, -0.32681035700549366),
+            (0., 0.7360461258894254, -0.38326508306172924), // This is a fake T = 0 value for reference
+            (0.139, 0.7360461258894254, -0.38326508306172924),
+            (0.154, 0.7492957152865027, -0.31556760023282565),
+            (0.174, 0.7217297548149253, -0.25830998457395093),
+            (0.199, 0.7196745401373572, -0.24971877005975093),
+            (0.233, 0.7375872973499797, -0.21776224853123094),
+            (0.278, 0.7855533106315216, -0.1736425033681984),
         ]
         .iter()
         .for_each(|(t, mg, f0)| {

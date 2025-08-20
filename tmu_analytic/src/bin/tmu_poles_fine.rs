@@ -26,9 +26,9 @@ const TARGET_ZERO: R = 1E-12;
 const NC: NCTYPE = 3;
 const MG: R = 0.656;
 const F0: R = -0.876;
-const MQ: R = 0.4;
+const MQ: R = 0.2;
 
-const NO_YM: bool = false;
+const NO_YM: bool = true;
 const NO_QCD: bool = false;
 
 lazy_static! {
@@ -255,7 +255,7 @@ fn main() {
         // IIA. Fixed parameters
         let mut prev_zero = vec![-1., 1.];
 
-        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.35), (1, 0.45)]);
+        let fieldconfig = FieldConfig::new(NC, MG, vec![(2, 0.125), (1, 0.225)]);
         let f0q = F0
             + fieldconfig
                 .quarks
@@ -332,12 +332,12 @@ fn main() {
         let mut prev_zero = vec![1., 1.];
 
         let params = [
-            (0.139, 0.7517777951910817, -0.5062071238487814),
-            (0.154, 0.7639062870106536, -0.44084616449186326),
-            (0.174, 0.7345150400347596, -0.3843769966635342),
-            (0.199, 0.7306060280562273, -0.38161604237819363),
-            (0.233, 0.746307345288752, -0.3585815488317115),
-            (0.278, 0.7924693589714722, -0.32681035700549366),
+            (0.139, 0.7360461258894254, -0.38326508306172924),
+            (0.154, 0.7492957152865027, -0.31556760023282565),
+            (0.174, 0.7217297548149253, -0.25830998457395093),
+            (0.199, 0.7196745401373572, -0.24971877005975093),
+            (0.233, 0.7375872973499797, -0.21776224853123094),
+            (0.278, 0.7855533106315216, -0.1736425033681984),
         ];
         params.iter().for_each(|&(t, mg, f0)| {
             println!("Searching QCD zero at lattice parameters for T = {t:.3}");
