@@ -287,45 +287,51 @@ pub mod gluon {
 
 pub mod quark {
     use crate::common::thermal::inlines::fermi_momentum;
-    use crate::consts::{get_default_integration_method, nc};
+    use crate::consts::get_default_integration_method;
     use crate::utils::find_root;
-    use crate::{types::Integral, R};
+    use crate::{types::Integral, NCTYPE, R};
     use peroxide::numerical::integral::integrate;
     use std::f64::consts::PI;
 
     const PI2: R = PI * PI;
 
-    pub fn charge_density_with_method(m: R, beta: R, mu: R, integral: Integral) -> R {
+    pub fn charge_density_with_method(m: R, beta: R, mu: R, nc: NCTYPE, integral: Integral) -> R {
         integrate(
-            |t| inlines::charge_density_i((1. - t) / t, m, beta, mu) / (t * t),
+            |t| inlines::charge_density_i((1. - t) / t, m, beta, mu, nc) / (t * t),
             (0., 1.),
             integral,
         )
     }
 
-    pub fn charge_density(m: R, beta: R, mu: R) -> R {
-        charge_density_with_method(m, beta, mu, get_default_integration_method())
+    pub fn charge_density(m: R, beta: R, mu: R, nc: NCTYPE) -> R {
+        charge_density_with_method(m, beta, mu, nc, get_default_integration_method())
     }
 
-    pub fn charge_density_zero_temp(m: R, mu: R) -> R {
+    pub fn charge_density_zero_temp(m: R, mu: R, nc: NCTYPE) -> R {
         if mu.abs() <= m.abs() {
             return 0.;
         }
         let s = if mu > m { 1. } else { -1. };
         let fm = fermi_momentum(m, mu);
-        (nc() as R) * s * (fm * fm * fm) / (3. * PI2)
+        (nc as R) * s * (fm * fm * fm) / (3. * PI2)
     }
 
     /// # Panics
     /// This function panics if density as a function of chemical potential
     /// could not be inverted to yield chemical potential as a function of
     /// density
-    pub fn chemical_potential_with_method(m: R, beta: R, n: R, integral: Integral) -> R {
+    pub fn chemical_potential_with_method(
+        m: R,
+        beta: R,
+        n: R,
+        nc: NCTYPE,
+        integral: Integral,
+    ) -> R {
         if n == 0. {
             return 0.;
         }
         find_root(
-            &|mu| n - charge_density_with_method(m, beta, mu, integral),
+            &|mu| n - charge_density_with_method(m, beta, mu, nc, integral),
             (0.5 * n, n),
             integral.get_tol(),
             1000,
@@ -334,30 +340,29 @@ pub mod quark {
         .0
     }
 
-    pub fn chemical_potential(m: R, beta: R, n: R) -> R {
-        chemical_potential_with_method(m, beta, n, get_default_integration_method())
+    pub fn chemical_potential(m: R, beta: R, n: R, nc: NCTYPE) -> R {
+        chemical_potential_with_method(m, beta, n, nc, get_default_integration_method())
     }
 
-    pub fn chemical_potential_zero_temp(m: R, n: R) -> R {
+    pub fn chemical_potential_zero_temp(m: R, n: R, nc: NCTYPE) -> R {
         if n == 0. {
             return 0.;
         }
-        let a = (3. * PI2 * n.abs() / (nc() as R)).powf(2. / 3.);
+        let a = (3. * PI2 * n.abs() / (nc as R)).powf(2. / 3.);
         let s = if n > 0. { 1. } else { -1. };
         s * m.mul_add(m, a).sqrt()
     }
 
     pub(crate) mod inlines {
         use crate::common::{inlines::energy, thermal::inlines::fermi_distribution};
-        use crate::consts::nc;
-        use crate::R;
+        use crate::{NCTYPE, R};
         use std::f64::consts::PI;
 
         const PI2: R = PI * PI;
 
-        pub fn charge_density_i(q: R, m: R, beta: R, mu: R) -> R {
+        pub fn charge_density_i(q: R, m: R, beta: R, mu: R, nc: NCTYPE) -> R {
             let en = energy(q, m);
-            (nc() as R)
+            (nc as R)
                 * q
                 * q
                 * (fermi_distribution(en, beta, mu) - fermi_distribution(en, beta, -mu))
@@ -912,8 +917,9 @@ pub mod zero_momentum {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Num, R};
+    use crate::{Num, NCTYPE, R};
 
+    const NC: NCTYPE = 3;
     const TOLERANCE: R = 10E-12;
 
     fn assert_equal_with_tol<T: Num>(lhs: T, rhs: T, tol: R) {
@@ -964,7 +970,8 @@ mod tests {
                     chemical_potential_with_method(
                         m,
                         beta,
-                        charge_density_with_method(m, beta, mu, Integral::G7K15(tol, iter)),
+                        charge_density_with_method(m, beta, mu, NC, Integral::G7K15(tol, iter)),
+                        NC,
                         Integral::G7K15(tol, iter),
                     ),
                     mu,
@@ -973,7 +980,7 @@ mod tests {
             }
 
             assert_equal(
-                chemical_potential_zero_temp(m, charge_density_zero_temp(m, mu)),
+                chemical_potential_zero_temp(m, charge_density_zero_temp(m, mu, NC), NC),
                 mu,
             );
         }

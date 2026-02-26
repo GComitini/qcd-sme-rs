@@ -1,6 +1,9 @@
 use peroxide::{fuga::*, util::plot};
 use qcd_sme::qcd::thermal::quark::{charge_density, charge_density_zero_temp};
+use qcd_sme::NCTYPE;
 use rayon::prelude::*;
+
+const NC: NCTYPE = 3;
 
 fn main() {
     let (mumin, mumax) = (-2., 2.);
@@ -31,7 +34,7 @@ fn main() {
         .par_iter()
         .map(|&mu| {
             eprintln!("Computing T = 0.0 GeV, mu = {mu} GeV");
-            charge_density_zero_temp(mq, mu)
+            charge_density_zero_temp(mq, mu, NC)
         })
         .collect();
     plot_detail.insert_image(vals[detail_range.clone()].to_vec());
@@ -43,7 +46,7 @@ fn main() {
             .par_iter()
             .map(|&mu| {
                 eprintln!("Computing T = {t} GeV, mu = {mu} GeV");
-                charge_density(mq, 1. / t, mu)
+                charge_density(mq, 1. / t, mu, NC)
             })
             .collect();
         if t <= 0.2 {

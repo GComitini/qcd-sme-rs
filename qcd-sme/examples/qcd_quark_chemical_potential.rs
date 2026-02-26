@@ -1,7 +1,10 @@
 use peroxide::{fuga::*, util::plot};
 use qcd_sme::consts::set_default_tol_integral;
 use qcd_sme::qcd::thermal::quark::{chemical_potential, chemical_potential_zero_temp};
+use qcd_sme::NCTYPE;
 use rayon::prelude::*;
+
+const NC: NCTYPE = 3;
 
 fn main() {
     let (nmin, nmax) = (-2., 2.);
@@ -33,7 +36,7 @@ fn main() {
         .par_iter()
         .map(|&n| {
             eprintln!("Computing T = 0.0 GeV, mu = {n} GeV");
-            chemical_potential_zero_temp(mq, n)
+            chemical_potential_zero_temp(mq, n, NC)
         })
         .collect();
     plot_detail.insert_image(vals[detail_range.clone()].to_vec());
@@ -45,7 +48,7 @@ fn main() {
             .par_iter()
             .map(|&mu| {
                 eprintln!("Computing T = {t} GeV, mu = {mu} GeV");
-                chemical_potential(mq, 1. / t, mu)
+                chemical_potential(mq, 1. / t, mu, NC)
             })
             .collect();
         if t <= 0.2 {

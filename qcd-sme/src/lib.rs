@@ -21,4 +21,4 @@ pub mod utils;
 pub mod ym;
 
 pub use consts::I;
-pub use types::{Integral, Num, C, R};
+pub use types::{Integral, Num, C, NCTYPE, R};
